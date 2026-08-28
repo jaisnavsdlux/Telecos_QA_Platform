@@ -1,0 +1,4 @@
+scope: G3
+required_references:
+- FC_Drawing
+- SDV_Photos

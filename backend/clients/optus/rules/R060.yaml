@@ -1,0 +1,17 @@
+id: R060
+name: Drawing scale standards and bold emphasis for new proposed equipment
+category: CAD Standards
+scope: G3, G3-1, G4, F1
+description: Verify that layout and detail sheets display a standard engineering scale
+  (e.g. 1:100, 1:50, 1:20) and that new/proposed equipment elements and callouts are
+  emphasized in bold text/layers.
+required_references:
+- FC_Drawing
+pass_criteria: PASS if a standard scale is shown on the sheet (or in detail titles)
+  and proposed equipment callouts are distinct and readable.
+fail_criteria: FAIL if no standard scale is indicated or proposed modifications are
+  indistinguishable from background layers.
+expected_patterns:
+- (?i)(scale|1\s*:\s*\d+|detail)
+negative_constraints:
+- Accept valid detail scales (e.g. DETAIL 1 SCALE 1:100) on layout plans

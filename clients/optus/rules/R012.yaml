@@ -1,0 +1,26 @@
+id: R012
+name: Cover sheet drawing list must align with As-built reference and project scope
+category: Drawing Quality
+scope: Cover
+description: 'Validate the drawing index on the Cover Sheet against the project scope
+  and previous As-Built: 1. Proposed new sheets must use Revision ''A''. 2. Antenna
+  schedule sheets must be named with ''A'' prefix (A1, A2, A3, etc.). 3. Plumbing
+  diagrams must be named with ''P'' prefix (P1, P2, etc.) — previously named as A-series
+  in older As-builts. 4. Disciplines not in current scope (e.g. Electrical E1/E2/E3
+  if no electrical upgrade) should either be omitted or have blank revision entries.'
+required_references:
+- FC_Drawing
+pass_criteria: 'PASS if: - The cover sheet drawing list correctly indexes the sheets
+  with valid prefixes (G-series for General, A-series for Antennas, P-series for Plumbing,
+  F-series for Shelter, S-series for Structural). - Proposed drawings are marked with
+  Revision ''A''. - Plumbing diagram is correctly identified as P1 (and not conflicting
+  with Antenna A-series).'
+fail_criteria: FAIL if plumbing diagrams are incorrectly titled with A-series prefixes
+  without separation, or if proposed drawings have broken revision sequences.
+expected_patterns:
+- (?i)(G1|G2|G3|A1|P1|F1|S1)
+negative_constraints:
+- Do NOT fail because P1 is grouped under general Antenna/Transmission transmission
+  index headers as long as the sheet code itself is P1
+- Do NOT require non-scoped disciplines (e.g. Electrical E-series) to have revision
+  entries if no electrical upgrade is required

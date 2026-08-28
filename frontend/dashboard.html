@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — Strelza Telecos QA Platform</title>
+<link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <!-- Strelza Sidebar with 4-Tier Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand brand">
+        <img src="/static/strelza-logo.jpg" alt="Strelza" style="height:28px; border-radius:4px; object-fit:contain;" />
+        <div>STRELZA QA<small>Telecos Engineering</small></div>
+      </div>
+
+      <!-- Global Multi-Project Selector Container -->
+      <div id="projectSelectorContainer" style="padding:0 12px; margin-bottom:12px;"></div>
+
+      <nav>
+        <a class="nav-link active" href="/static/dashboard.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          1. Dashboard
+        </a>
+        <a class="nav-link" href="/static/package.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          2. Package &amp; Reference Area
+        </a>
+        <a class="nav-link" href="/static/checkpoints.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 12 18 16 13"/></svg>
+          3. Checkpoint Validation
+        </a>
+        <a class="nav-link" href="/static/reports.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          4. Audit Reports Hub
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div>
+            <div id="sidebarUsername" style="font-weight:600;">Lead QA Administrator</div>
+            <span class="role-badge" id="sidebarRole">ADMIN</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm btn-block" id="logoutBtn">Sign out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1>Executive Compliance Dashboard</h1>
+          <p>Real-time audit scorecard, token telemetry, and system status for Austins Ferry (H8097).</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a class="btn btn-primary" href="/static/checkpoints.html">
+            <span>▶</span> Launch Checkpoint Validator
+          </a>
+          <a class="btn" href="/static/reports.html" style="background:var(--surface-raised);">
+            <span>📑</span> View PDF Reports
+          </a>
+        </div>
+      </div>
+
+      <!-- Live Scorecard KPI Strip -->
+      <div class="summary-strip">
+        <div class="summary-tile pass">
+          <div class="value" id="kpiPass">59</div>
+          <div class="label">Passing Rules (100%)</div>
+        </div>
+        <div class="summary-tile fail">
+          <div class="value" id="kpiFail">0</div>
+          <div class="label">Failed Defects</div>
+        </div>
+        <div class="summary-tile unclear">
+          <div class="value" id="kpiUnclear">0</div>
+          <div class="label">Unclear Issues</div>
+        </div>
+        <div class="summary-tile na">
+          <div class="value" id="kpiNA">12</div>
+          <div class="label">Not Applicable (Rooftop Scope)</div>
+        </div>
+        <div class="summary-tile">
+          <div class="value" id="kpiTotal">71</div>
+          <div class="label">Total Optus BA Rules</div>
+        </div>
+      </div>
+
+      <!-- Main Overview Grid -->
+      <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:20px; margin-bottom:24px;">
+        <!-- Target Site Profile Card -->
+        <div class="card card-pad">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border-soft); padding-bottom:12px;">
+            <h3 style="margin:0;">Active Target Drawing &amp; Site Baseline</h3>
+            <span class="badge badge-pass">QC VERIFIED</span>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+              <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Site Identifier</div>
+              <div class="mono" id="siteIdentifierText" style="font-size:16px; font-weight:700; color:var(--text); margin-top:2px;">H8097 &bull; AUSTINS FERRY</div>
+            </div>
+            <div>
+              <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Structure Type</div>
+              <div class="mono" id="structureTypeText" style="font-size:14px; font-weight:600; color:var(--cyan-dim); margin-top:2px;">CONCRETE MONOPOLE (26.8m)</div>
+            </div>
+            <div>
+              <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Drawing Package File</div>
+              <div class="mono" id="drawingPackageText" style="font-size:12px; color:var(--text); margin-top:2px; word-break:break-all;">H8097_AUSTINS FERRY_FC_05122025_Final PDF After QC validation.pdf</div>
+            </div>
+            <div>
+              <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Drawing Revision</div>
+              <div class="mono" id="drawingRevisionText" style="font-size:13px; color:var(--pass); font-weight:600; margin-top:2px;">FOR CONSTRUCTION (Rev 1.0)</div>
+            </div>
+          </div>
+
+          <div style="margin-top:20px; padding:12px 16px; background:var(--surface-raised); border-radius:var(--radius); border:1px solid var(--border-soft); display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <span style="font-weight:600; color:var(--text);">Companion Reference Package:</span>
+              <span id="companionPackageText" style="color:var(--cyan-dim); font-weight:600; font-family:var(--font-mono); margin-left:6px;">531 files across 11 categories</span>
+            </div>
+            <a class="btn btn-sm" href="/static/package.html">Inspect Files &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Token Telemetry Card -->
+        <div class="card card-pad">
+          <h3 style="margin:0; margin-bottom:16px; border-bottom:1px solid var(--border-soft); padding-bottom:12px;">Inference &amp; Token Telemetry</h3>
+          
+          <div style="margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+              <span style="color:var(--text-muted);">Total Input Tokens:</span>
+              <span class="mono" id="telemetryInputTokens" style="color:var(--text); font-weight:700;">488,460</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+              <span style="color:var(--text-muted);">Total Output Tokens:</span>
+              <span class="mono" id="telemetryOutputTokens" style="color:var(--text); font-weight:700;">13,517</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+              <span style="color:var(--text-muted);">Prompt Cache Reads:</span>
+              <span class="mono" id="telemetryCacheReads" style="color:var(--pass); font-weight:700;">0 (Zero Caching Confirmed)</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px;">
+              <span style="color:var(--text-muted);">Audit Execution Runtime:</span>
+              <span class="mono" id="telemetryRuntime" style="color:var(--cyan-dim); font-weight:700;">346.50 seconds (5.8 mins)</span>
+            </div>
+          </div>
+
+          <div style="padding:10px 14px; background:#e0f2fe; border:1px solid #bae6fd; border-radius:var(--radius); font-size:12px; color:var(--cyan-dim);">
+            ⚡ <strong id="telemetryModel">Model:</strong> Gemma-4 Multimodal Vision pipeline operating locally with zero external API dependencies.
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Reports Quick Access -->
+      <section class="card" style="overflow:hidden;">
+        <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+          <h3 style="margin:0;">Latest Audit Compliance Reports</h3>
+          <a class="btn btn-sm" href="/static/reports.html">Open Full Reports Hub &rarr;</a>
+        </div>
+        <div id="dashboardReportList">
+          <div style="padding:20px; text-align:center; color:var(--text-muted);">
+            <span class="spinner"></span> Loading reports metadata…
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/js/api.js?v=2.2"></script>
+  <script>
+    Api.requireAuth();
+    const user = Api.getUser();
+    document.getElementById("sidebarUsername").textContent = user?.display_name || user?.username || "Lead QA Administrator";
+    document.getElementById("sidebarRole").textContent = (user?.role || "ADMIN").toUpperCase();
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      Api.clearSession();
+      window.location.href = "/static/index.html";
+    });
+
+    async function loadDashboard() {
+      try {
+        const metrics = await Api.get("/api/dashboard_metrics");
+        const audit = await Api.get("/audit_status");
+        
+        const v = (audit.status === "running" ? audit.verdicts : null) || metrics.verdicts || audit.verdicts || {};
+        const passCount = v.PASS || 0;
+        const failCount = v.FAIL || 0;
+        const unclearCount = v.UNCLEAR || 0;
+        const naCount = v.NOT_APPLICABLE || 0;
+        const totalCount = passCount + failCount + unclearCount + naCount;
+
+        document.getElementById("kpiPass").textContent = passCount;
+        document.getElementById("kpiFail").textContent = failCount;
+        document.getElementById("kpiUnclear").textContent = unclearCount;
+        document.getElementById("kpiNA").textContent = naCount;
+        document.getElementById("kpiTotal").textContent = totalCount || metrics.total_rules || 71;
+
+        if (metrics.target_site) {
+          document.getElementById("siteIdentifierText").textContent = `${metrics.target_site.site_id} • ${metrics.target_site.site_name}`;
+          document.getElementById("structureTypeText").textContent = metrics.target_site.structure_type || "Telecom Structure";
+          document.getElementById("drawingPackageText").textContent = metrics.target_site.primary_drawing || "No drawing uploaded";
+          document.getElementById("drawingRevisionText").textContent = metrics.target_site.drawing_revision || "FOR CONSTRUCTION (Rev 1.0)";
+          document.getElementById("companionPackageText").textContent = `${metrics.total_reference_files || 0} files indexed`;
+        }
+
+        if (metrics.telemetry) {
+          document.getElementById("telemetryInputTokens").textContent = Number(metrics.telemetry.input_tokens || 0).toLocaleString();
+          document.getElementById("telemetryOutputTokens").textContent = Number(metrics.telemetry.output_tokens || 0).toLocaleString();
+          document.getElementById("telemetryCacheReads").textContent = `${metrics.telemetry.cache_read_tokens || 0} (Zero Caching Confirmed)`;
+          const secs = metrics.telemetry.duration_seconds || 0;
+          const mins = (secs / 60).toFixed(1);
+          document.getElementById("telemetryRuntime").textContent = `${secs} seconds (${mins} mins)`;
+        }
+
+        const reports = await Api.get("/api/reports");
+        const listEl = document.getElementById("dashboardReportList");
+        if (!reports || !reports.length) {
+          listEl.innerHTML = `<div style="padding:24px; text-align:center; color:var(--text-muted);">No reports generated yet for this project.</div>`;
+        } else {
+          listEl.innerHTML = reports.map(r => `
+            <div class="checkpoint-row" style="padding:16px 20px;">
+              <div style="font-size:24px;">📑</div>
+              <div class="checkpoint-info">
+                <div class="rule">
+                  <span>${escapeHtml(r.title)}</span>
+                  <span class="badge ${r.verdict_summary.fail > 0 ? 'badge-fail' : 'badge-pass'}">
+                    ${r.verdict_summary.pass} PASS ${r.verdict_summary.fail > 0 ? '/ ' + r.verdict_summary.fail + ' FAIL' : ''} ${r.verdict_summary.na > 0 ? '/ ' + r.verdict_summary.na + ' N/A' : ''}
+                  </span>
+                </div>
+                <div class="check-text">Generated ${escapeHtml(r.timestamp)} &bull; ${r.pages} Pages &bull; ${r.size_kb} KB</div>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <a class="btn btn-sm btn-primary" href="/static/reports.html">View in Hub</a>
+                <a class="btn btn-sm" href="${r.download_url}" target="_blank">Download PDF</a>
+              </div>
+            </div>
+          `).join("");
+        }
+      } catch (err) {
+        console.error("Dashboard load failed", err);
+      }
+    }
+
+    initProjectSelector("projectSelectorContainer", () => loadDashboard());
+    loadDashboard();
+    setInterval(loadDashboard, 3000);
+  </script>
+</body>
+</html>

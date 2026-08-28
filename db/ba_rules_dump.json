@@ -1,0 +1,1487 @@
+{
+  "R001": {
+    "check_point": "Correct Optus drawing template has been used?",
+    "explanation": "Two CAD templates are available for Optus. We primarily use the standard Optus FC Template, but some projects use the Child CAD Template. If the client provides the input file in the Child CAD Template, we will use that file; otherwise, we will follow the standard Optus template.",
+    "image_ref": "Optus FC template saved. \nAustin Ferry site use a Child CAD file, which is also saved",
+    "dlux_notes": "Check whether the correct template (Child CAD template) is used instead of the standard one.\nChild CAD template \u2192 has watermark\n\nStandard template \u2192 no watermark\n\nHow to validate:\nCheck input CAD file\nIf input has watermark \u2192 output must use same template",
+    "req_docs": "https://alltelecosaus-my.sharepoint.com/:f:/g/personal/manik_babuta_alltelecos_com_au/IgAfqo0Clm7ZSZmtDBjoY7TqARex5XYqwS-U3YXwEnneN4s?e=iiTk2u",
+    "optus_review": "Correct\n\nIf input has no watermark \u2192 output must match with Optus standard drawing template.",
+    "sample_rules": ""
+  },
+  "R002": {
+    "check_point": "Drawings must be correct scale in all the sheets",
+    "explanation": "Check all drawing scale must be followed standard scale. If scale is not followed the standard or Acceptable, need to highlight",
+    "image_ref": "Refer \"1-scale\" image",
+    "dlux_notes": "Ensure scale is mentioned in required sheets\n\nFirst sheets (cover, antenna, etc.) \u2192 may NOT have scale\n\nOther sheets \u2192 MUST have scale",
+    "req_docs": "Standard Scale.png",
+    "optus_review": "Ensure scale is mentioned in required sheets\n\nCover sheet, G1, A series, P series & E series sheet \u2192 may NOT have scale. Also no need to check the reference OSD standard sheet scale.\n\nOther sheets \u2192 MUST have scale, must be followed the standard scale value",
+    "sample_rules": ""
+  },
+  "R003": {
+    "check_point": "Check scale with viewport",
+    "explanation": "Check shown scale must in standard one. Also scale must be matched with viewport",
+    "image_ref": "Refer \"1-SCALE & Viewport\" image",
+    "dlux_notes": "need CAD access, click on scale to view viewport, need to check on viewport\nThe mentioned scale must match actual viewport scale in CAD",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R004": {
+    "check_point": "FC stamp is correctly mentioned to all sheets?",
+    "explanation": "Draft symbol must be in all sheets",
+    "image_ref": "Refer \"2-draft\" image",
+    "dlux_notes": "Check if Draft/FC stamp is present in all sheets.\nCheck if the DRAFT watermark is present in the drawing pages.\nIf DRAFT watermark is visible \u2192 PASS\nIf DRAFT watermark is not visible \u2192 FAIL\nDo not check FOR CONSTRUCTION stamp.",
+    "req_docs": "2-Draft.png",
+    "optus_review": "Draft symbol must be RED color & same alignment (rotation) as per reference image.",
+    "sample_rules": ""
+  },
+  "R005": {
+    "check_point": "Layers correcly followed",
+    "explanation": "Main objective is existing must be in unbold layer whereas proposed must be in bold layer.",
+    "image_ref": "You can find the layer formats in CAD template in Model space. Refer \"3-Optus FC template Layer format & 4-Child CAD template Layer format\" snip",
+    "dlux_notes": "Existing must be unbold, propsed means bold, Check in As-built file.\nCheck layer usage based on Existing vs Proposed\n\nExisting elements \u2192 Unbold/light layer\n\nProposed/New elements \u2192 Bold layer",
+    "req_docs": "",
+    "optus_review": "All Headings, Notes and Structural notes must be shown in bold layers. Most of the sheets Callout/Text are bold layer, except for below exemption:\n\nG1 sheet: \nEquipment Shelter/ODU: The heading must be bold, but the content should be unbolded unless a new cabinet is proposed or any modification is made.\nTransmission: The heading must be bold, but the content should be unbolded unless a new dish or new fibre is proposed\n\nIf Callout mentions \"Existing\" that must be Unbold layer.\n\nIf callout mentions \"Proposed/New/Relocated/Removed\" that must be Bold layer",
+    "sample_rules": ""
+  },
+  "R006": {
+    "check_point": "All text in uppercase font",
+    "explanation": "All text should be in full uppercase, except for email IDs (mostly found in the G1 sheet \u2013 Construction Site Access) and units such as m (meter) and km (kilometer) & programe name (eJV) 'e' lower case accepted",
+    "image_ref": "Refer \"Check point 7\" image",
+    "dlux_notes": "units of measurements will be in small, mail ID \nother than these all will be in upper case\nEmail ID comes under Construction Site access(most of the time)\n\nExceptions:\nTitle block (template content)\nProgram name like \u201ceJV\u201d (lowercase allowed)",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R007": {
+    "check_point": "Please study structural MU, if any prior to fabrication/Installation is identified, please hightlight to DEs & SEs",
+    "explanation": "During the course of the project, if you identify any PRIOR TO INSTALLATION/FABRICATION notes, please ensure they are highlighted, particularly those found in the structural sheets.",
+    "image_ref": "",
+    "dlux_notes": "System should identify if PRIOR TO INSTALLATION/FABRICATION notes is present in any of the sheets",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R008": {
+    "check_point": "Site number/Name/Address details correct",
+    "explanation": "these details needs to be crosschecked with RFSNA",
+    "image_ref": "Refer \"1-Site name-number-address\"",
+    "dlux_notes": "checking on one sheet(eg cover sheet) is enough\nRFSNA is a website which consists of history/information about site\nValidate:\nSite ID\nSite Name\nAddress\nJoint Venture (JV)\n\nSource:\nRFNSA system",
+    "req_docs": "RFSNA",
+    "optus_review": "Correct. Currently, you do not have access to the RFSNA website. We save the RFSNA details in the Input folder for all projects. Please note that these are site-specific, and each project has its own set",
+    "sample_rules": ""
+  },
+  "R009": {
+    "check_point": "Add structure owner site ID. (Indara, Amplitel & BAI etc)",
+    "explanation": "these details needs to be crosschecked with RFSNA",
+    "image_ref": "Refer \"1-Site name-number-address\"",
+    "dlux_notes": "checking on one sheet(eg cover sheet) is enough\nRFNSA is a website which consists of history/information about site",
+    "req_docs": "RFSNA",
+    "optus_review": "If site owner is Optus/Council/Private owner, we don't have to mention it. In this case, Verdict must be in N/A (Not Applicable)\n\nIf site owner is BAI/Amplitel/Indara, we have to mention.",
+    "sample_rules": ""
+  },
+  "R010": {
+    "check_point": "Work authority number is correct",
+    "explanation": "The Work Authority Number is a 6-digit number, which is provided in the Scope of Works section of the Antenna System tab in the FR excel. Sometimes mentioned in FormA & FR's file name.",
+    "image_ref": "Refer \"2-Work Authority ID -1 & 2\" image",
+    "dlux_notes": "Check FORM A, FR. WA means Work Authority\nValidate Work Authority ID\n\nSources:\nForm A\nFR (Feasibility Report)",
+    "req_docs": "FORM A, FR",
+    "optus_review": "Correct.\nFR \u2192 Antenna system tab \u2192 Scope of Works Summary box \n\nAnother way: Mention the WA ID at the beginning of the FR and Form A file names in six digits",
+    "sample_rules": ""
+  },
+  "R011": {
+    "check_point": "Client & Vendor logo is correct",
+    "explanation": "Check End client is \"Optus\"\nVendor \"CPS/Servicestream/CAM/Ventia/Nokia\". You can find Vendor details in Antenna system/property/planning tab in FR.",
+    "image_ref": "Refer \"3-Logo\" image\nRefer \"4-For Vendor logo\" image (for identify who is vendor)",
+    "dlux_notes": "Client logo and Vendor. Vendor details is in FR\nG2 sheet also needs to be checked \nEnsure:\nClient logo (Optus) present\nVendor logo (CPS / Service Stream etc.) correct\nLogo present in ALL sheets",
+    "req_docs": "FR",
+    "optus_review": "Correct. \"G2 sheet also needs to be checked\" - not clear",
+    "sample_rules": ""
+  },
+  "R012": {
+    "check_point": "Drawings listed in cover sheet aligned with previous As-built & proposed scope (Sheet name/Number/title/Rev.)",
+    "explanation": "These details need to be cross-checked with the previous As-Built file, and the proposed revision must be marked as REV \u2018A\u2019. If any previous revision is not applicable to the current project, please remove it and keep only the title. Antenna schedule names should start with A1, A2, A3, etc., while plumbing diagram names should start with P1, P2, etc.",
+    "image_ref": "Refer \"5-Cover sheet - Sheetname-Number-Rev-title\" image",
+    "dlux_notes": "The drawing list in the current FC (For Construction) must align with:\nPrevious As-Built drawings\nNew proposed scope\nThe proposed must have \"A\" revision.",
+    "req_docs": "As Built\nhttps://alltelecosaus-my.sharepoint.com/:b:/r/personal/manik_babuta_alltelecos_com_au/Documents/SUPPLIER%20ACCESS/ALL%20TELECOS/DluxTech%20AI/Input%20file/As%20built%20file%20(Latest).pdf?csf=1&web=1&e=5izblN",
+    "optus_review": "Correct. Refer below additional point: \nIf any previous revision is not applicable to the current project, please remove it and keep only the title. (Example, for current project no Electrical upgrade is required which means no need to include the E1, E2 & E3 sheets in cover sheet)\n\nAntenna schedule names should start with A1, A2, A3, etc., while plumbing diagram names should start with P1, P2, etc. Previously Plumbing diagram named as A series in As-built.",
+    "sample_rules": ""
+  },
+  "R013": {
+    "check_point": "Remove any R reference & EME EXCLUSION ZONE from cover sheet for CPS only",
+    "explanation": "For CPS vendor: no need to include \"EME EXCLUSION ZONE\" title & their previous drawing version details.",
+    "image_ref": "",
+    "dlux_notes": "If something is not in current scope:\nRemove content\nKeep heading",
+    "req_docs": "",
+    "optus_review": "No need to keep heading & content for EME EXCLUSION ZONE for CPS vendor",
+    "sample_rules": ""
+  },
+  "R014": {
+    "check_point": "MERC signage is shown in the FC pack as per the latest Optus OSD requirements - Site specific for typical ground site - OSD-171-1, Rooftop/watertower OSD-171-2 & Site signage legend and notes OSD-171-3.",
+    "explanation": "If site is Rooftop & Shelter is located on roof/inside building, we need to include OSD-171-2. All other case we should include OSD-171-1. OSD-171-3 must for all projects.",
+    "image_ref": "Refer \"6-standard OSD sheet\" image.",
+    "dlux_notes": "Have to validate on Cover sheet where correct site is mentioned. Validate with photos\nGround site \u2192 171-1\nRooftop site \u2192 171-2\nGeneral \u2192 171-3",
+    "req_docs": "",
+    "optus_review": "Correct.\nFor all sites \u2192 OSD-100\nGround site \u2192 171-1\nRooftop/Water tank site \u2192 171-2\nGeneral \u2192 171-3\n\nIf Rooftop/water tank site, shelter is located on ground \u2192 171-1 & 171-2",
+    "sample_rules": ""
+  },
+  "R015": {
+    "check_point": "Program name",
+    "explanation": "Check program based on FR - \nMostly programe name as eJV, OO & MOCN \neJV means jont venture\nOO  - Optus Only\nMOCN - Multi-Operator Core Network",
+    "image_ref": "Refer \"7-Program name\" image",
+    "dlux_notes": "Check program name based on FR\nDerived from FR / Cover Sheet",
+    "req_docs": "FR",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R016": {
+    "check_point": "Add reference documents - Add Pole & Mount Structural cert which dates matches with provided cert. Also check with FC issue date",
+    "explanation": "For the Pole and Mount certificate received from the structural engineer, the certificate name and date must match those shown on the cover sheet. \nCertificate Order\n1. Pole & foundation cert\n2. If any strengthening is required for pole & footing, show drawing.\n3. Mount/Headframe cert\n4. Mount/Headframe drawing",
+    "image_ref": "Refer \"8-Cover sheet certificate 2\" image",
+    "dlux_notes": "equipemnts installed in pole - pole certificate\nparticularly for mount - mount certificate\nCompare name and date in the pole certificate with the cover sheet in the FC drawing PDF",
+    "req_docs": "Pole certificate\nmount certificate",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R017": {
+    "check_point": "All required OSD is mentioned or not?",
+    "explanation": "If any new steelwork or equipment is proposed, the corresponding OSD must be included on the cover sheet. For example, if a new cable ladder is proposed, OSD-550 must be included. The same applies to new fencing, shelters, and cable pits",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R018": {
+    "check_point": "Service stream site only - Add  \u201cSAED_DA/DC/L3/LO CONDITIONS\u201d in reference documents (Refer snip 8 in next sheet for details)",
+    "explanation": "For Servicestream vendor: must to add SAED_DA/DC/L3/LO CONDITIONS in reference documents",
+    "image_ref": "Refer \"9-SS-SAED\" image",
+    "dlux_notes": "If vendor = Service Stream \u2192 Ensure SAD / DEA / DCL3 references are added in drawing.\nIf vendor = CPS \u2192 No need to add these references.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R019": {
+    "check_point": "Distribution list: (Optus & either CPS or Servicestrem)\nOPTUS               : SUHAIB OBAID\nCPS TECH          : BRETT THOMSON\nService stream: SAMINA TABASSUM",
+    "explanation": "This needs to be checked based on the client and vendor. Please also verify the vendor name, as sometimes the vendor is CPS but a different vendor name is listed",
+    "image_ref": "Refer \"10-distribution list\"",
+    "dlux_notes": "Cover sheet must include correct:\n\nClient \u2192 Usually Optus\nVendor \u2192 CPS / Service Stream\nProject Manager name based on vendor",
+    "req_docs": "",
+    "optus_review": "Correct\n\nVendor CPS / CPS TECH both are same",
+    "sample_rules": ""
+  },
+  "R020": {
+    "check_point": "Revision numbers correct (Eg.\"A\" issue)",
+    "explanation": "Check Revision must be \"A\" in all sheets",
+    "image_ref": "Refer \"Title block\" image",
+    "dlux_notes": "Usually starts with A\nMust match across: All sheets",
+    "req_docs": "",
+    "optus_review": "Correct. Reference OSD sheet has different revision.",
+    "sample_rules": ""
+  },
+  "R021": {
+    "check_point": "Drawing number correct (Eg.\"S1212\" issue)",
+    "explanation": "Check Drawing number based on FR/RFSNA/Asbuilt",
+    "image_ref": "",
+    "dlux_notes": "Must match RFNSA site ID",
+    "req_docs": "RFSNA",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R022": {
+    "check_point": "Drawing title correct (Eg.\"SITE SPECIFICATIONS)",
+    "explanation": "Check Drawing title as per cover sheet",
+    "image_ref": "",
+    "dlux_notes": "Based on cover sheet, drawing title must be there. Cover sheet and respective sheet should be aligned.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R023": {
+    "check_point": "Drawing revision details needs to match with previous As-built & Cover sheets",
+    "explanation": "Rev needs to be updated as per cover sheet & previous As-built",
+    "image_ref": "",
+    "dlux_notes": "All sheet consists of Revision details, if it\u2019s a new sheet revision wont be present.\n\nMust match with:\nPrevious As-Built drawings\nCover sheet",
+    "req_docs": "As Built\nhttps://alltelecosaus-my.sharepoint.com/:b:/r/personal/manik_babuta_alltelecos_com_au/Documents/SUPPLIER%20ACCESS/ALL%20TELECOS/DluxTech%20AI/Input%20file/As%20built%20file%20(Latest).pdf?csf=1&web=1&e=5izblN",
+    "optus_review": "Correct. If its is new sheet, no revision history, always comes with new A.",
+    "sample_rules": ""
+  },
+  "R024": {
+    "check_point": "Drawing status correct (Eg.FOR CONSTRUCTION)",
+    "explanation": "must be in \"FOR CONSTRUCTION\"",
+    "image_ref": "",
+    "dlux_notes": "Drawing status must be \"FOR CONSTRUCTION\"",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R025": {
+    "check_point": "Site number/Name/Address details correct",
+    "explanation": "needs to be checked based on RFSNA",
+    "image_ref": "",
+    "dlux_notes": "Based on RFNSA. Address only 1st line will be there",
+    "req_docs": "RFSNA",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R026": {
+    "check_point": "Site address details correct?",
+    "explanation": "Check site details as per RFSNA",
+    "image_ref": "Refer \"1-Site address - Co-Ordinates details\"  image",
+    "dlux_notes": "Must match RFNSA exactly",
+    "req_docs": "RFSNA",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R027": {
+    "check_point": "RFNSA Number Shown on FC",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "Must match RFNSA exactly",
+    "req_docs": "RFSNA",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R028": {
+    "check_point": "Optus site number shown correct",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "Must match RFNSA exactly",
+    "req_docs": "RFSNA",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R029": {
+    "check_point": "Site map location correct & Site location Data table",
+    "explanation": "Check the map is current site, based on co-ordinates",
+    "image_ref": "",
+    "dlux_notes": "Validate coordinates with Google Maps\nCross-check with RFNSA data\n-Verify the latitude and longitude using Google Maps\n-Ensure the location shown matches the actual site\n-Cross-check road names (e.g., Sunshine Road)\n-Confirm that the overall location and positioning are correct",
+    "req_docs": "Google maps\nRFSNA",
+    "optus_review": "Main check:\nValidate the map in google map based on the RFSNA co-ordinates.\n\nValidate coordinates (Lattitude, Longitude, Northing & Easting, Zone, Datum) with RFSNA.\n\nSource must be RFSNA\n\nThe reference location is the center of the tower. If the tower is a monopole, the monopole will be considered. If it is a lattice tower, the lattice tower will be considered, and so on.",
+    "sample_rules": "For now, keep the source as only RFSNA, as most projects are upgrade projects (e.g., from 4G to 5G).\n\nIf it is a new build site, then it may be the site survey report, as there is no previous history for the site and everything is new."
+  },
+  "R030": {
+    "check_point": "Check \"Existing structure sections TITLE\" like height, model",
+    "explanation": "Check the structure type & owner name based on the As-built & RFSNA. If any mismatches identified please highlight. (For the Austin Ferry site owned by Telstra, recently its transferred to Optus.)",
+    "image_ref": "Refer\"2-Existing structure sections TITLE\".\nPlease note that if existing structure name is Telstra, which needs to be changed into \"Amplitel\" (because Amplitel bought Telstra structure). Refer \"2-Existing structure sections - detail of structural adequacy\"",
+    "dlux_notes": "Check Height, Model & Owner based on As-built & RFSNA",
+    "req_docs": "asbuilt\nRFSNA",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R031": {
+    "check_point": "Point 1 \"Existing structure sections\" Mention existing tower with heights, model & Owner. Like below format; EXISTING INDARA 54.76m HIGH ROAM RT84 SELF SUPPORTING LATTICE TOWER",
+    "explanation": "Check the structure type, height, model & owner name based on the As-built & RFSNA. Same as previous comments",
+    "image_ref": "Refer \"2-Existing structure sections TITLE\" & \n\"3-Existing structure sections\". \"2-Existing structure sections (Cert name_REV_Date)\"",
+    "dlux_notes": "Check Height, Model & Owner based on As-built & RFSNA(same as adove checkpoint)",
+    "req_docs": "asbuilt\nRFSNA",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R032": {
+    "check_point": "Structural adequecy of pole & foundation (Point 2)",
+    "explanation": "Check the pole/tower and foundation certifier\u2019s name and date as per the certificate. Refer to the certificate to confirm whether the structure is passed or not. If it is not passed, check whether the required strengthening has been mentioned",
+    "image_ref": "Refer \"4-Existing structure sections\" for structure adequacy",
+    "dlux_notes": "Will be checked in initial stage not in final . Below 100 means its passing.\nBelow 100% loading \u2192 PASS\nAbove 100% loading \u2192 OVERLOADED \u2192 Strengthening required",
+    "req_docs": "",
+    "optus_review": "Correct. Validate the certifier name / REV / Date based on the pole certificate.",
+    "sample_rules": ""
+  },
+  "R033": {
+    "check_point": "Check callout for Panel/RRU/AAU to be installed on existing or new mount (Point 3)",
+    "explanation": "Check the Panel/RRU/AAU to be installed on existing or new mount based on the plan view (G3-1) & structural drawing. If new mounts are proposed, add their structural drawing number",
+    "image_ref": "Refer \"5-Existing structure sections & 5-Existing structure sections (Structural drawing number)\"",
+    "dlux_notes": "Check whether Antenna is installed on:\nExisting mount\nNew mount\n\nVerify G3 sheet, Plan/elevation drawings(structural drawings)\n\nIf new mount is mentioned:\nCross-check structural drawing reference number\nDrawing number must match across:\nCover sheet\nPlan view\nElevation (if present)",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R034": {
+    "check_point": "Structural adequecy of mount (Point 4)",
+    "explanation": "Check the mount certifier\u2019s name and date as per the certificate. Refer to the certificate to confirm whether the existing mount is passed or not. If it is not passed, check whether the required strengthening has been mentioned?",
+    "image_ref": "Refer \"6-Existing structure sections\"",
+    "dlux_notes": "Verify that the structural adequacy of antenna mounts is properly addressed by checking whether the mount is existing or new; if new, ensure it is both designed and certified, and if existing, ensure it is certified by an approved vendor (e.g., SitePro1), while confirming the correct certificate ID (not drawing ID), date, and standard reference format are included in the documentation.",
+    "req_docs": "",
+    "optus_review": "Correct great Understanding. \nAdditional point same as pole certificate \nBelow 100% loading \u2192 PASS\nAbove 100% loading \u2192 OVERLOADED \u2192 Most case replace the existing mount with new mount. Some rare case, reuse the existing mount with Strengthening.",
+    "sample_rules": ""
+  },
+  "R035": {
+    "check_point": "Is the antenna maintenance access by EWP only or access step pegs with Lad Saf?. If Lad-saf are present at existing, please check which is certified or not. (Point 5)",
+    "explanation": "Check the antenna & RRU access via EWP or ladder with lad-saf based on site conditions, As-buit & Photos (For subject site, no ladder identified on photos)",
+    "image_ref": "Refer \"7-Existing structure sections\"",
+    "dlux_notes": "Check Access Via:\nEWP (Elevated Work Platform)\nLadder / StepEx\n\nCheck:\nSite photos\nAs-built documents",
+    "req_docs": "Site Photos\nAs Built",
+    "optus_review": "Correct.",
+    "sample_rules": "If step pegs or a ladder are available on site, access can be made using the ladder. In such cases, we must check whether the ladder has been certified within the last 1 year; otherwise, it cannot be used.\n\nHowever, most projects will require an EWP. In some rare cases, the EWP cannot be used due to site constraints such as very tall buildings, narrow access roads for parking the EWP, or busy roads. This can be checked at a later stage"
+  },
+  "R036": {
+    "check_point": "Update the Equipment Shelter as per the As-Built (AB). These are mostly in the unbold layer unless an update is required.",
+    "explanation": "Check Equipment shelter callout based on As-built & photos. But mostly there is no need of footing structural adequacy details, which is only required for new build site.",
+    "image_ref": "Refer \"8-Equipment Shelter\"",
+    "dlux_notes": "If equipment load is reduced \u2192 No structural certification required\nIf equipment load is increased \u2192 Structural certification is required\nIf a new shelter is installed:\nProvide shelter details (type, material, footing)\nInclude structural certification for footing and concrete\n\nValidate based on As Built and Photos",
+    "req_docs": "Photos\nAs Built",
+    "optus_review": "Correct good understanding. Sometimes As-built had structural certificate for shelter/ODU footing  & structural drawing as previous scope it was new, but currently its existing, so no need to include that.",
+    "sample_rules": ""
+  },
+  "R037": {
+    "check_point": "Update the Transmission as per the As-Built (AB). These are mostly in the unbold layer unless an update is required.",
+    "explanation": "Check the transmission type, either fibre or dish. The site is connected to the other network via radio or fibre. Verify this through the As-Built drawings and site photos. If any active Optus dish is found, note that the site is connected via radio; otherwise, it is connected via fibre.",
+    "image_ref": "Refer \"9-Transmission\"",
+    "dlux_notes": "Validate transmission type (Dish(Radio) / Fiber)\nCheck presence of dish antenna in site photos\nCross-check transmission details in As-built drawings",
+    "req_docs": "As Built\nhttps://alltelecosaus-my.sharepoint.com/:b:/r/personal/manik_babuta_alltelecos_com_au/Documents/SUPPLIER%20ACCESS/ALL%20TELECOS/DluxTech%20AI/Input%20file/As%20built%20file%20(Latest).pdf?csf=1&web=1&e=5izblN",
+    "optus_review": "Correct. The preferred option is based on the as-built.\n\nPhoto validation is also acceptable, but sometimes there are additional dishes on site that belong to other carriers and not to Optus. For this site, the elevation drawing clearly mentions the Optus dish, which makes it clear. However, in some other projects, they simply mention \u201cdish\u201d without specifying the carrier, which makes validation difficult.",
+    "sample_rules": ""
+  },
+  "R038": {
+    "check_point": "Update the construction site access - Previous AB info is mostly outdated - please check INDARA/Amplitel/BAI document for updated information.",
+    "explanation": "Check the construction site access based on the As-Built, Indara, BA and Amplitel documents. The first point should always be site access from the main access road. The next point should cover site contact details, access protocol, and approvals. In most cases, the site access details in the As-Built drawings are outdated, as the last update was done more than three years ago, so the access details may no longer be valid. It is better to contact the Design Engineer to confirm",
+    "image_ref": "",
+    "dlux_notes": "Check in As-Built",
+    "req_docs": "As Built\nhttps://alltelecosaus-my.sharepoint.com/:b:/r/personal/manik_babuta_alltelecos_com_au/Documents/SUPPLIER%20ACCESS/ALL%20TELECOS/DluxTech%20AI/Input%20file/As%20built%20file%20(Latest).pdf?csf=1&web=1&e=5izblN",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R039": {
+    "check_point": "Site hazards updated as per site specific requirements. (Refer previous AB & SDV photos)",
+    "explanation": "Check Site Hazards as per As-built & SDV photos.",
+    "image_ref": "Refer \"10-Site Hazard\"",
+    "dlux_notes": "Review all site photos",
+    "req_docs": "SDV Photos",
+    "optus_review": "Some of the points are common to all sites. Validate the site hazard based on the SDV photos.",
+    "sample_rules": ""
+  },
+  "R040": {
+    "check_point": "Site signage needs to be updated as per OSD-171, PRD, SDV photos & FORM A/B",
+    "explanation": "Primarily, the site signage needs to be checked against Form A/B. Also check it against the OSD-171 document and the SDV photos",
+    "image_ref": "Refer \"11-Site signage 1 & 2\"",
+    "dlux_notes": "Validate correct signage standard:\nGround site \u2192 171-1\nRooftop site \u2192 171-2\nGeneral \u2192 171-3 (comes in all projects)\nCheck site type in cover sheet, validate with Form A/B / Photos/ OSD-171 document",
+    "req_docs": "Form A/B\nPhotos\nOSD 171 doc",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R041": {
+    "check_point": "Make sure outdated/worn-out signage needs to be replaced with new.",
+    "explanation": "If you find any outdated/faded/damaged signage in SDV photos, which needs to be replaced with new. Also, as per the OSD171 document, all signage must be installed in the correct location. For example, \u201cKeep Out\u201d signage must be located on the access gate, not on the shelter door.",
+    "image_ref": "Refer \"11-Site signage 3 & 4\"",
+    "dlux_notes": "Will be in G3, G1 sheet under site signage - conclusion\nAlso check with Form A/B\nNeeds to validate sdv photos and based on that it should be concluded on G1/G3 sheet. If new means sometimes the conclusion will be missed, if exsisting \"Replace existing\u2026.\" will be mentioned.Validate if ARPANSA RPS3 compliance requirements include:\n-Signage\n-Chain barrier with MERCS-3 signage\n-Tilt adjustments (mechanical/electrical)\n-Azimuth changes\n-Power reduction\n-Technology Unit (TU) drop\n\nCross-check these requirements in:\n-Form B / PRD document\n\nEnsure proposed signage and chain barrier are included in:\n-G1\u2013G4 sheets\n\nVerify tilt values and any technology drop are mentioned in:\n-A1 sheet\n\nFor rooftop sites:\nValidate chain barrier with MERCS-3 signage is proposed\nEnsure dimensions match Form B / PRD\nFor pole (monopole) sites:\nValidate only MERCS signage is proposed (no chain barrier unless specified)\n\"Validate if ARPANSA RPS3 compliance requirements include:\n-Signage\n-Chain barrier with MERCS-3 signage\n-Tilt adjustments (mechanical/electrical)\n-Azimuth changes\n-Power reduction\n-Technology Unit (TU) drop\n\nCross-check these requirements in:\n-Form B / PRD document\n\nEnsure proposed signage and chain barrier are included in:\n-G1\u2013G4 sheets\n\nVerify tilt values and any technology drop are mentioned in:\n-A1 sheet\n\nFor rooftop sites:\nValidate chain barrier with MERCS-3 signage is proposed\nEnsure dimensions match Form B / PRD\nFor pole (monopole) sites:\nValidate only MERCS signage is proposed (no chain barrier unless specified)\"",
+    "req_docs": "Form B",
+    "optus_review": "This is applicable to next points 45. For this check point, replace existing outdated/faded/damaged signage needs to be replaced with new.",
+    "sample_rules": ""
+  },
+  "R042": {
+    "check_point": "Form B is applicable? If yes, check whether comments updated or not.",
+    "explanation": "Please verify whether the \u2018ARPANSA RPS3 Compliant\u2019 requirements include proposing signage, a chain barrier with MERCS-3 signage, adjusting the mechanical and electrical tilt values, changing Azimuth, reducing power, or dropping certain TUs to mitigate EME.\nIn the G1 to G4 sheets, we have included the proposed signage and chain barrier. In the A1 sheet, please indicate the tilt values and any technology drop.\nFor rooftop sites, a new chain barrier with MERCS-3 signage is typically installed show dimension that exactly match with Form B/PRD, whereas for pole sites, only MERCS signage is required",
+    "image_ref": "Refer \"Check point 45\" image & Form B - Sample drawing",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R043": {
+    "check_point": "Update Electrical Installation and site earthing as per CPS recent remarks. (Only CPS)",
+    "explanation": "If electrical upgrade is not required, please add the standard notes & check the existing power supply based on the PVA report or RLM/As-built/Photos.",
+    "image_ref": "Refer \"12-Electrical Installation and site earthing\"",
+    "dlux_notes": "Check in G1 Sheet under \"Electrical Installation and site earthing\"\nValidate with RLM - sheet 3.",
+    "req_docs": "RLM",
+    "optus_review": "Correct. Sheet 3 Floor layout",
+    "sample_rules": ""
+  },
+  "R044": {
+    "check_point": "If Electrical upgrade is required, please add E1 & E2 sheets. For E3 sheets add the standard notes in G3 sheets.",
+    "explanation": "If upgrade is required, need to include the E-sheets.",
+    "image_ref": "Refer \"12-Electrical Installation and site earthing1\"",
+    "dlux_notes": "Check on RLM - sheet 3. If its mentioned as \"existing....\" electrical upgrade is not required. Or else electrical upgrade is required, in that case electrical sheets needs to be added.",
+    "req_docs": "",
+    "optus_review": "Correct. Need to validate the E sheet with EE markup",
+    "sample_rules": ""
+  },
+  "R045": {
+    "check_point": "WHS design risk assessment note included for CPS only. (Not appliable for Servicestream)",
+    "explanation": "Check WHS safety based on SDV photos. If site has any issues, need to highlight & provide the safety measure.",
+    "image_ref": "Refer \"13-WHS safety risk assessment\"",
+    "dlux_notes": "Validate based on SDV Photos, WHS design risk assessment note should be included in G1 sheet",
+    "req_docs": "SDV Photos",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R046": {
+    "check_point": "Update Corrosion Protection note on G1 page. (Only Servicestream site)",
+    "explanation": "Check the corrosion protection category based on the structural certificate. If more severe corrosion is identified on site, consult the Structural Engineer (SE)",
+    "image_ref": "Refer \"14-Corrosion protection\"",
+    "dlux_notes": "If it's a service stream site means we have to mention the corrosion production",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R047": {
+    "check_point": "North located and pointed in upper direction",
+    "explanation": "Check North block & must always be in a straight position.",
+    "image_ref": "Refer \"1-North symbol\"",
+    "dlux_notes": "North Block should be in straight position.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R048": {
+    "check_point": "Scale shown and correct ( Eg. 1:500/1:1000) Mainly focus atleast two roads for selecting the scale & try to avoid large scale (1:2000 & 1:2500)",
+    "explanation": "The drawing scale must follow standard sizes. Wherever possible, use a scale of 1:500 or 1:1000 to cover at least the two main roads and the meter box location. If this is not possible, a scale of 1:2000 may be required, particularly when the site is located a long distance from the highway",
+    "image_ref": "Refer \"2-Scale 1-2000\" & \"3-Scale 1-1000\"",
+    "dlux_notes": "Validate if the standard sizes are used.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R049": {
+    "check_point": "Street name shown is correct?",
+    "explanation": "Check street name with google map (based on co-ordinates)",
+    "image_ref": "Refer \"4-Road name-Access route-Ewp Location\"",
+    "dlux_notes": "Reference comes from RFNSA or check with google map",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R050": {
+    "check_point": "All existing electrical/fiber O/H or U/G services shown",
+    "explanation": "Check electrical lines with google map/previous As-built. Overhead power lines, we can able to see in google map, but U/G line only we drawn based on only As-built.",
+    "image_ref": "",
+    "dlux_notes": "Overhead power lines needs to be checked in google maps, underground needs to be checked in As-Built. Based on the Latitude and Longitude(will be in RFNSA and G1 sheet) search on google maps",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R051": {
+    "check_point": "Surrounding buildings/parks/road/other carriers/ True north/trees and vegetation etc shown",
+    "explanation": "Check these with google map/previous As-built",
+    "image_ref": "",
+    "dlux_notes": "Compare the G2 sheet with As-Built.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R052": {
+    "check_point": "Site access clearly shown and referenced (including notes)",
+    "explanation": "Check site access clearly shown in drawing",
+    "image_ref": "",
+    "dlux_notes": "Compare with As-Built if G2 Sheet is present. If G2 sheet is not there, validate with SDV Photos(Signage_Access) & also google maps.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R053": {
+    "check_point": "Are access routes and EWP/ Crane location shown correctly on drawing?",
+    "explanation": "Check Ewp location shown in drawing, these callout must for all sites",
+    "image_ref": "",
+    "dlux_notes": "Validate access road is clearly shown using Photos/As Built\nValidate EWP location is shown for all sites\nIf EWP is on road/roadside \u2192\nAdd note: Traffic and Pedestrian Management required\nIf EWP is near overhead power lines \u2192\nAdd note: Tiger tails required",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R054": {
+    "check_point": "Notes & Legend details included",
+    "explanation": "Check standard notes If required add below points. For Legend, show legend detail with correct line type, which is used in drawing like fence, O/H power supply line or U/G power supply line",
+    "image_ref": "Refer \"5-Standard note-legend\"",
+    "dlux_notes": "Validate standard notes are included\nEnsure required notes are added based on condition:\nTraffic & pedestrian note (if EWP on road)\nTiger tails note (if near power lines)\nValidate legend includes correct line types (power lines, fence, etc.)",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R055": {
+    "check_point": "Traffic & pedestrain management is required. If yes please include note.",
+    "explanation": "If the EWP is parked on a road/highway, add a callout into standard notes: \u201cTraffic and Pedestrian Management is required.\u201d Also EWP parking location close to power lines add note \"Tiger tails are required\"",
+    "image_ref": "",
+    "dlux_notes": "Check EWP position from drawing + photos\nIf EWP impacts road usage \u2192\nEnsure note is added in standard notes section\nIf no impact \u2192 no note required",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R056": {
+    "check_point": "If Electrical upgrade is required, please add Electrical cables upgrade notes which needs to be checked by EE. So please highlight to DEs & TLs",
+    "explanation": "If Electrical upgrade is required, check whether the Electrical Engineer\u2019s MU is captured in the DFC, including details such as consumer cable length and size, and submain cable length and size. Sometime Electrical upgrade comes in G3 sheet, because scale in G2-sheet is 1:2000.",
+    "image_ref": "Refer \"Electrical sheet remarks PDF\"",
+    "dlux_notes": "If electrical upgrade is required:\nVerify Electrical Engineer\u2019s MU is included in DFC\nCheck details like:\nConsumer cable length & size\nSubmain cable length & size\nCross-check in:\nG3 sheet (preferred for electrical due to scale)",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R057": {
+    "check_point": "North located and pointed in upper direction",
+    "explanation": "Check North block & must be always in a straight position. Also check site plan with google map as sometimes previous As-built has incorrect building/site orientation",
+    "image_ref": "",
+    "dlux_notes": "Validate on G3 and G2 sheet. Mostly if G3 sheet is correct G2 will also be correct.North block should be in straight position. No rotated position.\n\nLatitude and longitude will be in G1 sheet. The orientation should also match with Google map and As Built.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R058": {
+    "check_point": "General rule 1  (applicable for all sheets)",
+    "explanation": "Check all existing drawing/callouts with SDV photos. If As-built drawing are matched with SDV photos, keep it otherwise update the drawing as per photos. For example, subject site timber steps (retaining wall) not matching with As-built & SDV photos. So update the drawing as per photos.",
+    "image_ref": "Refer \"1-General rule 1 - timber steps\"",
+    "dlux_notes": "Check the drawing in the G3 sheet with SDV Photos. \nHave to remove duplicate SDV Photos.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R059": {
+    "check_point": "General rule 2 (applicable for all sheets)",
+    "explanation": "Need to show all existing callouts, but no need include the reference OSD.",
+    "image_ref": "Refer \"2-General rule 2\"",
+    "dlux_notes": "Validate with As Built and SDV Photos.  Exisiting means don\u2019t have to include the number. New means Reference should be added.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R060": {
+    "check_point": "Scale shown and correct ( Eg. 1:100) & New equipment shown as BOLD",
+    "explanation": "Check shown scale must in standard one. Also scale must be matched with viewport",
+    "image_ref": "Refer \"3-SCALE & Viewport.png\"",
+    "dlux_notes": "Scale should match with viewport. Dont have access for now.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R061": {
+    "check_point": "Compound shown and referenced (as per Indara document for Indara site)",
+    "explanation": "Check the site compound area shown in the photos and dimensions to ensure they match the previous As-Built or site owner documents. Also, verify the lease area dimensions against the lease document or previous As-Built drawings",
+    "image_ref": "Refer \"4-Compound dimension & lease\"",
+    "dlux_notes": "Check whether all the dimensions are matching in the diagrams with As Built.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R062": {
+    "check_point": "If site owner is INDARA & rooftop site, Earthing notes must be added in G3 sheet.",
+    "explanation": "Check Earthing notes is included in G3 sheet, If site owner is Indara & site type is rooftop.",
+    "image_ref": "Refer \"5-Earthing appicable for rooftop\"",
+    "dlux_notes": "If site onwer is Indara & Rooftop site means notes should be included.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R063": {
+    "check_point": "Show other operator shelter & cable ladder details",
+    "explanation": "Check other operator shelter/cable tray with photos and previous As-built.",
+    "image_ref": "",
+    "dlux_notes": "Check for other operator shelter and cable tray with As Built. Check with internals, Site overall SDV Photos.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R064": {
+    "check_point": "Show shelter callout",
+    "explanation": "Check shelter callout based on As-built, mostly its standard & must be in bold layer",
+    "image_ref": "Refer \"6-Shelter callout\"",
+    "dlux_notes": "Check the notes \"2nd point\" on the left side on the G3 sheet. compare with G3 sheet",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R065": {
+    "check_point": "GPS antenna shown: For Nokia region AYGE & Ericsson region GNSS GPS.",
+    "explanation": "Check the GPS model based on the RRU.\nVodafone always uses Nokia RRUs; therefore, the GPS antenna must be Nokia AYGE.\nOptus has two manufacturers depending on the region: Ericsson and Nokia. If a Nokia RRU is used, the GPS model should be Nokia AYGE. If an Ericsson RRU model is used, the GPS model should be GNSS",
+    "image_ref": "Refer \"7-GPS callout\"",
+    "dlux_notes": "Check the Gps model based on RRU. Validate with DPD(preferred) or FR. (decided to go with FR). Check GPS is mounted on cable ladder or wall(top of the shelter), validate this text with RLM or FR.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R066": {
+    "check_point": "All proposed equipment comes within lease area. If not, raise queries to DE & TL",
+    "explanation": "All proposed equipment shown in bold layers must be located within the lease area. If the proper antenna block or exact dimensions are not followed, it may appear to be within the lease plan, but in reality it may not be. Please ensure the lease area is correct and that the proper antenna blocks are used in the drawings.",
+    "image_ref": "",
+    "dlux_notes": "If the antenna block is going outside the lease area, its a issue.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R067": {
+    "check_point": "Show removed feeders details & proposed Hybrid cables details. Please check proposed feeders can be possible to accommodate existing cable tray/ladder/underground conduit or internal monopole.",
+    "explanation": "Check feeders scope based on the phase 1 RLM & FR.",
+    "image_ref": "Refer \"8-Cable ladder callout\" & \n\"8-Cable ladder callout -1\"",
+    "dlux_notes": "Check with RLM & FR. Added a SS for reference, the point highlighted in red is known as Feeders details.  Check proposed feeders can be possible to accommodate existing cable Based on cable size & cable tray size validate it",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R068": {
+    "check_point": "G3 sheet - Antenna tagged shown",
+    "explanation": "Check antenna tag like antenna number & Azimuth shown correctly on drawing, which matches with RLM & FR. Sometimes CAD Engineer not updating the antenna tag properly. If two or three antennas comes at same pole, higher antenna tag close to antenna block.",
+    "image_ref": "Refer \"9-Antenna tag label\", \"9-Antenna tag label-1\" & \"9-Antenna tag label-2\"",
+    "dlux_notes": "Validate with both RLM & FR\nO - Optus\nV - Vodafone\n\nFollow this rule eg If two or three antennas comes at same pole, higher antenna tag close to antenna block. Attached ss for reference, 2nd image.",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R069": {
+    "check_point": "Update EME comments as per OSD-171 document & Form A/B.",
+    "explanation": "Primarily, the site signage needs to be checked against Form A/B. Also check it against the OSD-171 document and the SDV photos. We already discussed in G1 sheet. Point out the leader in correct position",
+    "image_ref": "Refer \"10-Site signage G3 sheet\"",
+    "dlux_notes": "Need Clarification",
+    "req_docs": "",
+    "optus_review": "will explain",
+    "sample_rules": ""
+  },
+  "R070": {
+    "check_point": "Roof levels shown (Rooftop sites only)",
+    "explanation": "Check roof level is shown in drawing, based on existing As-built Elevation sheet or Form B",
+    "image_ref": "Refer \"11-Roof level in G3 sheet\"",
+    "dlux_notes": "Only for rooftop site.Validate with As Built and Form A",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R071": {
+    "check_point": "Designated walkway and step overs shown as necessary  (Rooftop sites only)",
+    "explanation": "For rooftop sites, roof sheets are used and are directly connected to purlins or timber members. For that site walkways are necessary to access all antennas.\nIf the rooftop is concrete, walkways are not mandatory",
+    "image_ref": "Refer \"12-Roof sheet & Walkway\"",
+    "dlux_notes": "Only for rooftop site. Validate with As Built and SDV Photos",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R072": {
+    "check_point": "Safety handrailing / anchor points shown  (Rooftop sites only)",
+    "explanation": "Check handrail & anchor points are shown as per photos & As-built (Photos are final)",
+    "image_ref": "Refer \"13-Safety handrail & Anchor point\"",
+    "dlux_notes": "Only for rooftop site. Validate with As Built and SDV Photos",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R073": {
+    "check_point": "All trees and vegetations located",
+    "explanation": "Check any trees or vegetation around the site. If yes, please shown them.",
+    "image_ref": "",
+    "dlux_notes": "Validate with google map or As Built",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R074": {
+    "check_point": "Panel/AAU antenna(s) shown, orientation",
+    "explanation": "Check the panel/AAU antenna model (dimensions) and azimuth based on the RLM and FR.\nEnsure the antenna azimuth is correctly shown in both the drawing and the callouts.",
+    "image_ref": "Refer \"14-antenna dimension\"",
+    "dlux_notes": "check antenna block, rru block, dimensions",
+    "req_docs": "",
+    "optus_review": "Correct",
+    "sample_rules": ""
+  },
+  "R075": {
+    "check_point": "Maintain 500mm Horizontal, Maintain 70\u00b0 for passive antennas & 60\u00b0 AAUs Angular separation. If this separation is not achieved, please highlight to DEs & TL",
+    "explanation": "Check that the horizontal separation between two antennas is a minimum of 500 mm. If less than 500 mm is maintained, it is not acceptable to the client. Also, check the angular separation: 70 degrees for passive antennas and 60 degrees for AAUs. If any steelwork or equipment (RRU/antenna) falls within the beam separation, it needs to be highlighted.",
+    "image_ref": "Refer \"15-Horizontal separation\", \"16-Angular separation - 1\" & \"16-Angular separation - 2\"",
+    "dlux_notes": "Need Clarification",
+    "req_docs": "",
+    "optus_review": "will explain",
+    "sample_rules": ""
+  },
+  "R076": {
+    "check_point": "Check Antenna tag number, Antenna & RRU block size, Azimuth",
+    "explanation": "Same procedure as G3 sheet (D72)",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R077": {
+    "check_point": "Access must be checked for antennas/RRUs. If any access restriction identified, please highlight to DE & CE at early stage.  (Refer snip 7 in next sheet for access details)",
+    "explanation": "If step-pegs or ladder are avaiable on tower/structure, need to check any obstruction will come on climbing area. If its comes, need to highlight.",
+    "image_ref": "Refer \"17-ladder climbing clearance\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R078": {
+    "check_point": "Antenna, RRU, Combiner/Filter model & QTY need to matches FR/RLM/DPD",
+    "explanation": "Please check that the antenna model and quantity match the Phase 1 RLM, DPD, and FR. If there are any mismatches between the RLM, FR, and DPD, follow the DPD, as it is the latest document.\n\nSometimes the RLM is not in a standard format. Therefore, please check the format of the antenna callouts. The same applies to the RRU and ancillaries.",
+    "image_ref": "Refer \"18-Antenna, RRU & Combiner callout\" & \"18-Antenna callout format\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R079": {
+    "check_point": "Antenna numbering conforms to OSD70 and RF guidelines - Sector arrow shown correctly for new antenna and existing antennas with (\"J\" for joint venture and \"O\" for optus)",
+    "explanation": "Naming convention such as 11-J, 21-J, and 31-J should be followed.\nIf there are no eJV antennas, the usual order is:\nVodafone passive antennas first, numbered as 11-V, 21-V, 31-V\nOptus passive antennas next, numbered as 12-O, 22-O, 32-O\nOptus AAUs after that, numbered as 13-O, 23-O, 33-O\nThen TPG AAUs, numbered as 14-V, 24-V, 34-V\nThis is the standard format. If any future AAUs are added, show them as F-V",
+    "image_ref": "Refer \"19-Antenna tag number\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R080": {
+    "check_point": "Existing antennas (in the proximity of the new antennas) clearly shown to demonstrate no possible clashes with other carrier panel antennas?",
+    "explanation": "Existing antennas must be clearly shown in the drawings to demonstrate that there will be no physical clashes or interference with the proposed panel antennas. Please also check, based on the site photos, whether the proposed antenna clashes with any existing steelwork. In addition, verify the angular separation with other carriers\u2019 antennas",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R081": {
+    "check_point": "New structural design layout (Face mount, headframe from 3rd party or structural H frame, etc) incorporated in this drawing?",
+    "explanation": "Check whether the proposed antennas are mounted on an existing mount or a new mount. If they are mounted on a proposed mount, ensure that the callouts are correct and that the proposed mount is clearly and properly shown in the drawing, including the headframe orientation & their callout.",
+    "image_ref": "Refer \"20-mount design layout\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R082": {
+    "check_point": "Are antenna mounts clearly identified as \"New\" or \"Existing\"?",
+    "explanation": "Clearly specify the antenna mount based on above points",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R083": {
+    "check_point": "Legends and notes shown and read correctly",
+    "explanation": "Please check whether the standard notes are included. Also verify that the site number has been updated correctly. If required, add site-specific notes based on photos, such as painting requirements if existing antennas, equipment, or mounts are painted, and highlight any corrosion identified on site.",
+    "image_ref": "Refer \"21-Notes - paint\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R084": {
+    "check_point": "Scale shown and correct (Eg. 1:500)",
+    "explanation": "Check shown scale must in standard one. Also scale must be matched with viewport",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R085": {
+    "check_point": "Overall structural height EL noted and RL shown at ground level datum point",
+    "explanation": "Check the overall structure height and the top-of-tower height against the measurements. Also verify the datum RL based on the RFSNA elevation",
+    "image_ref": "Refer \"1-Top of tower height\" & \"2-datum RL value\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R086": {
+    "check_point": "Antenna model name, QTY & Elevation level",
+    "explanation": "Check Antenna center line (ACL) needs to be matched with FR/RLM/RFSNA/Structural cert. If any mismatches, please highlight. Model needs to be matched with DPD/FR/RLM/RFSNA/Structural cert. If any mismatches are found, the DPD will be considered final; however, please highlight all discrepancies. In addition, verify that the antenna is placed at the correct level based on the measurements. If two antennas on same pole, Min. 300mm separation between two AAUs to avoid the jumper cables clashes",
+    "image_ref": "Refer \"3-Antenna model & ACL - Cert\" & \n\"4-Antenna model & ACL - FR\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R087": {
+    "check_point": "RRU model, QTY & Elevation level",
+    "explanation": "Check RRU level based on RLM/Structural certificate. FC & Structural cert must be in same level. If any changes, please highlight. Check RRU model based on DPD/Structural certificate. Maintain Min. 300mm separation between two RRUs",
+    "image_ref": "Refer \"5-RRU model & ACL - Cert\" & \n\"6-vertical separation between two RRUs\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R088": {
+    "check_point": "Feeders model & Qty and feeders route details",
+    "explanation": "Check the feeder scope based on the Phase 1 RLM and FR. It is mostly the same as shown in the G2 sheet; however, in the G2 sheet the cables run on a horizontal cable tray/Underground conduit at ground level, whereas in the elevation the cables are shown passing either through a vertical cable ladder, strapped to the monopole or feeder profile, or internally through the monopole. Please verify this against the as-built drawings and site photos. Also check existing cable route is enough for proposed feeders scope.",
+    "image_ref": "Refer \"7-cable route details\" & \n\"8-cable tray type & feeders capacity\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R089": {
+    "check_point": "Rooftop EL level (for rooftop site)",
+    "explanation": "Check roof top level with measurement same as like top of tower height.",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R090": {
+    "check_point": "Panel/Parabolic antenna heights noted (CL). Vertical clearance dimensions between new and existing antennas mentioned",
+    "explanation": "Check other operators\u2019 antennas and dishes against the as-built drawings and site photos. If other operators\u2019 equipment is very close to the proposed antenna level, please double-check for any possible physical clashes using the photos. Also verify the vertical separation between the two levels.",
+    "image_ref": "Refer \"9-other operator antennas\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R091": {
+    "check_point": "Does the headframe, antennas, shelter/ODU and other equipment need painting?",
+    "explanation": "Check the site photos and as-built drawings. If any existing antennas, equipment, or steelwork are painted, the proposed antennas, equipment, and steelwork must be painted to match the existing colour. Please add painting notes into \"Notes\"",
+    "image_ref": "Refer \"10-paint & no paint\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R092": {
+    "check_point": "If HV tower, Maintain min. Vertical/Horizontal distance from HV power lines. Refer standard",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R093": {
+    "check_point": "Show GPS, shelter & Existing callouts like fence, existing tower callout, other operator shelter callout.",
+    "explanation": "Same callout from G3 sheet.",
+    "image_ref": "Refer \"11-proposed GPS & shelter and existing callout\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R094": {
+    "check_point": "Notes shown and read correctly",
+    "explanation": "Please check whether the standard notes are included. Also verify that the site number has been updated correctly. If required, add site-specific notes based on photos, such as painting requirements if existing antennas, equipment, or mounts are painted, and highlight any corrosion identified on site.",
+    "image_ref": "Same as G3-1 sheet",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R095": {
+    "check_point": "ROOFTOP SITE - Separation Distance between base of antenna and rooftop provided?",
+    "explanation": "Check that the distance between the antenna base and the rooftop is a minimum of 400 mm in the drawing to accommodate RF tails",
+    "image_ref": "Refer \"12-Base separation & 5m rule\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R096": {
+    "check_point": "ROOFTOP SITE - Check 5m rule",
+    "explanation": "Check the bottom of top antenna & building last connection point (antenna support connection) within 5m. If its more than 5m means its not acceptable by planning",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R097": {
+    "check_point": "New structural design layout (Face mount, headframe from 3rd party or structural H frame, etc) incorporated in this drawing?",
+    "explanation": "Check whether proposed antennas are mounted on a existing/proposed mount and confirm existing/proposed pipe length is enough for proposed antenna. If new mount is proposed, check correct antenna mount/headframe included in the elevation drawing.",
+    "image_ref": "Same as G3-1 sheet",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R098": {
+    "check_point": "Use latest antenna system tool excel",
+    "explanation": "For CAD Engineers",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R099": {
+    "check_point": "Update correct antenna model, dimension, TU, Mect tilt & E Tilt, ACL, Azimuth, status",
+    "explanation": "Check antenna model with DPD. Check Azi, ACL, Tu, Mech tilt & Electrical tilt with FR",
+    "image_ref": "Refer \"A-Sheet PDF\" - page 1 for Passive antenna & page 2 for AAU antenna.",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R100": {
+    "check_point": "Include Ancillaries COM/Rej Filter/MHA details with correct QTY",
+    "explanation": "Check Ancillaries Model & Qty with DPD",
+    "image_ref": "Refer \"A-Sheet PDF\" - page 3 for Ancillaries & RRU \n\nAntenna spec sheets are saved & DPD attached in A-sheet PDF",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R101": {
+    "check_point": "Include RRU details with correct QTY - include Future RRU also",
+    "explanation": "Check RRU Model & Qty with DPD",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R102": {
+    "check_point": "Update RRU TxRx port correctly in table - Also update RF port connected to each RRU",
+    "explanation": "Check the total number of Tx/Rx ports and how many ports are connected to each RRU, based on the DPD.",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R103": {
+    "check_point": "Existing trunk cables. If there is no information available, please add C6 assumed",
+    "explanation": "For existing cables, if the exact cable cross-section size is known, specify the value; otherwise, note it as \u2018C6 ASSUMED. For New cable, Cable cross section size always \"C10\"",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R104": {
+    "check_point": "proposed trunk cables length must be rounded off into 10m",
+    "explanation": "check proposed length must be rounded off into 10",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R105": {
+    "check_point": "Calculate RF tail length for all RRUs - please consider horizontal & vertical distance for tail calculation",
+    "explanation": "Check Plan View G3-1 sheet to confirm whether the RRU is installed close to or away from the passive antenna. If the RRU is close to the passive antenna, the RF tail length will be 5 m. If it is away, calculate the required RF tail length (including horizontal run, vertical run, and bending radius). The RF tail is the cable connecting the antenna and the RRU, with a maximum allowable length of 5 m. If more than 5 m is required, client approval is required",
+    "image_ref": "Refer \"Tail length calculation 1\" \"Tail length calculation 2\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R106": {
+    "check_point": "Shown clear view of correct plumbing diagram from DPD/CPD document",
+    "explanation": "check DPD image clarity, make sure all equipments naming must be visible",
+    "image_ref": "Refer \"A-Sheet PDF\" - page 4, where DPD clarity is good to visible.",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R107": {
+    "check_point": "Check DPD legends are standard or not",
+    "explanation": "Check DPD legends are recent one.",
+    "image_ref": "Refer \"DPD legend\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R108": {
+    "check_point": "Conjuction notes to refer A1 sheet",
+    "explanation": "Check Site ID & drawing number",
+    "image_ref": "Refer \"DPD notes\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R109": {
+    "check_point": "It is mandatory to review photos of the proposed steelwork installation locations to identify any site obstructions. If you don't have photos for that lccation, need SDV, please check with DEs & TL",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R110": {
+    "check_point": "For roof top site: to ensure a minimum vertical clearance of 500mm between the roof slab and the bottom of the antennas",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R111": {
+    "check_point": "CEs please check overall structural markup which has any site prior to installation or fabrication. Highlight such items to the DE and avoid including these notes in early drafting.",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R112": {
+    "check_point": "Dimension setout/reference dimension is required for all new installation.",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R113": {
+    "check_point": "Access must be checked for antennas/RRUs. If any access restriction identified, please highlight to DE & CE at early stage.  (Refer snip 7 in next sheet for access details)",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R114": {
+    "check_point": "Bolt holes drawn correct to suit Bolt size. If required add field drill holes.",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R115": {
+    "check_point": "HOLES 3mm OR MORE GREATER THAN THE BOLT DIAMETER AND SLOTTED HOLES ARE TO HAVE PLATE WASHERS OF MINIMUM 4mm THICKNESS AND ARE TO EXTEND A MINIMUM OF 0.5 THE BOLT DIAMETER PAST THE EDGE OF THE HOLE",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R116": {
+    "check_point": "Minimum edge distance must be provided for all holes, and it should match the installation and fabrication drawings.",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R117": {
+    "check_point": "All assembly drawings match with connection details",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R118": {
+    "check_point": "All necessary angular dismensions shown correctly",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R119": {
+    "check_point": "Notes have been reviewed carefully. Sometimes the SE provides project standard notes that are not relevant to the current project, so please remove any unnecessary notes.",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R120": {
+    "check_point": "Calculate proposed brace length exactly. If not possible to calculate, add extra length + field holes at one end for flexability to avoid the build issue.",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R121": {
+    "check_point": "For roof top site: LAD-SAF design needs to be replaced with New plate & U-bolts as per recent Optus standard",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R122": {
+    "check_point": "Make sure proposed steel won\u2019t clashes with existing steel works, building or antennas.",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R123": {
+    "check_point": "Plate hole-to-hole distance and U-bolt center-to-center spacing must match",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R124": {
+    "check_point": "Existing wall type & thickness shown correctly. If not sure thk, please highlight",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R125": {
+    "check_point": "Embedment length specified for anchor bolts",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R126": {
+    "check_point": "Galvanizing holes specified for weldments and hollow sections",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R127": {
+    "check_point": "Correct weld symbol used and dimensions mentioned correctly",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R128": {
+    "check_point": "Steel Member Schedule and steel Quantities shown on the Structural drawings?",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R129": {
+    "check_point": "Member naming must be checked against the BOM",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R130": {
+    "check_point": "Structural certificate for the tower, foundation, headframe, mounts, shelter/ODU foundation supplied?",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R131": {
+    "check_point": "Equipment details in the structural certificate match FCs? Also date matches with cert.",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R132": {
+    "check_point": "Electrical specification is updated as per given input word document",
+    "explanation": "Check Electrical sheets E1 & E2, based on EE's Markup",
+    "image_ref": "E1 & E2 Markups from EE saved. Refer \"Electrical sheet remarks\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R133": {
+    "check_point": "Units referred correctly as \"kW\", \"V\", Amp, etc.",
+    "explanation": "Check double space & spelling",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R134": {
+    "check_point": "General rule for this sheet",
+    "explanation": "If phase 1 RLM done by Alltelecos & recent one. Just update the Floor Plan as per RLM. Some case RLM done by other vendor or RLM prepared by old standard means need to follow below checklist points & PDT",
+    "image_ref": "Refer Output file & Input RLM\nPDT version 12.7 excel saved",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R135": {
+    "check_point": "Shelter type with door swing direction correct",
+    "explanation": "Check door opening swing with photos",
+    "image_ref": "Refer \"1-Door opening\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R136": {
+    "check_point": "Internal rack number to be anticlockwise as enter the shelter,  number G000 for ground & R000 for rooftop",
+    "explanation": "Check the internal rack numbering.\nFor rooftop sites, use rack numbers such as R000, R001, etc.\nFor ground-based sites, use rack numbers such as G000, G001, etc.\nThe rack number (e.g., F01) shall be assigned in an anticlockwise direction while entering the shelter. This is the current standard",
+    "image_ref": "Refer \"2-Rack number\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R137": {
+    "check_point": "Show all equipment inside the shelter like existing damper, O/H cable tray & fan. Check all internal photos & update the floor plan",
+    "explanation": "Check all internal photos carefully & confirm all equipments shown in correct location.",
+    "image_ref": "Refer \"3-Existing internal shelter equipment location\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R138": {
+    "check_point": "Glandplate sufficient for upgrade works",
+    "explanation": "Check gland window photos & confirm enough space available for the additional proposed feeders.",
+    "image_ref": "Refer \"4-Gland window\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R139": {
+    "check_point": "Existing A/C units quantity mentioned including existing stacker frame",
+    "explanation": "Check AC units QTY including stacker frame callout based on photos.",
+    "image_ref": "Refer \"5-AC units callout\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R140": {
+    "check_point": "AC units working conditions",
+    "explanation": "Check the working condition of the AC units in the photos, as in some cases the AC unit has a water leakage issue. These issues were captured by the SDV Engineer in the photos and need to be highlighted in the DFC",
+    "image_ref": "Refer \"6-AC issue\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R141": {
+    "check_point": "Remove Huawei BTS rack",
+    "explanation": "Check Huawei BTS rack location & QTY, based on the photos, also make sure which needs to be removed in proposed scope. Also Mostly OLD type RFM & BBU removed along with BTS rack",
+    "image_ref": "Refer \"7-RFM & BBU\" \"7-Huawei BTS rack\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R142": {
+    "check_point": "Please make sure use proper BTS equipment based Nokia BBU or Ericsson BBU",
+    "explanation": "Check the BBU model based on the RRU manufacturer and model. \nIf the RRU is Nokia, use the Nokia AirScale BBU. \nFor Nokia TPG latest BBU - 1xAMID+1xASIM+2xABIP \nFor Nokia Optus latest BBU - : 1xAMID, 1xASIL+1xABIO+1xASIM+1xABIQ+1xABIA (please note these BBU cards revised maybe site conditions)\n If the RRU is Ericsson, use RP6651 or BBU6672, which mainly depends on the latest standard. Therefore, it is better to follow the Phase 1 RLM input",
+    "image_ref": "Refer \"8-BBU, power up BBU & Alarm\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R143": {
+    "check_point": "DCDU unit proposed to power up Ericsson BBU's & Nokia BBU power up via PSU",
+    "explanation": "Check the BBU power-up units. Nokia BBUs are powered up via PSU, whereas Ericsson BBUs are powered up via DCDU units",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R144": {
+    "check_point": "Existing Krone panel to be upgraded",
+    "explanation": "Check the alarm panel in the photos. If it is a Krone panel, please change it to an RJ45 panel. If RJ45 panel in existing, then keep it. Check 1x 6610 for PSU ALRAM panel.",
+    "image_ref": "Refer \"9-Krone-RJ45 Alaram panel\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R145": {
+    "check_point": "INSTALL 1 x 6610 FOR PSU ALARM, if Ericcson 1x BBU used for Optus. For Nokia BBU- no Alram unit required",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R146": {
+    "check_point": "Existing Skinny MER rack & 15-way iDCDP reused - please make sure more than 15-iDCDP are not accommodate.",
+    "explanation": "Check Existing skinny MER rack location & iDCDP type. If we reuse the existing 15 way-iDCDP, keep existing skinny MER rack. If 15-way IDCDP are not enough for proposed upgrade, we removed the IDCDP & Existing MER rack. If existing iDCDP type less than 15 way, please remove them. Also morethan 15-way iDCDP is not possible to accommodate the Existing skinney MER Rack.",
+    "image_ref": "Refer \"15 Way IDCDP\" & \"10-skinney MER rack\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R147": {
+    "check_point": "Existing/New 18-way/22-way iDCDP proposed for new/existing 37RU MER rack",
+    "explanation": "Check Existing /New iDCDP enough for proposed upgrade works. For this site existing 22-Way iDCDP there, which is more sufficient for propsoed upgrade.",
+    "image_ref": "Refer \"22-way iDCDP\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R148": {
+    "check_point": "Hybrid cable notes (Feeders scope)",
+    "explanation": "Check hybrid cable scope align with G-sheet & A-sheet",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R149": {
+    "check_point": "Remove Huawei PSU/Invenys and any batteries older than 5 years after the new installation",
+    "explanation": "Check the PSU and battery types. Outdated PSUs, such as Huawei or Invensys, must be removed if any are present on site",
+    "image_ref": "Refer \"11-Huawei PSU\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R150": {
+    "check_point": "Propose or reuse existing PSU & rectifier based on PDT. For eJV min 18KW are required whereas Optus only site use Min. 16kW PSU. If less than this condition, replace with new one.",
+    "explanation": "Check the PDT and whether the existing PSU capacity is sufficient based on the proposed equipment. In some cases, the existing PSU may have adequate capacity for the proposed upgrade, subject to agreement on the following conditions:\n\u2013 For eJV sites, a minimum of 18 kW is required.\n\u2013 For Optus-only sites, a minimum of 16 kW PSU is required.\nIf the capacity is less than these requirements, the PSU must be replaced with a new one. \nThe proposed PSU must be Vertiv.",
+    "image_ref": "refer \"12-PSU model & rectifier\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R151": {
+    "check_point": "Vertiv PSU footprint 600x480mm",
+    "explanation": "Check proposed PSU foot print must be in 600x480mm",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R152": {
+    "check_point": "Battery type & Model. If an Optus shelter is installed inside a Telstra exchange building, lithium batteries are not allowed. Even if the shelter is installed outside but within 2 m of the Telstra exchange room, lithium batteries are still not allowed",
+    "explanation": "Check Battery type & Model based on the PDT. Also, Check & confirm shelter/PSU rack location because Lithium batteries not allowed in Telstra exchange room.",
+    "image_ref": "refer \"12-PSU model & rectifier\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R153": {
+    "check_point": "Replace/reuse PSU CB size based on PDT tools - Vertiv PSU min. required 40A 1P CB (3 OFF)",
+    "explanation": "Check PSU CB size based on PDT. Also confirm existing PSU CB size based on photos. If we use Vertiv PSU means, Min 40A 1P CB (3 OFF)",
+    "image_ref": "Refer \"13-PSU CB size in PDT\" & \"14-Existing PSU CB size in Photos\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R154": {
+    "check_point": "Mention PDT approved version number. Please make sure use recent PDT tools",
+    "explanation": "Check the approved PDT version number against the RLM and the Phase 1 PDT submitted",
+    "image_ref": "Refer \"15-PDT version number\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R155": {
+    "check_point": "Ensure the exact AC power supply value is mentioned, and it must align with the PVA, power meter photos, and SLD. Also, confirm if a power upgrade is required",
+    "explanation": "Check the AC power supply with RLM, PVA report & As-built. PVA report is more accurate. Also check Existing power is enough for proposed upgrade with PDT.",
+    "image_ref": "Refer \"16-AC power supply\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R156": {
+    "check_point": "If RRU is internal solution, need to show RACK layout",
+    "explanation": "Check RRU is installed the inside the Shelter/ODU cabinet or MOCN site, need to add separate sheet for rack layout.",
+    "image_ref": "Refer \"Rack layout\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R157": {
+    "check_point": "All text font in ISOCP",
+    "explanation": "Check text style must be in ISOCP",
+    "image_ref": "Refer \"Text style\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R158": {
+    "check_point": "All text in uppercase font",
+    "explanation": "Check all text must be in \"UPPERCASE\" except measurment and diastance (like mm, m, kg, km) & email ID",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R159": {
+    "check_point": "All the existing and proposed equipments and texts layers are correct",
+    "explanation": "Please ensure that existing equipment/callouts are shown in the unbold layer, and proposed equipment/callouts are shown in the bold layer throughout the project.",
+    "image_ref": "Refer \"Layer Bold-Unbold\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R160": {
+    "check_point": "Dimensions and leader line not clash and mentioned correctly",
+    "explanation": "Check dimension & leader line will not clashed with another callout & leader line. Also check leader line head, sometimes arrow head is missing.",
+    "image_ref": "Refer \"Leader line arrow\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R161": {
+    "check_point": "Spell check done properly",
+    "explanation": "Check spelling throughout the project. Spelling error will come. & Check duplicate callout as well",
+    "image_ref": "Refer \"Duplicate notes1 & Spelling Error\"",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R162": {
+    "check_point": "PDF Drawing convention \" SITE NO_SITE NAME_DWG STATUS_VER NO_DATE(yyyymmdd)\nEg: \"A12311_PORTLIGHT_FC_VER3_20210621\"",
+    "explanation": "Check DWG file name",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R163": {
+    "check_point": "Standard Error",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R164": {
+    "check_point": "Technical Error",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  },
+  "R165": {
+    "check_point": "Annotation Error",
+    "explanation": "",
+    "image_ref": "",
+    "dlux_notes": "",
+    "req_docs": "",
+    "optus_review": "",
+    "sample_rules": ""
+  }
+}

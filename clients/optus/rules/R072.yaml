@@ -1,0 +1,20 @@
+id: R072
+name: Safety handrailing and anchor points validation (Rooftop sites only)
+category: Site Safety & Access
+scope: G3, G4
+description: 'Check safety fall protection systems (handrails and static line / anchor
+  points) for Rooftop installations: - For Rooftop sites: Verify fall protection handrails
+  or anchor points are shown as per As-Built and SDV site photos. - For Ground Monopole
+  / Tower sites: This rule is strictly NOT APPLICABLE.'
+required_references:
+- FC_Drawing
+pass_criteria: PASS if handrails and anchor points are shown for rooftop sites as
+  required, OR if the site is a Ground Monopole / Tower site and correctly evaluated
+  as NOT_APPLICABLE.
+fail_criteria: FAIL only if the site is a Rooftop site requiring edge protection or
+  static lines but fails to represent them in the drawings.
+expected_patterns:
+- (?i)(handrail|anchor|static line|fall protection|monopole|ground|not applicable)
+negative_constraints:
+- Automatically evaluate as NOT_APPLICABLE for ground-based concrete monopoles and
+  lattice towers

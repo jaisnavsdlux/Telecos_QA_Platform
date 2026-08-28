@@ -1,0 +1,20 @@
+id: R021
+name: Drawing number format and site code consistency
+type: high
+validation_mode: auto
+required_references:
+- FC_Drawing
+- RFNSA
+description: Validate drawing number format and ensure site code consistency.
+pass_criteria: "- Drawing number present\n- Contains RFNSA site code\n- Valid format:\n\
+  \    • H8097-00\n    • H8097-G1\n    • H8097-G3-1"
+fail_criteria: '- Missing drawing number
+
+  - Invalid format
+
+  - Site code mismatch'
+negative_constraints:
+- Ignore spacing variations
+- Ignore OSD/reference sheets
+notes: This is format + consistency validation.
+scope: Cover, G1

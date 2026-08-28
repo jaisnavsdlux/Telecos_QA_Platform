@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Package &amp; Reference Hub — Strelza Telecos QA</title>
+<link rel="stylesheet" href="/static/css/style.css" />
+<style>
+  .dropzone-container {
+    margin-bottom: 24px;
+  }
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .ref-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--surface-raised);
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+  }
+  .ref-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--text);
+    vertical-align: middle;
+    font-size: 13px;
+  }
+  .ref-table tr:hover td {
+    background: rgba(2, 132, 199, 0.04);
+  }
+  .file-type-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 22px;
+    padding: 0 4px;
+    border-radius: 4px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    margin-right: 10px;
+    border: 1px solid #bae6fd;
+    flex-shrink: 0;
+  }
+  .upload-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--pass);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1000;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .upload-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand brand">
+        <img src="/static/strelza-logo.jpg" alt="Strelza" style="height:28px; border-radius:4px; object-fit:contain;" />
+        <div>STRELZA QA<small>Telecos Engineering</small></div>
+      </div>
+
+      <!-- Global Multi-Project Selector Container -->
+      <div id="projectSelectorContainer" style="padding:0 12px; margin-bottom:12px;"></div>
+
+      <nav>
+        <a class="nav-link" href="/static/dashboard.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          1. Dashboard
+        </a>
+        <a class="nav-link active" href="/static/package.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          2. Package &amp; Reference Area
+        </a>
+        <a class="nav-link" href="/static/checkpoints.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 12 18 16 13"/></svg>
+          3. Checkpoint Validation
+        </a>
+        <a class="nav-link" href="/static/reports.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          4. Audit Reports Hub
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div>
+            <div id="sidebarUsername" style="font-weight:600;">Lead QA Administrator</div>
+            <span class="role-badge" id="sidebarRole">ADMIN</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm btn-block" id="logoutBtn">Sign out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
+        <div>
+          <h1>Package Files &amp; Reference Management</h1>
+          <p>Universal ingestion hub for For-Construction CAD drawings, ZIP engineering packages, companion folders, and reference metadata.</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a class="btn btn-primary" href="/static/checkpoints.html">Proceed to Validation &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Universal Ingestion & Dropzone Area -->
+      <div class="dropzone-container">
+        <div class="upload-dropzone" id="uploadDropzone">
+          <span class="upload-icon">📁</span>
+          <h4>Universal Package &amp; Companion File Upload</h4>
+          <p>Drag and drop CAD drawings (.pdf, .dwg, .dxf), ZIP packages, reference folders, or Excel/Word companions here.</p>
+          
+          <div class="upload-actions">
+            <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('fileInput').click()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Select Files
+            </button>
+            <button type="button" class="btn btn-sm" style="background:var(--surface-raised);" onclick="document.getElementById('folderInput').click()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              Select Entire Folder
+            </button>
+          </div>
+
+          <input type="file" id="fileInput" multiple style="display:none;" />
+          <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none;" />
+        </div>
+      </div>
+
+      <!-- Primary Drawing Package Section -->
+      <section class="card card-pad" style="margin-bottom:24px; border-left:3px solid var(--cyan);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span style="font-size:24px;">📐</span>
+            <div>
+              <h3 style="margin:0; font-size:16px;">Primary For-Construction Drawing Package</h3>
+              <p style="margin:2px 0 0 0; font-size:12px; color:var(--cyan);" class="mono" id="primaryDrawingName">H8097_AUSTINS FERRY_FC_05122025_Final PDF After QC validation.pdf</p>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button type="button" class="btn btn-sm" style="background:var(--surface-raised);" onclick="document.getElementById('primaryDwgInput').click()">
+              <span>📤</span> Upload / Replace Drawing PDF
+            </button>
+            <input type="file" id="primaryDwgInput" accept=".pdf,.dwg" style="display:none;" />
+            <span class="badge badge-pass" style="font-size:11px;">FOR CONSTRUCTION &bull; ACTIVE</span>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; font-weight:600; letter-spacing:0.04em;">Audited CAD Sheet Index (10 Sheets)</div>
+          <div class="sheets-grid" id="detectedSheetsGrid">
+            <span class="sheet-pill">📄 Sheet Cover: Title Block &amp; Drawing Index</span>
+            <span class="sheet-pill">📄 Sheet G1: Site Specifications &amp; Access</span>
+            <span class="sheet-pill">📄 Sheet G2: Overall Site Plan</span>
+            <span class="sheet-pill">📄 Sheet G3: Site Layout &amp; Setout Plan</span>
+            <span class="sheet-pill">📄 Sheet G3-1: Antenna Layout &amp; Clearance</span>
+            <span class="sheet-pill">📄 Sheet G4: Site Elevation</span>
+            <span class="sheet-pill">📄 Sheet A1: Antenna Schedule (Optus &amp; Vodafone)</span>
+            <span class="sheet-pill">📄 Sheet A2: Antenna Configuration Detail</span>
+            <span class="sheet-pill">📄 Sheet P1: RF Plumbing Diagram</span>
+            <span class="sheet-pill">📄 Sheet F1: Equipment Shelter Layout Plan</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reference Documents Explorer (Clean, Professional Table View) -->
+      <section class="card" style="overflow:hidden;">
+        <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h3 style="margin:0; font-size:16px;">Companion Reference Documents</h3>
+            <p style="margin:2px 0 0 0; font-size:12px; color:var(--text-muted);" id="refSummaryCount">531 companion files categorized across 11 engineering disciplines</p>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <input type="text" id="refSearchInput" placeholder="Filter files (e.g. cert, photo, FR)..." style="padding:7px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:12px; outline:none; width:260px;" />
+          </div>
+        </div>
+
+        <div style="padding:16px 20px 0 20px;">
+          <!-- Category Filter Pills Bar -->
+          <div class="cat-pills-bar" id="categoryPillsBar">
+            <div class="cat-pill active" onclick="filterCategory('ALL')">All Disciplines</div>
+          </div>
+        </div>
+
+        <!-- Files Data Table -->
+        <div style="max-height: 480px; overflow-y: auto;">
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th style="width:40%;">Document Name</th>
+                <th style="width:25%;">Discipline / Category</th>
+                <th style="width:15%;">Format</th>
+                <th style="width:10%;">Size</th>
+                <th style="width:10%; text-align:right;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="refTableBody">
+              <tr>
+                <td colspan="5" style="padding:30px; text-align:center; color:var(--text-muted);">
+                  <span class="spinner"></span> Loading companion reference documents…
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Upload Feedback Toast -->
+  <div class="upload-toast" id="uploadToast">
+    <span style="font-size:18px;">✅</span>
+    <span id="uploadToastMsg">Upload completed successfully.</span>
+  </div>
+
+  <script src="/static/js/api.js?v=2.2"></script>
+  <script>
+    Api.requireAuth();
+    const user = Api.getUser();
+    document.getElementById("sidebarUsername").textContent = user?.display_name || user?.username || "Lead QA Administrator";
+    document.getElementById("sidebarRole").textContent = (user?.role || "ADMIN").toUpperCase();
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      Api.clearSession();
+      window.location.href = "/static/index.html";
+    });
+
+    let allCategories = [];
+    let allFilesFlat = [];
+    let selectedCategory = "ALL";
+
+    async function loadPackage() {
+      try {
+        const activePid = Api.getActiveProjectId();
+        const data = await Api.get(`/api/projects/${encodeURIComponent(activePid)}/package_files`);
+        allCategories = data.reference_categories || [];
+        
+        if (data.primary_drawing) {
+          document.getElementById("primaryDrawingName").textContent = data.primary_drawing.filename || "No primary drawing uploaded";
+          const sheetsGrid = document.getElementById("detectedSheetsGrid");
+          if (data.primary_drawing.sheets_detected && data.primary_drawing.sheets_detected.length) {
+            sheetsGrid.innerHTML = data.primary_drawing.sheets_detected.map(s => `
+              <span class="sheet-pill">📄 Sheet ${escapeHtml(s.sheet)}: ${escapeHtml(s.title)}</span>
+            `).join("");
+          } else {
+            sheetsGrid.innerHTML = `<span class="sheet-pill" style="color:var(--text-muted);">No CAD sheets detected yet. Upload a drawing PDF above.</span>`;
+          }
+        }
+
+        allFilesFlat = [];
+        allCategories.forEach(cat => {
+          (cat.files || []).forEach(f => {
+            allFilesFlat.push({
+              name: f.name,
+              category: cat.category,
+              extension: (f.extension || f.name.split('.').pop() || 'FILE').toUpperCase(),
+              size_kb: f.size_kb
+            });
+          });
+        });
+
+        document.getElementById("refSummaryCount").textContent = `${data.total_reference_files || allFilesFlat.length} companion files categorized across ${allCategories.length} engineering disciplines`;
+
+        renderCategoryPills();
+        renderFilesTable();
+      } catch (err) {
+        document.getElementById("refTableBody").innerHTML = `<tr><td colspan="5" style="padding:20px; text-align:center; color:var(--text-muted);">Error loading package files: ${escapeHtml(err.message)}</td></tr>`;
+      }
+    }
+
+    function renderCategoryPills() {
+      const pillsContainer = document.getElementById("categoryPillsBar");
+      let pillsHtml = `<div class="cat-pill ${selectedCategory === 'ALL' ? 'active' : ''}" onclick="filterCategory('ALL')">All Disciplines (${allFilesFlat.length})</div>`;
+      
+      allCategories.forEach(cat => {
+        pillsHtml += `<div class="cat-pill ${selectedCategory === cat.category ? 'active' : ''}" onclick="filterCategory('${escapeHtml(cat.category)}')">${escapeHtml(cat.category)} (${cat.count})</div>`;
+      });
+
+      pillsContainer.innerHTML = pillsHtml;
+    }
+
+    window.filterCategory = function(catName) {
+      selectedCategory = catName;
+      renderCategoryPills();
+      renderFilesTable();
+    };
+
+    function renderFilesTable() {
+      const q = document.getElementById("refSearchInput").value.toLowerCase().trim();
+      const filtered = allFilesFlat.filter(f => {
+        const matchCat = (selectedCategory === "ALL" || f.category === selectedCategory);
+        const matchSearch = (!q || f.name.toLowerCase().includes(q) || f.category.toLowerCase().includes(q));
+        return matchCat && matchSearch;
+      });
+
+      const tbody = document.getElementById("refTableBody");
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="padding:30px; text-align:center; color:var(--text-muted);">No reference documents match your current filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.slice(0, 100).map(f => {
+        const ext = (f.extension || '').replace('.', '').toUpperCase();
+        return `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center;">
+                <span class="file-type-icon">${escapeHtml(ext.slice(0, 3))}</span>
+                <span style="font-weight:600; color:var(--text); word-break:break-all; font-size:13px;">${escapeHtml(f.name)}</span>
+              </div>
+            </td>
+            <td><span style="color:var(--text-muted); font-size:12px; font-weight:500;">${escapeHtml(f.category)}</span></td>
+            <td><span class="mono" style="font-size:11px; color:var(--cyan-dim); font-weight:700;">${escapeHtml(ext)}</span></td>
+            <td><span class="mono" style="font-size:11px; color:var(--text-muted); font-weight:500;">${f.size_kb} KB</span></td>
+            <td style="text-align:right;"><span class="badge badge-pass" style="font-size:9px; font-weight:700;">INDEXED</span></td>
+          </tr>
+        `;
+      }).join("") + (filtered.length > 100 ? `<tr><td colspan="5" style="text-align:center; color:var(--cyan-dim); font-weight:600; font-size:12px; padding:12px;">+ ${filtered.length - 100} more files indexed in package</td></tr>` : "");
+    }
+
+    document.getElementById("refSearchInput").addEventListener("input", renderFilesTable);
+
+    // ── Universal Drag & Drop and Upload Handlers ──────────────────
+    const dropzone = document.getElementById("uploadDropzone");
+    const fileInput = document.getElementById("fileInput");
+    const folderInput = document.getElementById("folderInput");
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('dragover');
+      }, false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files && files.length) {
+        handleFilesUpload(files);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length) {
+        handleFilesUpload(e.target.files);
+      }
+    });
+
+    const primaryDwgInput = document.getElementById("primaryDwgInput");
+    if (primaryDwgInput) {
+      primaryDwgInput.addEventListener('change', async (e) => {
+        if (!e.target.files || !e.target.files[0]) return;
+        const activePid = Api.getActiveProjectId();
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+
+        showToast(`Uploading primary drawing ${file.name}…`, false);
+        try {
+          const res = await fetch(`/api/projects/${encodeURIComponent(activePid)}/upload_drawing`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${Api.getToken()}` },
+            body: formData
+          });
+          const result = await res.json();
+          showToast(result.message || "Primary drawing successfully uploaded & indexed!", true);
+          loadPackage();
+        } catch (err) {
+          showToast("Upload failed: " + err.message, false);
+        }
+      });
+    }
+
+    async function handleFilesUpload(filesList) {
+      const activePid = Api.getActiveProjectId();
+      const formData = new FormData();
+      for (let i = 0; i < filesList.length; i++) {
+        formData.append("files", filesList[i]);
+      }
+
+      showToast(`Uploading ${filesList.length} file(s) into project ${activePid}…`, false);
+
+      try {
+        const res = await fetch(`/api/projects/${encodeURIComponent(activePid)}/upload_references`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${Api.getToken()}`
+          },
+          body: formData
+        });
+        const result = await res.json();
+        showToast(result.message || "Files successfully uploaded & indexed!", true);
+        loadPackage();
+      } catch (err) {
+        showToast("Upload failed: " + err.message, false);
+      }
+    }
+
+    function showToast(msg, isSuccess = true) {
+      const toast = document.getElementById("uploadToast");
+      const msgEl = document.getElementById("uploadToastMsg");
+      msgEl.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 4000);
+    }
+
+    initProjectSelector("projectSelectorContainer", () => loadPackage());
+    loadPackage();
+  </script>
+</body>
+</html>

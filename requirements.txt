@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+anthropic
+pymupdf
+pandas
+openpyxl
+requests
+python-dotenv
+pydantic
+reportlab
+pillow
+langchain-anthropic
+google-generativeai
+

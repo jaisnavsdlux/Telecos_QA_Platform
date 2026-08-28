@@ -1,0 +1,71 @@
+id: R020
+name: All drawing sheets must have correct revision "A" in title block
+type: high
+match_keywords:
+- revision
+- issue
+- title block
+validation_mode: auto
+description: "Validate that all drawing sheets in the FC package have the correct\
+  \ revision \nnumber (\"A\") in their title blocks.\n\nThe revision must:\n- Be present\
+  \ in each sheet\n- Be consistent across all sheets\n- Match the FC issue standard\
+  \ (typically \"A\")\n\nNOTE:\nReference/standard sheets (e.g., OSD sheets) may have\
+  \ different revisions \nand must be excluded from validation."
+scope: Cover, G1, G2, G3, G4
+location_hint:
+  region: title_block
+  typical_position: bottom_right
+pass_criteria: '- All applicable drawing sheets contain a revision value
+
+  - Revision value is "A" for all sheets
+
+  - Revision is consistent across all sheets'
+fail_criteria: '- Revision missing in any sheet
+
+  - Revision value not equal to "A"
+
+  - Inconsistent revision values across sheets'
+deterministic_checks:
+- check: revision_detection
+  description: Detect revision value in title block
+  regex_patterns:
+  - \brev\s*[:\-]?\s*a\b
+  - \bissue\s*a\b
+  pass_evidence: Revision "A" detected in sheet
+  fail_evidence: Revision "A" not found
+  fail_verdict: FAIL
+semantic_checks:
+- check: sheet_iteration
+  description: Validate revision across all sheets
+  logic: '- Iterate through all pages in the PDF
+
+    - Extract title block region (bottom-right area)
+
+    - Extract revision value from each sheet'
+- check: osd_exclusion
+  description: Exclude reference/OSD sheets
+  logic: "- Identify sheets containing:\n    • \"OSD\"\n    • \"STANDARD\"\n    •\
+    \ \"REFERENCE\"\n- Exclude these sheets from revision validation"
+- check: consistency_validation
+  description: Ensure all revisions are consistent
+  logic: '- Collect revision values from all applicable sheets
+
+    - Verify all values are equal to "A"'
+normalization_rules:
+- '''rev a'' → ''A'''
+- '''issue a'' → ''A'''
+- '''revision a'' → ''A'''
+negative_constraints:
+- Do NOT validate OSD/reference sheets
+- Do NOT fail if OSD sheets have non-"A" revisions
+- Allow minor formatting variations (Rev A, REV:A, Issue A)
+- Do NOT rely only on keyword presence; must extract from title block
+notes: '- Title block is typically located at the bottom-right of each sheet
+
+  - FC drawings usually start with revision "A"
+
+  - OSD/reference sheets are external standards and may have different revisions
+
+  - This is a multi-sheet consistency validation rule'
+required_references:
+- FC_Drawing

@@ -1,0 +1,52 @@
+id: R040
+name: Outdated or damaged signage must be identified and replaced
+type: high
+match_keywords:
+- signage
+- replace signage
+- faded
+- damaged
+- worn
+- MERCS
+- keep out
+- hazardous voltage
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- Form_A
+- SDV_Photos
+decision_priority: '1. SDV Photos → detect signage condition (if clearly visible)
+
+  2. FC Drawings → corrective action
+
+  3. Form A/B → supporting reference only'
+description: 'Validate that any clearly visible damaged, faded, missing, or incorrectly
+  placed signage
+
+  from SDV photos is addressed with corrective actions in FC drawings.'
+pass_criteria: "- If signage condition issues are clearly visible in SDV photos:\n\
+  \    • Corresponding corrective action exists in drawings\n      (e.g., \"Replace\
+  \ existing signage\", \"Install new signage\")\n\n- If no clear issues are visible:\n\
+  \    • Rule passes"
+fail_criteria: "- Clearly visible damaged/faded/missing signage in SDV photos\n  AND\
+  \ no corrective action mentioned in drawings\n\n- Critical signage missing in both\
+  \ photos and drawings"
+unclear_conditions: '- SDV photos not provided
+
+
+  - Signage condition cannot be reliably determined from photos'
+deterministic_checks:
+- check: replacement_keywords
+  keywords:
+  - replace existing
+  - install new
+  - new signage
+  pass_evidence: 'Corrective action found: {found}'
+  fail_verdict: UNCLEAR
+negative_constraints:
+- Do NOT fail if photo evidence is unclear
+- Do NOT require perfect 1:1 mapping
+- Do NOT assume damage without clear evidence
+notes: "This is a CONDITION → ACTION validation rule.\n\nOnly fail when:\n  • Issue\
+  \ is clearly visible\n  • AND not addressed in drawings"
+scope: G1

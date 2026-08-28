@@ -1,0 +1,66 @@
+id: R042
+name: Electrical upgrade validation and E-sheet inclusion
+type: high
+validation_mode: hybrid
+complexity: conditional_validation + document_inference
+required_references:
+- FC_Drawing
+- PVA
+- PDT
+- RLM
+optional_references:
+- RLM
+description: 'Validate whether electrical upgrade is required and ensure
+
+  correct inclusion or exclusion of E-sheets (E1/E2).
+
+
+  Decision is based on RLM first, then validated using drawing index.'
+decision_priority: '1. RLM → determines upgrade requirement (source of truth)
+
+  2. Drawing index → validates sheet presence
+
+  3. G3 / F1 → notes validation (supporting)'
+decision_flow: "Step 1: Determine upgrade requirement from RLM\n\n  IF RLM contains:\n\
+  \    • \"upgrade required\"\n    • new supply / new cable / augmentation\n\n   \
+  \   → upgrade_required = TRUE\n\n  IF RLM contains:\n    • \"existing supply sufficient\"\
+  \n    • \"no upgrade required\"\n\n      → upgrade_required = FALSE\n\n  ELSE:\n\
+  \      → UNCLEAR\n\nStep 2: Validate sheet inclusion\n\n  IF upgrade_required =\
+  \ TRUE:\n      → E1 and E2 MUST be present\n\n  IF upgrade_required = FALSE:\n \
+  \     → E1 and E2 MUST NOT be present"
+pass_criteria: 'PASS if: (1) Upgrade is required and separate E-sheets (E1/E2) are
+  included, OR (2) Existing electrical supply is confirmed adequate (no upgrade required
+  as per RLM/PVA/General Notes), so separate E-sheets are correctly omitted.'
+fail_criteria: "- Upgrade required but E1/E2 missing\n\n- No upgrade required BUT:\n\
+  \    • E1/E2 present\n\n- RLM contradicts drawing index\n\n- Partial inclusion (E1\
+  \ without E2 or vice versa)"
+unclear_conditions: '- RLM not available
+
+
+  - Upgrade intent not extractable from RLM
+
+
+  - Drawing index not readable'
+deterministic_checks:
+- check: sheet_detection
+  regex_patterns:
+  - \bE1\b
+  - \bE2\b
+  - \bE3\b
+  pass_evidence: 'E-sheets detected: {match}'
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: upgrade_detection
+  description: Detect electrical upgrade requirement
+  logic: "Look for phrases in RLM:\n\nPositive (upgrade):\n  • upgrade required\n\
+    \  • new supply\n  • augmentation\n\nNegative (no upgrade):\n  • existing supply\
+    \ sufficient\n  • no upgrade required"
+negative_constraints:
+- Do NOT infer upgrade from E-sheet presence
+- Do NOT treat "NEW" keyword alone as upgrade
+- Do NOT require E1/E2 if upgrade not required
+- Do NOT rely only on drawing index for decision
+notes: "- RLM is the primary decision source\n\n- E1/E2 presence is validation, not\
+  \ decision\n\n- Most telecom projects are upgrades without electrical changes\n\n\
+  - Key distinction:\n    Electrical work ≠ Electrical upgrade"
+scope: G1, E1

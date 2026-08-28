@@ -1,0 +1,26 @@
+id: R029
+name: Site map location correct & Site location Data table
+type: high
+match_keywords:
+- site map location
+validation_mode: google_maps_crosscheck
+required_references:
+- FC_Drawing
+- RFNSA
+- Google_Maps
+description: Site map location must correspond to RFNSA coordinates.
+pass_criteria: Map location corresponds to RFNSA coordinates.
+fail_criteria: Map location does not align with RFNSA coordinates.
+expected_patterns:
+- RFNSA
+- GDA94
+- ZONE 55
+- -?\d+\.\d+
+deterministic_checks:
+- check: regex_search
+  patterns:
+  - -?\d+\.\d+
+  pass_evidence: 'Coordinates found in drawing: {match}'
+  fail_verdict: UNCLEAR
+  fail_evidence: Cannot verify map location from PDF text — visual inspection required
+scope: G1, G2

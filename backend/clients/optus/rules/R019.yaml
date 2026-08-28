@@ -1,0 +1,111 @@
+id: R019
+name: Distribution list must match client, vendor, and project manager mapping
+type: high
+match_keywords:
+- distribution list
+- distribution
+- client
+- vendor
+validation_mode: auto
+description: 'Validate that the distribution list in the cover sheet correctly reflects:
+
+  - Client name
+
+  - Vendor name
+
+  - Corresponding Project Manager (PM)
+
+
+  Standard mappings:
+
+  - Client: OPTUS → SUHAIB OBAID
+
+  - Vendor: CPS / CPS TECH → BRETT THOMSON
+
+  - Vendor: SERVICE STREAM → SAMINA TABASSUM'
+scope: Cover
+location_hint:
+  page: 1
+  region: bottom_20_percent
+pass_criteria: "- Distribution section is present in the cover sheet\n- Client name\
+  \ is present and correctly identified\n- Vendor name is present and correctly identified\n\
+  - Corresponding Project Manager names are present\n- Correct mapping is followed:\n\
+  \    • OPTUS → SUHAIB OBAID\n    • CPS / CPS TECH → BRETT THOMSON\n    • SERVICE\
+  \ STREAM → SAMINA TABASSUM"
+fail_criteria: '- Distribution section is missing
+
+  - Client name missing or incorrect
+
+  - Vendor name missing or incorrect
+
+  - Project Manager name missing
+
+  - Incorrect mapping between vendor/client and PM
+
+  - Mismatch between detected vendor and listed PM'
+deterministic_checks:
+- check: distribution_section_presence
+  description: Detect distribution section
+  keywords:
+  - distribution
+  pass_evidence: Distribution section detected
+  fail_evidence: Distribution section not found
+  fail_verdict: FAIL
+- check: entity_presence
+  description: Detect client, vendor, and PM names
+  keywords:
+  - optus
+  - cps
+  - cps tech
+  - service stream
+  - suhaib obaid
+  - brett thomson
+  - samina tabassum
+  pass_evidence: Required entities detected
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: client_detection
+  description: Identify client from distribution section
+  logic: '- Extract entity labeled as client (typically OPTUS)'
+- check: vendor_detection
+  description: Identify vendor from distribution or title block
+  logic: "- Detect vendor name:\n    • CPS\n    • CPS TECH → normalize to CPS\n  \
+    \  • SERVICE STREAM"
+- check: pm_extraction
+  description: Extract project manager names
+  logic: '- Extract names associated with client and vendor entries'
+- check: mapping_validation
+  description: Validate correct mapping between entities and PMs
+  logic: 'IF client = OPTUS → must include SUHAIB OBAID
+
+
+    IF vendor = CPS → must include BRETT THOMSON
+
+
+    IF vendor = SERVICE STREAM → must include SAMINA TABASSUM'
+  pass_condition: All mappings are correct
+  fail_condition: Any mismatch in mapping
+normalization_rules:
+- cps tech → CPS
+- cps → CPS
+- service stream → SERVICE STREAM
+- optus → OPTUS
+- suhaib obaid → SUHAIB OBAID
+- brett thomson → BRETT THOMSON
+- samina tabassum → SAMINA TABASSUM
+negative_constraints:
+- Do NOT fail for case differences (case-insensitive matching)
+- Allow minor formatting variations (colon, spacing, alignment)
+- Do NOT rely only on keyword presence; mapping validation is mandatory
+- Ignore occurrences outside distribution section
+notes: '- Distribution list is typically located at the bottom of the cover sheet
+  (Page 1)
+
+  - Vendor name may appear as CPS or CPS TECH; both must be treated as equivalent
+
+  - Vendor can also be validated using logo or title block if ambiguous
+
+  - This is a relational validation rule (entity → role → mapping), not just keyword
+  detection'
+required_references:
+- FC_Drawing

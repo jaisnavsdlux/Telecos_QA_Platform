@@ -1,0 +1,103 @@
+id: R061
+name: GPS antenna model and placement must match RRU vendor and references
+type: high
+match_keywords:
+- gps
+- gnss
+- ayge
+- antenna
+- rru
+validation_mode: hybrid
+complexity: cross_document + vendor_logic
+required_references:
+- FC_Drawing
+- FR
+- DPD
+optional_references:
+- FR
+- RLM
+decision_priority: '1. FR (Feature Report) → RRU vendor (preferred source)
+
+  2. RLM → equipment layout validation
+
+  3. FC drawings → GPS model and placement'
+description: 'Validate that the GPS antenna model and placement are correct
+
+  based on the RRU vendor (Nokia or Ericsson).
+
+
+  GPS model must align with RRU manufacturer, and placement must
+
+  be correctly represented in drawings.'
+scope: G3, F1
+location_hint:
+  region: gps_antenna_section
+pass_criteria: "STEP 1: RRU Vendor Identification\n\n- RRU vendor identified from:\n\
+  \    • FR (preferred)\n    • RLM (fallback)\n\n------------------------------------------------\n\
+  \nSTEP 2: GPS Model Validation\n\nCASE 1: Nokia RRU\n\n- GPS antenna model = Nokia\
+  \ AYGE\n\n------------------------------------------------\n\nCASE 2: Ericsson RRU\n\
+  \n- GPS antenna model = GNSS GPS\n\n------------------------------------------------\n\
+  \nSTEP 3: Telecom Logic\n\n- Vodafone:\n    • Always uses Nokia RRU\n    → GPS must\
+  \ be AYGE\n\n- Optus:\n    • Nokia RRU → AYGE\n    • Ericsson RRU → GNSS\n\n------------------------------------------------\n\
+  \nSTEP 4: Placement Validation\n\n- GPS antenna is mounted on:\n    • Cable ladder\
+  \ OR\n    • Shelter wall (top)\n\n- Placement matches:\n    • FR\n    • RLM\n\n\
+  ------------------------------------------------\n\nFINAL:\n\n- GPS model and placement\
+  \ are correct and consistent"
+fail_criteria: "- GPS model does not match RRU vendor\n\n    • Nokia RRU + GNSS →\
+  \ FAIL\n    • Ericsson RRU + AYGE → FAIL\n\n- Vodafone site but GPS not AYGE\n\n\
+  - GPS antenna missing in drawing\n\n- GPS placement incorrect or not aligned with:\n\
+  \    • FR\n    • RLM"
+unclear_conditions: '- RRU vendor not identifiable
+
+
+  - GPS model not clearly mentioned
+
+
+  - FR and RLM both unavailable
+
+
+  - GPS placement unclear in drawing'
+deterministic_checks:
+- check: gps_model_detection
+  keywords:
+  - ayge
+  - gnss
+  - gps
+  pass_evidence: 'GPS model detected: {found}'
+  fail_verdict: UNCLEAR
+- check: rru_vendor_detection
+  keywords:
+  - nokia
+  - ericsson
+  pass_evidence: 'RRU vendor detected: {found}'
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: vendor_mapping
+  description: Map RRU vendor to GPS model
+  logic: 'If Nokia → AYGE
+
+    If Ericsson → GNSS'
+- check: telecom_logic
+  description: Apply operator-specific rules
+  logic: 'Vodafone → Nokia → AYGE
+
+    Optus → depends on RRU vendor'
+- check: placement_validation
+  description: Validate GPS antenna location
+  logic: "Confirm placement on:\n  • Cable ladder\n  • Shelter top"
+- check: cross_reference_validation
+  description: Validate against FR and RLM
+  logic: "Ensure:\n  • GPS model matches FR\n  • Placement matches RLM"
+normalization_rules:
+- lowercase text
+- trim spaces
+negative_constraints:
+- Do NOT assume vendor without FR or RLM
+- Do NOT pass if GPS model is generic (not specific)
+- Do NOT ignore telecom-specific rules
+- Do NOT pass if placement is missing
+notes: "- GPS antenna model depends strictly on RRU vendor\n\n- Nokia → AYGE\n- Ericsson\
+  \ → GNSS\n\n- Vodafone always uses Nokia RRUs\n\n- Optus may use Nokia or Ericsson\
+  \ depending on region\n\n- FR is the preferred source for vendor identification\n\
+  \n- Placement is typically:\n    • Cable ladder\n    • Shelter top\n\n- This rule\
+  \ ensures vendor consistency and installation correctness"

@@ -1,0 +1,64 @@
+id: R022
+name: Drawing titles must match cover sheet mapping
+type: high
+match_keywords:
+- drawing title
+- title
+validation_mode: auto
+description: "Validate that drawing titles in each sheet match the titles defined\
+  \ \nin the cover sheet (drawing index).\n\nThe cover sheet acts as the source of\
+  \ truth for:\n- Sheet number (Drawing No)\n- Corresponding drawing title\n\nEach\
+  \ sheet must have a title that aligns with its entry in the cover sheet."
+scope: Cover, G1, G2, G3, G4
+location_hint:
+  region: title_block_or_top_center
+pass_criteria: "- Cover sheet contains drawing list with:\n    • Drawing number\n\
+  \    • Drawing title\n\n- Each sheet:\n    • Has a drawing title\n    • Matches\
+  \ the title defined in cover sheet for that drawing number"
+fail_criteria: '- Drawing title missing in any sheet
+
+  - Drawing title does not match cover sheet mapping
+
+  - Incorrect or mismatched title for given drawing number'
+deterministic_checks:
+- check: title_presence
+  description: Ensure title exists
+  keywords:
+  - plan
+  - diagram
+  - layout
+  - specifications
+  pass_evidence: Title detected
+  fail_evidence: Title not found
+  fail_verdict: FAIL
+semantic_checks:
+- check: cover_sheet_mapping_extraction
+  description: Extract mapping from cover sheet
+  logic: "- From cover sheet extract:\n    Drawing No → Title\n- Example:\n    H8097-G1\
+    \ → SITE SPECIFICATIONS\n    H8097-G2 → OVERALL SITE PLAN"
+- check: sheet_title_extraction
+  description: Extract title from each sheet
+  logic: "- Extract title from:\n    • top center OR\n    • title block"
+- check: drawing_number_extraction
+  description: Extract drawing number
+  logic: '- Extract from title block (e.g., H8097-G2)'
+- check: mapping_validation
+  description: Validate title alignment
+  logic: "- For each sheet:\n    Find drawing number\n    Lookup expected title from\
+    \ cover sheet\n    Compare with extracted title"
+  pass_condition: Titles match
+  fail_condition: Mismatch
+normalization_rules:
+- remove extra spaces
+- uppercase comparison
+- ignore minor variations: • "PLAN" vs "LAYOUT PLAN" • "RF PLUMBING" vs "RF PLUMBING
+    DIAGRAM"
+negative_constraints:
+- Do NOT rely only on keyword presence
+- Allow minor wording variations
+- Do NOT fail if cover sheet is missing → return UNCLEAR
+notes: "- Cover sheet is the single source of truth\n- Titles must align with drawing\
+  \ number (not just exist)\n- This is a cross-page validation rule\n- Titles may\
+  \ appear:\n    • Top center of sheet\n    • Inside title block"
+required_references:
+- FC_Drawing

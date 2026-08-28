@@ -1,0 +1,15 @@
+id: R027
+name: Site number consistency across drawings
+type: medium
+validation_mode: auto
+description: Ensure same site number is used across all sheets.
+pass_criteria: '- Same site number appears across all sheets'
+fail_criteria: '- Multiple different site numbers found across sheets'
+negative_constraints:
+- Do NOT compare with RFNSA (handled in R008)
+- Only check internal consistency
+notes: This rule checks consistency, not correctness.
+scope: Cover, G1, G2, G3, G4
+required_references:
+- FC_Drawing
+- RFNSA

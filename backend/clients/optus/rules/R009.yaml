@@ -1,0 +1,80 @@
+id: R009
+name: Structure owner and owner site ID must be correct
+type: high
+match_keywords:
+- structure owner
+- owner site id
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- RFNSA
+description: 'Validate that the structure owner is correctly identified based on RFNSA.
+
+  For third-party infrastructure providers (Indara, Amplitel, BAI), the owner Site
+  ID
+
+  must be present and valid. For Optus-owned structures, no external owner ID is required.'
+scope: Cover, G1, G2
+pass_criteria: "PASS if:\n\n1. RFNSA owner = OPTUS:\n   - Drawing shows OPTUS as owner\n\
+  \   - No owner Site ID required\n\nOR\n\n2. RFNSA owner in [INDARA, AMPLITEL, BAI]:\n\
+  \   - Owner name matches (after normalization)\n   - Owner Site ID is present\n\
+  \   - Owner Site ID follows valid format (alphanumeric / numeric ID)"
+fail_criteria: "FAIL if:\n\n- RFNSA owner is third-party BUT:\n    • Owner name missing\
+  \ in drawing\n    • Owner name mismatch with RFNSA\n    • Owner Site ID missing\n\
+  \    • Owner Site ID invalid or not identifiable\n\n- Incorrect owner shown (e.g.,\
+  \ wrong company)"
+expected_patterns:
+- (?i)indara
+- (?i)amplitel
+- (?i)bai
+- (?i)optus
+- (?i)pty\s*ltd
+- (?i)communications
+owner_id_patterns:
+- \b[A-Z0-9]{5,10}\b
+- \b\d{5,10}\b
+normalization_rules:
+- lowercase all text
+- trim spaces
+- telstra → amplitel
+- remove "pty ltd", "communications"
+deterministic_checks:
+- check: owner_detection
+  keywords:
+  - indara
+  - amplitel
+  - bai
+  - optus
+  pass_evidence: 'Owner detected: {found}'
+  fail_evidence: No recognizable structure owner found
+- check: owner_id_detection
+  regex_patterns:
+  - \b[A-Z0-9]{5,10}\b
+  - \b\d{5,10}\b
+  pass_evidence: 'Owner Site ID detected: {match}'
+  fail_evidence: Owner Site ID not found
+semantic_checks:
+- check: rfsna_owner_extraction
+  description: Extract structure owner from RFNSA
+- check: fc_owner_extraction
+  description: Extract structure owner from drawing
+- check: owner_normalization
+  description: Normalize ownership values
+  logic: TELSTRA → AMPLITEL
+- check: owner_comparison
+  description: Compare RFNSA vs drawing owner after normalization
+conditional_logic: "IF RFNSA owner = OPTUS:\n    PASS (no owner site ID required)\n\
+  \nIF RFNSA owner in [INDARA, AMPLITEL, BAI]:\n    REQUIRE:\n      - owner match\n\
+  \      - owner site ID present"
+negative_constraints:
+- Do NOT require owner Site ID for Optus-owned structures
+- Do NOT fail if Telstra is used instead of Amplitel (legacy naming)
+- Do NOT assume all sites are shared infrastructure
+- Do NOT accept random numeric values as owner ID without context
+notes: '- RFNSA is the source of truth for ownership
+
+  - Telstra structures are now typically owned by Amplitel
+
+  - Owner Site ID is required ONLY for third-party infrastructure
+
+  - This is a conditional validation rule based on ownership type'

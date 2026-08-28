@@ -1,0 +1,80 @@
+id: R032
+name: Mount type and structural reference consistency (Panel/RRU/AAU)
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- Mount_Certificate
+- Structural_Drawings
+complexity: multi_sheet_inference + cross_reference
+description: "Validate mount type (Existing vs New) and ensure consistency across:\n\
+  \  - G3 / G3-1 (primary)\n  - Elevation drawings (supporting)\n  - Structural drawings\
+  \ (validation)\n\nIf NEW mount is identified:\n  → Structural reference MUST exist\
+  \ and be traceable"
+decision_priority: '1. G3 / G3-1 → primary source (mount intent)
+
+  2. Structural drawings → confirmation
+
+  3. Elevation → supporting only'
+decision_flow: "Step 1: Detect mount type from G3/G3-1\n\n  Identify:\n    • \"NEW\
+  \ MOUNT\"\n    • \"EXISTING MOUNT\"\n    • \"COLLAR MOUNT\"\n    • \"NEW COLLAR\"\
+  \n\n  If explicit not found:\n    → Infer from notes (e.g., \"to be installed\"\
+  )\n\nStep 2: Map equipment to mount\n  → Panel / RRU / AAU association\n\nStep 3:\n\
+  \n  IF mount = NEW:\n      → Structural reference MUST exist\n\n  IF mount = EXISTING:\n\
+  \      → Structural reference optional\n\nStep 4: Cross-check consistency across\
+  \ sheets"
+pass_criteria: "- Mount type identified from G3/G3-1\n\n- Consistent across available\
+  \ drawings\n\n- Equipment (Panel/RRU/AAU) logically mapped\n\n------------------------------------------------\n\
+  \nCASE 1: NEW mount\n\n- Structural drawing reference present\n\n- Reference:\n\
+  \    • Listed in drawing index OR\n    • Mentioned in notes OR\n    • Traceable\
+  \ to mount type\n\n------------------------------------------------\n\nCASE 2: EXISTING\
+  \ mount\n\n- Installation consistent with drawings"
+fail_criteria: "- Mount type conflict across drawings\n\n- NEW mount detected BUT:\n\
+  \    • No structural drawing reference\n    • OR reference not traceable\n\n- Structural\
+  \ drawing exists but unrelated to mount"
+unclear_conditions: '- Mount type not extractable from G3
+
+
+  - G3 visibility limited (labels not readable)
+
+
+  - Structural drawings not provided
+
+
+  - Equipment-to-mount mapping unclear'
+deterministic_checks:
+- check: mount_detection
+  keywords:
+  - new mount
+  - existing mount
+  - collar mount
+  - new collar
+  pass_evidence: 'Mount type detected: {found}'
+  fail_verdict: UNCLEAR
+- check: structural_reference_detection
+  regex_patterns:
+  - SP\d{5}-H\d+
+  - SX\d+
+  pass_evidence: Structural reference detected
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: mount_inference
+  description: Infer mount type from G3
+  logic: "If antenna installation includes:\n  • \"NEW\"\n  • \"INSTALL\"\n  → classify\
+    \ as NEW mount"
+- check: equipment_mapping
+  description: Map equipment to mount
+  logic: "Associate:\n  • Panels\n  • RRUs\n  • AAUs\nwith detected mount"
+- check: reference_linking
+  description: Validate structural reference relevance
+  logic: "Ensure structural drawing corresponds to:\n  • Mount type (e.g., collar/headframe)\n\
+    \  • Listed in index or notes"
+negative_constraints:
+- Do NOT assume mount type without evidence
+- Do NOT fail if G3 not readable → return UNCLEAR
+- Do NOT require elevation drawings if absent
+- Do NOT require strict 1:1 mapping if intent is clear
+notes: "- G3 is the primary source of truth\n\n- Structural drawings validate NEW\
+  \ mounts only\n\n- \"Collar mount\" typically implies NEW mount\n\n- This rule validates:\n\
+  \    • Mount intent\n    • Structural support linkage"
+scope: Cover, G3, G4

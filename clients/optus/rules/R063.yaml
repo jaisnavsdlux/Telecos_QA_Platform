@@ -1,0 +1,23 @@
+id: R063
+name: Other operator shelter and cable ladder details representation
+category: Compound Layout
+scope: G3, P1
+description: Verify that existing co-located operator infrastructure (e.g. Telstra
+  equipment shelter, existing cable ladder/tray) is shown on the G3 compound layout
+  and plumbing diagrams as per As-Built and site photos. Cable notes should specify
+  hybrid cable routing (e.g. 'REUSE EXISTING OPTUS H&S 9/18 HYBRID CABLE... TO RUN
+  IN EXISTING OPTUS 450mm WIDE CABLE LADDER').
+required_references:
+- FC_Drawing
+- As-built
+- SDV_Photos
+pass_criteria: PASS if co-located operator shelters (e.g. Telstra shelter) and cable
+  ladder routes with hybrid cable specifications (lengths/types) are clearly indicated
+  on G3 and P1 drawings.
+fail_criteria: FAIL if co-located structures shown in As-Built/photos are omitted
+  from the layout, or cable ladder routing paths are missing.
+expected_patterns:
+- (?i)(shelter|cable ladder|ladder|hybrid|cable|telstra)
+negative_constraints:
+- Accept standard cable note descriptions specifying cable length and ladder tray
+  width

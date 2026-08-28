@@ -1,0 +1,72 @@
+id: R015
+name: Program name must match FR reference
+type: medium
+match_keywords:
+- program name
+- project type
+- deployment type
+validation_mode: auto
+required_references:
+- FC_Drawing
+- FR
+description: "Validate that the program name in the drawing matches the program defined\
+  \ \nin the FR (Feasibility Report).\n\nProgram types include:\n- eJV (Joint Venture)\n\
+  - OO (Optus Only)\n- MOCN (Multi-Operator Core Network)\n\nNOTE:\nThe FR document\
+  \ will be provided/uploaded as an input.\nThe program name must be extracted from\
+  \ structured FR fields and \nvalidated against the drawing (cover sheet/title block)."
+scope: Cover
+pass_criteria: '- Program name is correctly extracted from FR
+
+  - Program name is present in the drawing
+
+  - Program name in drawing matches FR value'
+fail_criteria: '- Program name not found in FR
+
+  - Program name not found in drawing
+
+  - Program name mismatch between FR and drawing'
+deterministic_checks:
+- check: drawing_program_presence
+  description: Detect program name in drawing
+  regex_patterns:
+  - \bejv\b
+  - \bmocn\b
+  - \boo\b
+  pass_evidence: 'Program name found in drawing: {found}'
+  fail_evidence: Program name not found in drawing
+  fail_verdict: FAIL
+semantic_checks:
+- check: fr_program_extraction
+  description: Extract program name from FR structured fields
+  logic: "- Look for fields like:\n    • Program\n    • Project Type\n    • Deployment\
+    \ Type\n- Extract value associated with these fields\n- Normalize to one of:\n\
+    \    • eJV\n    • OO\n    • MOCN"
+- check: program_alignment
+  description: Compare FR vs drawing
+  logic: '- Extract program name from FR
+
+    - Extract program name from drawing
+
+    - Normalize both values
+
+    - Compare for equality'
+  pass_condition: Exact match
+  fail_condition: Mismatch
+normalization_rules:
+- ejv → eJV
+- '''e j v'' → eJV'
+- mocn → MOCN
+- '''multi operator core network'' → MOCN'
+- oo → OO
+- '''optus only'' → OO'
+negative_constraints:
+- Do NOT fail if FR is not uploaded → return UNCLEAR
+- Do NOT rely on random keyword matches; prioritize structured fields
+- Ignore program mentions in revision blocks or notes
+notes: '- FR is the source of truth for program type
+
+  - Program name must be extracted from structured fields, not inferred
+
+  - Drawing must reflect the same program name (usually in cover sheet)
+
+  - This is a cross-document validation rule (FR ↔ Drawing)'

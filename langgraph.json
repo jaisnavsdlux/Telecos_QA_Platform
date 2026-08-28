@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "compliance_validator": "./graph/workflow.py:studio_app"
+  },
+  "env": ".env"
+}

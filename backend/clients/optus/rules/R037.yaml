@@ -1,0 +1,24 @@
+id: R037
+name: Transmission type validation (Radio / Dish vs Fibre) as per As-Built
+category: Transmission
+scope: G1, G3, G4
+description: 'Verify transmission type (Radio vs Fibre) based on the As-Built drawings
+  and site conditions: - If an active Optus parabolic dish antenna is present (e.g.
+  Ø600 Parabolic Antenna noted on G1 / G3 / G4), transmission must be specified as
+  ''RADIO'' (e.g. ''THIS SITE IS CONNECTED TO THE NETWORK VIA RADIO''). - If no dish
+  exists and connection is via landline cable, transmission is specified as ''FIBRE''.
+  - Transmission section is typically unbold unless a new dish or fibre upgrade is
+  actively proposed.'
+required_references:
+- FC_Drawing
+- As-built
+pass_criteria: PASS if the transmission type noted in the drawing (e.g. RADIO via
+  active dish) aligns with the existing dish antenna shown in the As-Built and elevation
+  drawings.
+fail_criteria: FAIL if transmission is stated as FIBRE when an active Optus microwave
+  dish is the primary link, or if the transmission statement is completely absent.
+expected_patterns:
+- (?i)(radio|fibre|fiber|transmission|parabolic|dish)
+negative_constraints:
+- Do NOT fail if transmission heading is bold while existing body text is unbold
+- Prefer the As-Built and elevation drawing labels when determining carrier dish ownership

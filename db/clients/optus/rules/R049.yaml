@@ -1,0 +1,26 @@
+id: R049
+name: Surrounding buildings/parks/road/other carriers/ True north/trees and vegetation
+  etc shown
+type: medium
+match_keywords:
+- buildings
+- parks
+- roads
+- trees
+- vegetation
+- site surroundings
+validation_mode: google_maps_crosscheck
+description: Verify that surrounding features such as buildings, parks, roads, vegetation,
+  and nearby infrastructure are accurately shown in the G2 drawing by comparing with
+  Google Maps and As-Built drawings.
+pass_criteria: PASS if overall site plan G2 depicts surrounding infrastructure, named
+  access roads, lot boundaries, North arrow, and adjacent context consistent with
+  site drawings.
+fail_criteria: Surrounding features are missing, incomplete, or inconsistent with
+  real-world or As-Built data.
+expected_patterns: []
+scope: G2
+required_references:
+- FC_Drawing
+- As-built
+- SDV_Photos

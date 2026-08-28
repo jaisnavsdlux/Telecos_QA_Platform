@@ -1,0 +1,18 @@
+{
+  "admin": {
+    "username": "admin",
+    "password_hash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "role": "admin",
+    "display_name": "Lead QA Administrator",
+    "email": "admin@strelza.telecos.com.au",
+    "is_admin": true
+  },
+  "lead_auditor": {
+    "username": "lead_auditor",
+    "password_hash": "56c43b930d727fc06ad06b37a66909279ee8c31daf94f633de82a813189dfaa1",
+    "role": "admin",
+    "display_name": "Manik Babuta (Lead Auditor)",
+    "email": "manik@alltelecos.com.au",
+    "is_admin": true
+  }
+}

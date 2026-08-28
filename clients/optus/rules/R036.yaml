@@ -1,0 +1,57 @@
+id: R036
+name: Transmission type validation (Radio vs Fibre)
+type: high
+validation_mode: hybrid
+optional_references:
+- As-built
+- Site_Photos
+complexity: inference_based + cross_validation
+description: "Validate transmission type (Radio or Fibre) using:\n  - Dish antenna\
+  \ presence (primary signal)\n  - As-built drawings (authoritative if available)\n\
+  \  - Site photos (supporting)\n\nRule:\n  Dish present → Radio\n  No dish → Fibre"
+decision_priority: '1. Dish detection (Photos / Drawings)
+
+  2. As-built (if available)
+
+  3. FC drawings (support)'
+decision_flow: "Step 1: Detect dish antenna\n\n  IF dish present:\n      → Transmission\
+  \ = Radio\n\n  ELSE:\n      → Transmission = Fibre\n\nStep 2: Cross-check with As-built\
+  \ (if available)\n\n  IF contradiction:\n      → FAIL"
+pass_criteria: "CASE 1: Radio\n\n- Dish antenna detected in:\n    • Photos OR\n  \
+  \  • Drawings OR\n    • As-built\n\n------------------------------------------------\n\
+  \nCASE 2: Fibre\n\n- No dish antenna detected\n\n------------------------------------------------\n\
+  \nFINAL:\n\n- Transmission type correctly inferred and consistent"
+fail_criteria: '- Dish present BUT classified as fibre
+
+
+  - As-built indicates radio BUT no dish detected
+
+
+  - Contradictory evidence across sources'
+unclear_conditions: '- No photos AND no drawings AND As-built not readable
+
+
+  - Unable to detect dish presence/absence'
+decision_schema:
+- step: check_dish_presence
+  description: Are there any dish, microwave, or radio antennas explicitly drawn or
+    called out in the FC drawings or As-Built?
+- step: infer_transmission_type
+  description: If dish is present → Radio. If no dish is present → Fibre.
+- step: check_asbuilt_contradiction
+  description: Does the As-built (if available) explicitly contradict the inference?
+- step: reconcile_evidence
+  description: Generate final structured evidence linking the inference directly to
+    the verdict.
+negative_constraints:
+- Do NOT require explicit "fibre" mention
+- Do NOT require T1 sheet extraction
+- Do NOT assume radio without dish
+- Do NOT fail if As-built missing → rely on inference
+notes: "- Telecom standard:\n    Dish → Radio\n    No dish → Fibre\n\n- Fibre is the\
+  \ default assumption\n\n- This is an inference-based rule"
+scope: G1, G3, G4
+required_references:
+- FC_Drawing
+- FR
+- As-built

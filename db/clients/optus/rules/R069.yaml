@@ -1,0 +1,69 @@
+id: R069
+name: Trees and vegetation must be represented in drawings
+type: medium
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- Google_Maps
+- As-built
+optional_references:
+- FC_Drawings
+complexity: environment_detection + representation_validation
+description: 'Validate that trees and vegetation around the site are identified
+
+  and represented in the drawings.'
+decision_priority: '1. Google Snippet PDF (primary – real-world reference)
+
+  2. As-built (baseline reference)
+
+  3. G2 / G3 drawings (representation)'
+decision_flow: "Step 1: Detect surroundings from Google Snippet PDF / As-built\n\n\
+  \  • Identify vegetation:\n      - trees\n      - green areas\n\n  • Ignore:\n \
+  \     - rectangular shapes (buildings)\n      - hard structures\n\nStep 2:\n\n \
+  \ IF vegetation present:\n      → Must be shown in drawings\n\n  IF no vegetation:\n\
+  \      → No requirement"
+pass_criteria: "CASE 1: Vegetation present\n\n- Vegetation visible in:\n    • Google\
+  \ Snippet PDF OR\n    • As-built\n\n- Represented in:\n    • G2 OR G3 drawing\n\n\
+  ------------------------------------------------\n\nCASE 2: No vegetation\n\n- No\
+  \ vegetation detected in references\n\n- Drawings consistent with surroundings\n\
+  \n------------------------------------------------\n\nFINAL:\n\n- Vegetation accurately\
+  \ represented"
+fail_criteria: '- Vegetation present BUT not shown in drawings
+
+
+  - Major trees missing from layout
+
+
+  - Drawings contradict real-world vegetation'
+unclear_conditions: '- Google Snippet PDF not available
+
+
+  - As-built not available
+
+
+  - Vegetation visibility unclear'
+semantic_checks:
+- check: vegetation_detection
+  description: Detect trees/vegetation
+  logic: "Identify:\n  • trees\n  • green patches\n  • landscaping\n\nExclude:\n \
+    \ • rectangular shapes (buildings)\n  • concrete areas"
+- check: drawing_representation
+  description: Validate vegetation in drawings
+  logic: "Look for:\n  • tree symbols\n  • vegetation markers\n  • site surroundings"
+negative_constraints:
+- Do NOT treat rectangular shapes as vegetation (these are buildings)
+- Do NOT require exact count of trees
+- Do NOT fail for minor vegetation omissions
+- Do NOT rely only on drawings
+- Do NOT fail if references missing → return UNCLEAR
+notes: '- Google Snippet PDF is the primary visual reference
+
+
+  - Buildings are typically represented as rectangles and must be ignored
+
+
+  - Focus only on vegetation impacting site layout
+
+
+  - Minor shrubs can be ignored'
+scope: G2

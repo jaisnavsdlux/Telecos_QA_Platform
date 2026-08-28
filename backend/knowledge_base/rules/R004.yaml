@@ -1,0 +1,14 @@
+id: R004
+name: FC stamp is correctly mentioned to all sheets?
+type: high
+match_keywords:
+- fc stamp
+- draft watermark
+validation_mode: auto
+description: |-
+  All sheets must contain a visible 'DRAFT' watermark . 'FOR CONSTRUCTION' stamp should not be considered for this check.
+pass_criteria: The 'DRAFT' watermark is clearly visible on all sheets/pages in the
+  document.
+fail_criteria: The 'DRAFT' watermark is missing from one or more sheets/pages.
+expected_patterns:
+- DRAFT

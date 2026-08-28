@@ -1,0 +1,62 @@
+id: R031
+name: Structural adequacy of pole & foundation (certificate validation)
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- Structural_Certificate
+- Pole_Certificate
+input_expectation: "Structural certificate document will be provided.\n\nExtract:\n\
+  \  - ULS loading (%)\n  - Structural adequacy statement\n  - Certifier name\n  -\
+  \ Certificate date\n\nIf certificate missing:\n  → verdict = UNCLEAR"
+description: "Validate structural adequacy of pole/tower and foundation using the\
+  \ structural certificate.\n\nCORE LOGIC:\n  - ULS loading < 100% → SAFE\n  - ULS\
+  \ loading ≥ 100% → OVERLOADED → strengthening required"
+pass_criteria: "- ULS loading < 100%\n\n- Structural adequacy is confirmed\n  (explicit\
+  \ OR implicit via loading < 100%)\n\n- Certifier name present\n\n- Certificate date\
+  \ present"
+fail_criteria: '- ULS loading ≥ 100% AND no strengthening mentioned
+
+
+  - Loading not found
+
+
+  - Certifier missing
+
+
+  - Certificate date missing'
+deterministic_checks:
+- check: loading_detection
+  regex_patterns:
+  - \b\d{1,3}%\b
+  pass_evidence: 'Loading found: {match}'
+  fail_evidence: Loading not found
+  fail_verdict: FAIL
+- check: date_detection
+  regex_patterns:
+  - \d{2}[-/][A-Za-z]{3}[-/]\d{2,4}
+  - \d{2}[/-]\d{2}[/-]\d{4}
+  pass_evidence: 'Date found: {match}'
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: uls_priority_logic
+  logic: "If both ULS and SLS present:\n  → Use ULS only"
+- check: adequacy_logic
+  logic: "IF loading < 100%:\n  → PASS (even if wording is missing)\n\nIF loading\
+    \ ≥ 100%:\n  → Check strengthening"
+- check: strengthening_logic
+  logic: "IF loading ≥ 100%:\n  Check for:\n    • strengthening\n    • upgrade\n \
+    \   • modification"
+- check: certifier_extraction
+  logic: 'Extract engineer name from signature block
+
+    (not keyword-based)'
+negative_constraints:
+- Do NOT depend only on "adequacy" keywords
+- Do NOT use SLS if ULS exists
+- Do NOT fail if wording differs but loading is valid
+- If certificate missing → UNCLEAR
+notes: 'Loading % is the PRIMARY decision driver.
+
+  Text statements are secondary.'
+scope: Cover, G4

@@ -1,0 +1,24 @@
+id: R041
+name: Electrical installation and site earthing must match references
+category: Electrical & Power
+scope: G1, E1
+description: 'Check electrical installation and earthing notes on G1: - If no electrical
+  upgrade is required for the project scope (e.g. existing three phase power is sufficient),
+  G1 notes state existing power is adequate and separate E-series drawings (E1/E2/E3)
+  are NOT required. - If an electrical upgrade IS required, electrical details (phase,
+  breaker ratings) and E-series drawings must be present.'
+required_references:
+- FC_Drawing
+- PVA
+- PDT
+pass_criteria: 'PASS if: - The electrical installation note on G1 clearly states the
+  power supply status (e.g. ''EXISTING OPTUS THREE PHASE POWER SUPPLY IS SUFFICIENT'')
+  AND - Earthing requirements are specified, OR separate E-sheets are included if
+  upgrade is active.'
+fail_criteria: FAIL if electrical statements are contradictory (e.g. stating upgrade
+  is required but providing no electrical details or sheets).
+expected_patterns:
+- (?i)(electrical|power|earthing|three phase|supply|submain)
+negative_constraints:
+- Do NOT fail if E-series sheets are absent when existing power is confirmed sufficient
+  with no electrical upgrade required

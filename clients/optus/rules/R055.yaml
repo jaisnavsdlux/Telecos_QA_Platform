@@ -1,0 +1,86 @@
+id: R055
+name: Existing and new callouts must be correctly represented without unnecessary
+  references
+type: medium
+match_keywords:
+- existing
+- new
+- callout
+- reference
+- osd
+- note
+validation_mode: hybrid
+complexity: cross_document
+required_references:
+- FC_Drawing
+optional_references:
+- As-built
+- SDV_Photos
+decision_priority: '1. FC drawings → callout representation (primary)
+
+  2. SDV Photos → confirm existing vs new condition
+
+  3. As-built → baseline reference for existing elements'
+description: 'Validate that all existing and new elements are correctly represented
+
+  in drawings with appropriate callouts.
+
+
+  Existing elements must be shown without unnecessary references,
+
+  while new elements must include proper references (e.g., OSD).'
+scope: G1, G2, G3, G4
+location_hint:
+  region: callout_section
+pass_criteria: "STEP 1: Existing Elements\n\n- All existing elements are shown in\
+  \ drawings\n\n- Existing elements:\n    • Do NOT include reference numbers (e.g.,\
+  \ OSD)\n    • Are clearly marked as existing\n\n------------------------------------------------\n\
+  \nSTEP 2: New Elements\n\n- All new elements are clearly identified\n\n- New elements:\n\
+  \    • Include appropriate references (e.g., OSD, detail refs)\n    • Are distinguishable\
+  \ from existing elements\n\n------------------------------------------------\n\n\
+  STEP 3: Validation with References\n\n- Existing vs new classification aligns with:\n\
+  \    • SDV photos\n    • As-built drawings\n\n------------------------------------------------\n\
+  \nFINAL:\n\n- Callouts are complete, correctly classified, and properly referenced"
+fail_criteria: "- Existing elements include unnecessary references (e.g., OSD numbers)\n\
+  \n- New elements missing required references\n\n- Existing elements not shown in\
+  \ drawings\n\n- Misclassification:\n    • Existing marked as new\n    • New marked\
+  \ as existing\n\n- Inconsistency between:\n    • Drawings vs SDV photos\n    • Drawings\
+  \ vs As-built"
+unclear_conditions: '- Unable to distinguish existing vs new elements
+
+
+  - SDV photos and As-built both unavailable
+
+
+  - Callouts unclear or partially visible'
+deterministic_checks:
+- check: reference_detection
+  regex_patterns:
+  - \bOSD-\d+\b
+  - \bREF\b
+  pass_evidence: 'Reference detected: {match}'
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: classification_detection
+  description: Identify existing vs new elements
+  logic: "Detect keywords:\n  • existing\n  • new\n  • proposed\n  • install"
+- check: reference_assignment
+  description: Validate reference usage
+  logic: "For each element:\n  If NEW → must have reference\n  If EXISTING → must\
+    \ NOT have reference"
+- check: cross_validation
+  description: Validate classification using SDV and As-built
+  logic: "Compare:\n  • SDV → actual condition\n  • As-built → baseline\n  • Drawing\
+    \ → classification"
+normalization_rules:
+- lowercase text
+- trim spaces
+negative_constraints:
+- Do NOT require references for existing elements
+- Do NOT assume all elements are new
+- Do NOT ignore SDV validation
+- Do NOT pass if classification is inconsistent
+notes: "- Existing elements represent current site condition and should not\n  include\
+  \ reference standards like OSD.\n\n- New elements must always include proper references.\n\
+  \n- This rule ensures clarity between:\n    Existing (no reference) vs New (with\
+  \ reference)\n\n- SDV photos are useful to confirm real site condition."

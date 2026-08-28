@@ -1,0 +1,25 @@
+id: R005
+name: Layer usage must follow existing vs proposed standards
+category: CAD Standards
+scope: G1, G2, G3, G4
+description: 'Check layer usage conventions: existing infrastructure must be drawn
+  in unbold/light styling, while proposed/new/relocated/removed infrastructure must
+  be emphasized in bold styling. G1 Sheet Exemptions: - Equipment Shelter / ODU: Heading
+  is bold, but content is unbolded unless a new cabinet/modification is proposed.
+  - Transmission: Heading is bold, but content is unbolded unless a new dish or new
+  fibre is proposed. Callout Rules: - Callouts starting with ''Existing'' must be
+  unbold. - Callouts mentioning ''Proposed'', ''New'', ''Relocated'', or ''Removed''
+  must be bold.'
+required_references:
+- FC_Drawing
+pass_criteria: 'PASS if: - Callouts and drawing elements follow the Existing (unbold)
+  vs Proposed/New/Removed (bold) convention. - G1 sheet follows its defined heading
+  vs content boldness exceptions.'
+fail_criteria: FAIL if proposed/new equipment is drawn in faint/unbold lines while
+  existing equipment is prominently bolded without design intent.
+expected_patterns:
+- (?i)(existing|proposed|new|relocated|removed)
+negative_constraints:
+- Do NOT fail if raw CAD .dwg layer properties are inaccessible; evaluate visual text
+  callout and heading boldness
+- Do NOT fail G1 sheet for having unbold body text under bold headings

@@ -1,0 +1,57 @@
+id: R066
+name: Roof levels must be shown and validated (Rooftop sites only)
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- As-built
+optional_references:
+- Form_A_B
+- FC_Drawings
+complexity: conditional_site_type + cross_reference
+description: 'Validate that roof levels are shown in drawings for rooftop sites
+
+  and match As-built or Form A/B references.'
+decision_priority: '1. Site type detection (rooftop vs non-rooftop)
+
+  2. G3 / elevation drawings → roof level presence
+
+  3. As-built / Form A/B → validation reference'
+decision_flow: "Step 1: Detect site type\n\n  IF site ≠ rooftop:\n      → NOT APPLICABLE\
+  \ (N/A)\n\n  IF rooftop:\n      → proceed\n\nStep 2: Detect roof level in drawing\n\
+  \n  Look for:\n    • RL (Roof Level)\n    • Height markers\n    • Elevation references\n\
+  \nStep 3: Cross-check with:\n  • As-built elevation sheet\n  • Form A/B"
+pass_criteria: "CASE 1: Rooftop site\n\n- Roof level clearly shown in:\n    • G3 OR\n\
+  \    • Elevation drawing\n\n- Roof level aligns with:\n    • As-built OR\n    •\
+  \ Form A/B\n\n------------------------------------------------\n\nCASE 2: Non-rooftop\
+  \ site\n\n- Rule not applicable → PASS / N/A"
+fail_criteria: "- Rooftop site BUT:\n    • Roof level not shown\n\n- Roof level contradicts\
+  \ As-built / Form A/B\n\n- Missing elevation reference for rooftop"
+unclear_conditions: '- Site type cannot be determined
+
+
+  - Roof level not readable in drawing
+
+
+  - As-built / Form A/B not available'
+deterministic_checks:
+- check: roof_level_detection
+  regex_patterns:
+  - \bRL\b
+  - roof level
+  - \+\d+(\.\d+)?
+  pass_evidence: Roof level detected
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: site_type_detection
+  description: Identify rooftop vs ground site
+- check: elevation_validation
+  description: Compare roof level with reference
+negative_constraints:
+- Do NOT validate for non-rooftop sites
+- Do NOT fail if As-built missing → return UNCLEAR
+- Do NOT require exact numeric match (allow tolerance)
+notes: "- Rooftop sites require roof level reference for installation context\n\n\
+  - Ground-based sites do NOT require this validation\n\n- Typical indicators:\n \
+  \   • RL notation\n    • Elevation markers"
+scope: G3, G4

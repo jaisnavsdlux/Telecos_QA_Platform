@@ -1,0 +1,25 @@
+id: R030
+name: Existing structure details must match As-built and RFNSA
+category: Technical Accuracy
+scope: G1, G4
+description: 'Verify that the existing structure type and owner name are accurately
+  identified based on the As-Built and RFNSA reference documents: - Check structure
+  type (e.g. Concrete Monopole, Lattice Tower, Rooftop). - Check owner name (e.g.
+  Optus, Amplitel, Indara, BAI). Note: If previously owned by Telstra and transferred
+  to Optus/Amplitel, verify drawing reflects current Optus ownership. - Height should
+  align with reference drawings (e.g. 26.8m / 27m concrete monopole).'
+required_references:
+- FC_Drawing
+- As-built
+- RFNSA
+pass_criteria: PASS if the drawing correctly identifies the structure type (e.g. CONCRETE
+  MONOPOLE) and owner (e.g. OPTUS / AMPLITEL) matching the As-Built and RFNSA records.
+fail_criteria: FAIL if the structure type is fundamentally misidentified (e.g. labeled
+  as Guyed Mast instead of Monopole) or ownership contradicts verified reference data.
+expected_patterns:
+- (?i)(monopole|tower|concrete|optus|structure)
+negative_constraints:
+- Do NOT fail if structure height or model details appear in the elevation notes/drawing
+  text rather than in a single title line
+- Recognize that older Telstra structures acquired by Optus are correctly labeled
+  as Optus

@@ -1,0 +1,23 @@
+id: R065
+name: GPS antenna model and placement based on RRU vendor
+category: Equipment Details
+scope: G3, G3-1, G4, A1, F1
+description: "Check the GPS antenna model and mounting based on the RRU equipment\
+  \ vendor (from FR / DPD / drawing notes): - Vodafone: Always uses Nokia RRUs ->\
+  \ GPS antenna must be Nokia AYGE. - Optus:\n    • If Nokia RRU is used -> GPS antenna\
+  \ model is Nokia AYGE.\n    • If Ericsson RRU is used -> GPS antenna model is GNSS\
+  \ (e.g. Ericsson GNSS Receiver).\n- Mounting location: Mounted on cable ladder or\
+  \ on top/wall of the equipment shelter."
+required_references:
+- FC_Drawing
+- FR
+- DPD
+pass_criteria: 'PASS if: - The GPS antenna model corresponds to the RRU manufacturer
+  (e.g. GNSS for Ericsson RRU / AYGE for Nokia RRU) OR - GPS antenna location and
+  notes align with FR/DPD specifications.'
+fail_criteria: FAIL if a Nokia AYGE GPS is specified for an Ericsson-only site (or
+  vice versa), or if GPS antenna requirements are contradicted by drawing callouts.
+expected_patterns:
+- (?i)(gps|gnss|ayge|ericsson|nokia|rru)
+negative_constraints:
+- Do NOT fail if GPS is an existing retained item noted on shelter top or cable ladder

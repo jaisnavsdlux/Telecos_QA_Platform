@@ -1,0 +1,25 @@
+id: R014
+name: MERC signage must comply with Optus OSD requirements based on site type
+category: Signage & Safety
+scope: Cover, G1
+description: 'Verify that the correct Optus Standard Drawings (OSD) for signage are
+  referenced based on the site type: - All sites: OSD-100 (Standard Construction Notes)
+  & OSD-171-3 (Site Signage Legend and Notes) must be present. - Ground Sites (Monopole
+  / Lattice Tower): Must reference OSD-171-1 (Typical Ground Site). - Rooftop / Water
+  Tank Sites: Must reference OSD-171-2. - Rooftop / Water Tank Sites with Shelter
+  on Ground: Must reference BOTH OSD-171-1 and OSD-171-2.'
+required_references:
+- FC_Drawing
+- OSD_171
+pass_criteria: 'PASS if the Cover Sheet reference list or G1 notes correctly cite:
+  - OSD-100 AND OSD-171-3 (or OSD-171 general) AND - OSD-171-1 for Ground/Monopole
+  sites (OR OSD-171-2 for Rooftop sites).'
+fail_criteria: FAIL if mandatory OSD signage drawings are omitted or the wrong standard
+  drawing is used (e.g. referencing OSD-171-2 exclusively for a Ground Monopole site).
+expected_patterns:
+- (?i)OSD[- ]*171
+- (?i)OSD[- ]*100
+negative_constraints:
+- Allow minor formatting variations (e.g. 'OSD-171-1', 'OSD 171-1', 'OSD_171')
+- Do NOT fail if OSD-100 and OSD-171-1/OSD-171-3 are listed in reference documents
+  table on Cover sheet

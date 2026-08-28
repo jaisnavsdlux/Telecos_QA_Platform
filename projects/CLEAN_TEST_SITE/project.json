@@ -1,0 +1,12 @@
+{
+  "id": "CLEAN_TEST_SITE",
+  "name": "CLEAN_TEST_SITE",
+  "code": "CLEAN_TEST_SITE",
+  "structure_type": "TELECOM STRUCTURE",
+  "drawing_revision": "FOR CONSTRUCTION (Rev 1.0)",
+  "primary_drawing": "VectorDraw.pdf",
+  "created_at": "2026-08-28 12:37:44",
+  "sheets": [
+    "Sheet P1: General Arrangement"
+  ]
+}

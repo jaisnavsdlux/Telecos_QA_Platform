@@ -1,0 +1,42 @@
+cad_only_keywords:
+- viewport
+- layer
+- layers
+- bold
+- unbold
+- north located
+- north symbol
+- isocp
+- font style
+- leader line
+- dimension
+- door swing
+- rack number
+- anticlockwise
+- glandplate
+- a/c units
+- ac units
+- huawei bts
+- krone panel
+- idcdp
+- mer rack
+- vertiv psu footprint
+- battery type
+- rf tail
+- rooftop el
+- 5m rule
+- walkway
+- handrail
+- anchor point
+- hv tower
+- hv power
+- antenna maintenance access
+- ewp location
+- crane location
+- compound shown
+- earthing notes
+- roof level
+- all text font
+- text font in isocp
+- dimensions and leader
+required_references: []

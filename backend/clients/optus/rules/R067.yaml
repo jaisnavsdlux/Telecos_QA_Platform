@@ -1,0 +1,66 @@
+id: R067
+name: Walkway and step-over validation (Rooftop sites only)
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- SDV_Photos
+- As-built
+optional_references:
+- As-built
+- FC_Drawings
+complexity: conditional_site + material_based_validation
+description: "Validate designated walkways and step-overs for rooftop sites.\n\nRequirement\
+  \ depends on roof type:\n  - Roof sheet → walkways required\n  - Concrete roof →\
+  \ walkways optional"
+decision_priority: '1. Site type detection (rooftop)
+
+  2. Roof type detection (sheet vs concrete)
+
+  3. Photos (actual condition)
+
+  4. As-built / G3 (supporting)'
+decision_flow: "Step 1: Detect site type\n\n  IF site ≠ rooftop:\n      → NOT APPLICABLE\
+  \ (N/A)\n\nStep 2: Detect roof type\n\n  IF roof sheet:\n      → walkway REQUIRED\n\
+  \n  IF concrete:\n      → walkway OPTIONAL\n\nStep 3: Validate using:\n  • SDV photos\
+  \ (primary)\n  • As-built / G3 (support)"
+pass_criteria: "CASE 1: Roof sheet\n\n- Walkway present in:\n    • Photos OR\n   \
+  \ • Drawings\n\n- Provides access to antennas\n\n- Step-overs present where required\n\
+  \n------------------------------------------------\n\nCASE 2: Concrete roof\n\n\
+  - Walkway may be absent\n\n- No unsafe access condition observed\n\n------------------------------------------------\n\
+  \nFINAL:\n\n- Access path is safe and logically defined"
+fail_criteria: "- Roof sheet AND:\n    • Walkway missing\n\n- Unsafe access path:\n\
+  \    • No clear route to antennas\n\n- Step-overs required but missing\n\n- Drawings\
+  \ show walkway but not present in photos"
+unclear_conditions: '- Roof type not identifiable
+
+
+  - Photos do not show roof surface
+
+
+  - Walkway visibility unclear'
+semantic_checks:
+- check: roof_type_detection
+  description: Identify roof material
+  logic: "Detect:\n  • corrugated / metal → roof sheet\n  • flat slab → concrete"
+- check: walkway_detection
+  description: Detect walkway presence
+  logic: "Identify:\n  • walkway paths\n  • grating / panels\n  • marked access paths"
+- check: stepover_detection
+  description: Detect step-over elements
+  logic: "Identify:\n  • step-over frames\n  • cable crossings"
+negative_constraints:
+- Do NOT require walkway for concrete roofs
+- Do NOT rely only on drawings (photos preferred)
+- Do NOT fail if photos missing → return UNCLEAR
+notes: '- Roof sheet sites require walkways to prevent damage
+
+
+  - Concrete roofs allow direct access
+
+
+  - Step-overs are required where obstructions exist
+
+
+  - Photos override drawings for actual condition'
+scope: G3, G4

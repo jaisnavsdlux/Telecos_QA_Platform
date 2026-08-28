@@ -1,0 +1,75 @@
+id: R058
+name: Earthing notes must be included in G3 for Indara rooftop sites
+type: high
+match_keywords:
+- earthing
+- earth
+- grounding
+- rooftop
+- indara
+validation_mode: hybrid
+complexity: conditional_context
+required_references:
+- FC_Drawing
+preconditions:
+- site_owner_indara
+- site_type_rooftop
+decision_priority: '1. Project context → site owner (Indara)
+
+  2. Project context → site type (Rooftop)
+
+  3. G3 sheet → earthing note presence'
+description: 'Validate that earthing notes are included in the G3 sheet
+
+  when the site belongs to Indara and is a rooftop installation.'
+scope: G3
+location_hint:
+  region: electrical_notes
+pass_criteria: '- Site owner is Indara
+
+  - Site type is Rooftop
+
+
+  AND
+
+
+  - Earthing notes are clearly included in G3 sheet'
+fail_criteria: '- Site owner is Indara AND site is Rooftop
+
+
+  BUT
+
+
+  - Earthing notes missing in G3 sheet'
+unclear_conditions: '- Site owner not identifiable
+
+
+  - Site type (rooftop vs ground) unclear
+
+
+  - G3 sheet missing or unreadable'
+deterministic_checks:
+- check: earthing_keyword_detection
+  keywords:
+  - earthing
+  - earth
+  - grounding
+  pass_evidence: Earthing reference found in G3
+  fail_verdict: FAIL
+semantic_checks:
+- check: g3_note_extraction
+  description: Extract earthing-related notes from G3
+  logic: "Identify:\n  • Earthing notes\n  • Grounding instructions\n  • Electrical\
+    \ safety notes"
+normalization_rules:
+- lowercase text
+- trim spaces
+negative_constraints:
+- Do NOT apply rule if site owner is not Indara
+- Do NOT apply rule if site is not rooftop
+- Do NOT pass if earthing note is generic but missing in G3
+- Do NOT infer rooftop without clear evidence
+notes: "- This is a conditional rule specific to Indara rooftop sites\n\n- Earthing\
+  \ notes are mandatory for rooftop installations\n  due to safety and grounding requirements\n\
+  \n- G3 sheet is the required location for these notes\n\n- This rule should NOT\
+  \ run if preconditions are not met\n  → return NOT_APPLICABLE"

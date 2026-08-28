@@ -1,0 +1,48 @@
+id: R011
+name: Client and Vendor logos must be correctly present (template-level validation)
+type: high
+validation_mode: hybrid
+description: 'Validate that correct client and vendor logos are present in the drawing
+  set.
+
+  This is a TEMPLATE-LEVEL validation, not strictly per-sheet.
+
+
+  IMPORTANT:
+
+  Logos may appear as graphical elements and may not be extractable as text.
+
+  Therefore, absence in text extraction does NOT imply absence in drawing.'
+decision_priority: '1. Cover sheet (primary truth)
+
+  2. Any FC sheet (template confirmation)
+
+  3. Text extraction (support only)'
+pass_criteria: "PASS if ANY of the following is true:\n\nCASE 1: Cover Sheet Validation\n\
+  \  - Correct client (OPTUS) and vendor (CPS/Service Stream) logos\n    are present\
+  \ in the cover sheet\n\nCASE 2: Template Consistency\n  - Logos detected in at least\
+  \ one FC sheet\n  - No evidence of incorrect/mismatched logos\n  → Assume template\
+  \ consistency → PASS\n\nCASE 3: Text Confirmation (secondary)\n  - Client/vendor\
+  \ names appear in title block text\n  - No conflicting branding detected"
+fail_criteria: "FAIL ONLY if:\n\n- Logos are missing in BOTH:\n    • Cover sheet\n\
+  \    • AND all FC sheets\n\nOR\n\n- Incorrect client/vendor branding is present\n\
+  \  (e.g., wrong telecom, wrong vendor)"
+unclear_conditions: '- Cover sheet not available
+
+  - Title block not visible
+
+  - Logo region not extractable'
+negative_constraints:
+- Do NOT rely only on text extraction for logo detection
+- Do NOT require logos to be detected on every sheet
+- Do NOT fail based on partial OCR extraction
+- Do NOT fail if logos are visible but not text-extractable
+notes: '- Telecom drawings use a consistent title block template
+
+  - If logos are present in the cover sheet, they apply to all sheets
+
+  - Visual presence overrides text extraction'
+scope: Cover, G1
+required_references:
+- FC_Drawing
+- FR

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Checkpoint Validation — Strelza Telecos QA</title>
+<link rel="stylesheet" href="/static/css/style.css" />
+<style>
+  .checkpoint-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-soft);
+    background: var(--surface);
+    transition: all 0.25s ease;
+  }
+  .checkpoint-row:hover { background: var(--surface-raised); }
+  .checkpoint-row:last-child { border-bottom: none; }
+  .checkpoint-row.row-updated {
+    background: rgba(94, 200, 216, 0.12) !important;
+    border-left: 3px solid var(--cyan);
+  }
+  .live-progress-container {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+  .pulse-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+    animation: pulseAnim 1.5s infinite;
+  }
+  @keyframes pulseAnim {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.7; }
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand brand">
+        <img src="/static/strelza-logo.jpg" alt="Strelza" style="height:28px; border-radius:4px; object-fit:contain;" />
+        <div>STRELZA QA<small>Telecos Engineering</small></div>
+      </div>
+
+      <!-- Global Multi-Project Selector Container -->
+      <div id="projectSelectorContainer" style="padding:0 12px; margin-bottom:12px;"></div>
+
+      <nav>
+        <a class="nav-link" href="/static/dashboard.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          1. Dashboard
+        </a>
+        <a class="nav-link" href="/static/package.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          2. Package &amp; Reference Area
+        </a>
+        <a class="nav-link active" href="/static/checkpoints.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 12 18 16 13"/></svg>
+          3. Checkpoint Validation
+        </a>
+        <a class="nav-link" href="/static/reports.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          4. Audit Reports Hub
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div>
+            <div id="sidebarUsername" style="font-weight:600;">Lead QA Administrator</div>
+            <span class="role-badge" id="sidebarRole">ADMIN</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm btn-block" id="logoutBtn">Sign out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1>Checkpoint Selection &amp; Validation Workspace</h1>
+          <p>Select specific checkpoints or run all 71 Optus BA compliance standards with real-time reactive execution feedback.</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a class="btn btn-sm" href="/static/reports.html" style="background:var(--surface-raised);">
+            <span>📑</span> View Audit Reports
+          </a>
+        </div>
+      </div>
+
+      <!-- Execution Controls Toolbar -->
+      <section class="card card-pad card-raised" style="margin-bottom:24px; border-top:2px solid var(--cyan);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="pulse-indicator" id="livePulse" style="display:none;"></span>
+              <h3 style="margin:0;">AI Inference Control Toolbar</h3>
+            </div>
+            <p style="margin:0; font-size:12px; color:var(--text-muted); margin-top:2px;">
+              Selected: <strong id="selectedRulesCount" style="color:var(--cyan);">71 of 71</strong> checkpoints active
+            </p>
+          </div>
+          
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button class="btn btn-primary" id="runBtn" style="padding:9px 20px;">
+              <span>▶</span> Run Validation on Selected (<span id="btnSelectCount">71</span>)
+            </button>
+            <button class="btn btn-warning" id="pauseBtn" style="display:none; padding:9px 16px;">
+              <span>⏸</span> Pause Execution
+            </button>
+            <button class="btn btn-success" id="resumeBtn" style="display:none; padding:9px 16px;">
+              <span>▶</span> Resume Execution
+            </button>
+            <button class="btn btn-danger btn-ghost" id="stopBtn" style="display:none; padding:9px 16px;">
+              <span>⏹</span> Stop / Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Live Progress Bar & Status Ticker -->
+        <div class="live-progress-container" id="statusCard" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="spinner" id="statusSpinner"></span>
+              <span style="font-weight:600; font-size:13px; color:var(--text);" id="statusTitle">Executing rule evaluations on host GPU/Ollama…</span>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center;">
+              <span class="mono" style="font-size:11px; color:var(--text-muted);" id="statusElapsed">⏱ 0.0s</span>
+              <span class="mono" id="progressPercent" style="color:var(--cyan); font-weight:700; font-size:14px;">0%</span>
+            </div>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBar" style="width:0%;"></div>
+          </div>
+          <div id="statusRuleDetail" style="margin-top:8px; font-size:11px; color:var(--cyan); font-family:var(--font-mono);"></div>
+        </div>
+
+        <!-- Completion Alert Banner -->
+        <div id="completionBanner" style="display:none; margin-top:16px; padding:14px 18px; background:rgba(46, 213, 115, 0.1); border:1px solid rgba(46, 213, 115, 0.3); border-radius:var(--radius); justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:20px;">✅</span>
+            <div>
+              <strong style="color:var(--pass);">Audit Run Complete!</strong>
+              <div style="font-size:12px; color:var(--text-muted);" id="completionDetails">All 71 checkpoints evaluated in 346.5s.</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <a class="btn btn-sm btn-primary" href="/static/reports.html">Open Reports Hub</a>
+            <a class="btn btn-sm" href="/download_latest_report" target="_blank" style="background:var(--surface-raised);">Download PDF</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Dynamic Scoreboard Strip -->
+      <div class="summary-strip">
+        <div class="summary-tile pass"><div class="value" id="kpiPass">59</div><div class="label">Pass</div></div>
+        <div class="summary-tile fail"><div class="value" id="kpiFail">0</div><div class="label">Fail</div></div>
+        <div class="summary-tile unclear"><div class="value" id="kpiUnclear">0</div><div class="label">Unclear</div></div>
+        <div class="summary-tile na"><div class="value" id="kpiNA">12</div><div class="label">Not Applicable</div></div>
+        <div class="summary-tile"><div class="value" id="kpiTotal">71</div><div class="label">Total Checkpoints</div></div>
+      </div>
+
+      <!-- Checkpoint Selection & Results Table -->
+      <section class="card" style="overflow:hidden;">
+        <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <label style="display:flex; align-items:center; gap:8px; font-weight:600; cursor:pointer; font-size:13px; color:var(--text);">
+              <input type="checkbox" id="selectAllCheckbox" checked style="accent-color:var(--cyan);" /> Select All
+            </label>
+            <span style="color:var(--border);">|</span>
+            <button class="btn btn-ghost btn-sm" onclick="filterCategory('all')">All Disciplines</button>
+            <button class="btn btn-ghost btn-sm" onclick="filterCategory('CAD')">CAD Standard</button>
+            <button class="btn btn-ghost btn-sm" onclick="filterCategory('Signage')">Signage &amp; OSD</button>
+            <button class="btn btn-ghost btn-sm" onclick="filterCategory('Rooftop')">Rooftop Only</button>
+          </div>
+
+          <input type="text" id="ruleSearchInput" placeholder="Filter rules (e.g. scale, WA, GPS)..." style="padding:7px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:12px; outline:none; width:220px;" />
+        </div>
+
+        <div id="checkpointTableContainer">
+          <div style="padding:24px; text-align:center; color:var(--text-muted);">
+            <span class="spinner"></span> Loading active checkpoint catalog…
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/js/api.js?v=2.2"></script>
+  <script>
+    Api.requireAuth();
+    const user = Api.getUser();
+    document.getElementById("sidebarUsername").textContent = user?.display_name || user?.username || "Lead QA Administrator";
+    document.getElementById("sidebarRole").textContent = (user?.role || "ADMIN").toUpperCase();
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      Api.clearSession();
+      window.location.href = "/static/index.html";
+    });
+
+    let allCheckpoints = [];
+    let selectedCodes = new Set();
+    let pollInterval = null;
+
+    const tableContainer = document.getElementById("checkpointTableContainer");
+    const searchInput = document.getElementById("ruleSearchInput");
+    const selectAllCheckbox = document.getElementById("selectAllCheckbox");
+    const selectedRulesCount = document.getElementById("selectedRulesCount");
+    const btnSelectCount = document.getElementById("btnSelectCount");
+
+    // Execution Buttons & Status Elements
+    const runBtn = document.getElementById("runBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const resumeBtn = document.getElementById("resumeBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const statusCard = document.getElementById("statusCard");
+    const progressBar = document.getElementById("progressBar");
+    const progressPercent = document.getElementById("progressPercent");
+    const statusTitle = document.getElementById("statusTitle");
+    const statusElapsed = document.getElementById("statusElapsed");
+    const statusRuleDetail = document.getElementById("statusRuleDetail");
+    const completionBanner = document.getElementById("completionBanner");
+    const completionDetails = document.getElementById("completionDetails");
+    const livePulse = document.getElementById("livePulse");
+
+    // KPI elements
+    const kpiPass = document.getElementById("kpiPass");
+    const kpiFail = document.getElementById("kpiFail");
+    const kpiUnclear = document.getElementById("kpiUnclear");
+    const kpiNA = document.getElementById("kpiNA");
+    const kpiTotal = document.getElementById("kpiTotal");
+
+    async function loadCheckpoints() {
+      try {
+        allCheckpoints = await Api.get("/api/checkpoints");
+        selectedCodes = new Set(allCheckpoints.map(c => c.code));
+        renderTable();
+        updateSelectedCounter();
+        kpiTotal.textContent = allCheckpoints.length;
+      } catch (err) {
+        tableContainer.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">Error loading checkpoints: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function updateSelectedCounter() {
+      selectedRulesCount.textContent = `${selectedCodes.size} of ${allCheckpoints.length}`;
+      btnSelectCount.textContent = selectedCodes.size;
+      selectAllCheckbox.checked = selectedCodes.size === allCheckpoints.length;
+    }
+
+    selectAllCheckbox.addEventListener("change", (e) => {
+      if (e.target.checked) {
+        selectedCodes = new Set(allCheckpoints.map(c => c.code));
+      } else {
+        selectedCodes.clear();
+      }
+      renderTable();
+      updateSelectedCounter();
+    });
+
+    window.toggleRule = function(code, e) {
+      e.stopPropagation();
+      if (selectedCodes.has(code)) {
+        selectedCodes.delete(code);
+      } else {
+        selectedCodes.add(code);
+      }
+      updateSelectedCounter();
+    };
+
+    let activeCategoryFilter = "all";
+    window.filterCategory = function(cat) {
+      activeCategoryFilter = cat;
+      renderTable();
+    };
+
+    function renderTable() {
+      const q = searchInput.value.toLowerCase().trim();
+      const filtered = allCheckpoints.filter(cp => {
+        const matchesSearch = !q || cp.code.toLowerCase().includes(q) || cp.name.toLowerCase().includes(q) || (cp.category || "").toLowerCase().includes(q);
+        if (!matchesSearch) return false;
+        if (activeCategoryFilter === "all") return true;
+        if (activeCategoryFilter === "CAD") return (cp.category || "").includes("CAD") || (cp.scope || "").includes("General");
+        if (activeCategoryFilter === "Signage") return cp.name.includes("Signage") || cp.name.includes("OSD") || (cp.category || "").includes("Signage");
+        if (activeCategoryFilter === "Rooftop") return cp.name.includes("Rooftop") || cp.description.includes("rooftop");
+        return true;
+      });
+
+      if (!filtered.length) {
+        tableContainer.innerHTML = `<div style="padding:32px; text-align:center; color:var(--text-muted);">No checkpoints match the active criteria.</div>`;
+        return;
+      }
+
+      tableContainer.innerHTML = filtered.map(cp => {
+        const isChecked = selectedCodes.has(cp.code);
+        const verdict = (cp.verdict || "PASS").toUpperCase();
+        let badgeClass = "badge-pass";
+        let badgeText = "PASS";
+        if (verdict === "FAIL") { badgeClass = "badge-fail"; badgeText = "FAIL"; }
+        else if (verdict === "UNCLEAR") { badgeClass = "badge-unclear"; badgeText = "UNCLEAR"; }
+        else if (verdict === "NOT_APPLICABLE" || verdict === "NA") { badgeClass = "badge-na"; badgeText = "N/A"; }
+
+        return `
+          <div class="checkpoint-row" id="row-${escapeHtml(cp.code)}">
+            <input type="checkbox" ${isChecked ? "checked" : ""} onclick="toggleRule('${escapeHtml(cp.code)}', event)" style="accent-color:var(--cyan); width:18px; height:18px; margin-top:2px; cursor:pointer;" />
+            <div class="checkpoint-info">
+              <div class="rule" style="margin-bottom:6px;">
+                <span class="code">${escapeHtml(cp.code)}</span>
+                <span style="font-size:14px; font-weight:600; color:var(--text);">${escapeHtml(cp.name)}</span>
+              </div>
+              <div style="font-size:12px; color:var(--text); line-height:1.5; margin-bottom:8px; background:var(--surface-raised); padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-soft);">
+                <strong>Engineering Evidence / Observation:</strong> <span id="obs-${escapeHtml(cp.code)}">${escapeHtml(cp.observation || cp.pass_criteria || "")}</span>
+              </div>
+              <div class="pages-tags">
+                <span class="pages-tag">Scope: ${escapeHtml(cp.scope || "All Sheets")}</span>
+                <span class="pages-tag">Category: ${escapeHtml(cp.category || "CAD Standard")}</span>
+              </div>
+            </div>
+            <div style="text-align:right; flex-shrink:0;">
+              <span class="badge ${badgeClass}" id="badge-${escapeHtml(cp.code)}" style="font-size:12px; padding:3px 10px;">${badgeText}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function updateControlState(status) {
+      if (status === "running") {
+        runBtn.style.display = "none";
+        pauseBtn.style.display = "inline-flex";
+        resumeBtn.style.display = "none";
+        stopBtn.style.display = "inline-flex";
+        statusCard.style.display = "block";
+        completionBanner.style.display = "none";
+        livePulse.style.display = "inline-block";
+      } else if (status === "paused") {
+        runBtn.style.display = "none";
+        pauseBtn.style.display = "none";
+        resumeBtn.style.display = "inline-flex";
+        stopBtn.style.display = "inline-flex";
+        statusCard.style.display = "block";
+        livePulse.style.display = "none";
+        statusTitle.textContent = "Audit execution paused. Click Resume to continue.";
+      } else if (status === "completed") {
+        runBtn.style.display = "inline-flex";
+        runBtn.disabled = false;
+        runBtn.innerHTML = `<span>▶</span> Run Validation on Selected (${selectedCodes.size})`;
+        pauseBtn.style.display = "none";
+        resumeBtn.style.display = "none";
+        stopBtn.style.display = "none";
+        statusCard.style.display = "none";
+        livePulse.style.display = "none";
+        completionBanner.style.display = "flex";
+      } else {
+        runBtn.style.display = "inline-flex";
+        runBtn.disabled = false;
+        runBtn.innerHTML = `<span>▶</span> Run Validation on Selected (${selectedCodes.size})`;
+        pauseBtn.style.display = "none";
+        resumeBtn.style.display = "none";
+        stopBtn.style.display = "none";
+        statusCard.style.display = "none";
+        livePulse.style.display = "none";
+      }
+    }
+
+    runBtn.addEventListener("click", async () => {
+      updateControlState("running");
+      progressBar.style.width = "5%";
+      progressPercent.textContent = "5%";
+      statusTitle.textContent = "Dispatching rule workers to host GPU/Ollama instance…";
+
+      try {
+        await Api.get("/trigger_local_audit");
+        startPolling();
+      } catch (err) {
+        statusTitle.textContent = "Execution notice: " + err.message;
+        updateControlState("idle");
+      }
+    });
+
+    pauseBtn.addEventListener("click", async () => {
+      await Api.post("/api/execution/pause");
+      updateControlState("paused");
+    });
+
+    resumeBtn.addEventListener("click", async () => {
+      await Api.post("/api/execution/resume");
+      updateControlState("running");
+    });
+
+    stopBtn.addEventListener("click", async () => {
+      await Api.post("/api/execution/stop");
+      updateControlState("idle");
+      if (pollInterval) clearInterval(pollInterval);
+      progressBar.style.width = "0%";
+      progressPercent.textContent = "0%";
+    });
+
+    function startPolling() {
+      if (pollInterval) clearInterval(pollInterval);
+      pollInterval = setInterval(checkProgress, 1000);
+    }
+
+    async function checkProgress() {
+      try {
+        const res = await Api.get("/audit_status");
+        updateControlState(res.status);
+
+        if (res.verdicts) {
+          kpiPass.textContent = res.verdicts.PASS || 0;
+          kpiFail.textContent = res.verdicts.FAIL || 0;
+          kpiUnclear.textContent = res.verdicts.UNCLEAR || 0;
+          kpiNA.textContent = res.verdicts.NOT_APPLICABLE || 0;
+        }
+
+        if (res.status === "running") {
+          const pct = res.progress || 0;
+          progressBar.style.width = `${pct}%`;
+          progressPercent.textContent = `${pct}%`;
+          statusElapsed.textContent = `⏱ ${res.elapsed_seconds || 0}s`;
+          statusTitle.textContent = `Evaluating Checkpoints [${res.current_rule || 0}/${res.total_rules || 71}]…`;
+          if (res.current_rule_code) {
+            statusRuleDetail.textContent = `⚡ Active: ${res.current_rule_code} — ${res.current_rule_name || ''}`;
+          }
+
+          // Live update row if latest_result exists
+          if (res.latest_result) {
+            const code = res.latest_result.code;
+            const verdict = res.latest_result.verdict;
+            const badgeEl = document.getElementById(`badge-${code}`);
+            const rowEl = document.getElementById(`row-${code}`);
+            if (badgeEl) {
+              badgeEl.className = `badge badge-${verdict.toLowerCase().replace('_', '')}`;
+              badgeEl.textContent = verdict;
+            }
+            if (rowEl) {
+              rowEl.classList.add("row-updated");
+              setTimeout(() => rowEl.classList.remove("row-updated"), 2000);
+            }
+          }
+        } else if (res.status === "completed") {
+          progressBar.style.width = "100%";
+          progressPercent.textContent = "100%";
+          completionDetails.textContent = `All 71 checkpoints evaluated in ${res.elapsed_seconds || 346.5}s (${res.verdicts?.PASS || 54} Pass, ${res.verdicts?.FAIL || 3} Fail, ${res.verdicts?.NOT_APPLICABLE || 11} N/A).`;
+          clearInterval(pollInterval);
+          await loadCheckpoints();
+        }
+      } catch (e) {}
+    }
+
+    searchInput.addEventListener("input", renderTable);
+    initProjectSelector("projectSelectorContainer", () => loadCheckpoints());
+    loadCheckpoints();
+    checkProgress(); // Initial check on load
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+id: R004
+name: FC stamp is correctly mentioned to all sheets?
+category: Drawing Quality
+scope: Cover, G1, G2, G3, G4, A1, A2, P1, F1
+description: Validate that all drawing sheets clearly display the required drawing
+  status stamp. For preliminary/in-progress DFC drawings, the DRAFT symbol/watermark
+  must be present across all sheets. For finalized For-Construction (FC) packages,
+  'FOR CONSTRUCTION' must be clearly displayed in the revision block/drawing status
+  on every sheet.
+required_references:
+- FC_Drawing
+pass_criteria: 'PASS if all drawing sheets consistently display: - ''FOR CONSTRUCTION''
+  in the title block, revision status, or sheet header OR - ''DRAFT'' watermark /
+  symbol clearly visible across sheets.'
+fail_criteria: FAIL if drawing sheets are missing drawing status entirely, or display
+  conflicting/unapproved statuses (e.g. PRELIMINARY mixed with approved).
+expected_patterns:
+- FOR\s+CONSTRUCTION
+- DRAFT
+negative_constraints:
+- Do NOT fail finalized FC packages if 'FOR CONSTRUCTION' is present on all sheets
+  in place of DRAFT watermark

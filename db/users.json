@@ -1,0 +1,74 @@
+{
+  "admin": {
+    "username": "admin",
+    "password_hash": "pbkdf2_sha256$100000$dd2b26b46b92ac88dc0432a545ce405c$2b74fae068d94e1a266d7a44b29b0a20ab9228422e7d31f41532c9d10e57d398",
+    "role": "admin",
+    "display_name": "Lead QA Administrator",
+    "email": "admin@strelza.telecos.com.au",
+    "is_admin": true
+  },
+  "lead_auditor": {
+    "username": "lead_auditor",
+    "password_hash": "56c43b930d727fc06ad06b37a66909279ee8c31daf94f633de82a813189dfaa1",
+    "role": "admin",
+    "display_name": "Manik Babuta (Lead Auditor)",
+    "email": "manik@alltelecos.com.au",
+    "is_admin": true
+  },
+  "design": {
+    "username": "design",
+    "password_hash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "role": "reviewer",
+    "display_name": "design",
+    "email": "design@gmail.com",
+    "is_admin": false
+  },
+  "engineer_ca1bea": {
+    "username": "engineer_ca1bea",
+    "password_hash": "pbkdf2_sha256$100000$0556b228a9be60a5036daa32b4adbffa$4f0945d72eb0b01c4b86396031ac46d80ba4aba28bd8f2e25714b77bf7884995",
+    "role": "engineer",
+    "display_name": "Test Engineer",
+    "email": "engineer_ca1bea@telecos.com.au",
+    "is_admin": false
+  },
+  "engineer_3d091d": {
+    "username": "engineer_3d091d",
+    "password_hash": "pbkdf2_sha256$100000$92d71a005e8af5a3a06b55f705917333$3c07b7ba926dd10ea25079988f4844cc5e22b927afa133f30703625775f36ff9",
+    "role": "engineer",
+    "display_name": "Test Engineer",
+    "email": "engineer_3d091d@telecos.com.au",
+    "is_admin": false
+  },
+  "engineer_b9c778": {
+    "username": "engineer_b9c778",
+    "password_hash": "pbkdf2_sha256$100000$753ea0d868ebc48d7b280617afeb24c8$cbcd50c41ac698f4de482106361bd73a832bdaf7eb84e8c3334fcbbe3faad6ec",
+    "role": "engineer",
+    "display_name": "Test Engineer",
+    "email": "engineer_b9c778@telecos.com.au",
+    "is_admin": false
+  },
+  "engineer_f4258d": {
+    "username": "engineer_f4258d",
+    "password_hash": "pbkdf2_sha256$100000$c7ecc56ba4cb8c1d29848a3ad771f372$f5ffc80ee32a8fa79e1ff2d9d1c7065717872db55026b7314881c63798d4ac64",
+    "role": "engineer",
+    "display_name": "Test Engineer",
+    "email": "engineer_f4258d@telecos.com.au",
+    "is_admin": false
+  },
+  "engineer_dba767": {
+    "username": "engineer_dba767",
+    "password_hash": "pbkdf2_sha256$100000$c54658308fae59f6136a62e3ff669d0d$344c56312efc3c2d80f6d2fa249cd91b4fc3a9834d3f3c7659a03db1db28caed",
+    "role": "engineer",
+    "display_name": "Test Engineer",
+    "email": "engineer_dba767@telecos.com.au",
+    "is_admin": false
+  },
+  "engineer_c21669": {
+    "username": "engineer_c21669",
+    "password_hash": "pbkdf2_sha256$100000$7c878f55d171bf93559ad5407c4eba0c$6a3f3c0a12f12e11eda2c8d4532f3af1fdfa5426c1cb8e7cf72edf57390fcf6e",
+    "role": "engineer",
+    "display_name": "Test Engineer",
+    "email": "engineer_c21669@telecos.com.au",
+    "is_admin": false
+  }
+}

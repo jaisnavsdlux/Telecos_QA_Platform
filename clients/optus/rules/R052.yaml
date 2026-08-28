@@ -1,0 +1,21 @@
+id: R052
+name: Site access clearly shown and referenced on drawings
+category: Site Access
+scope: G1, G2
+description: 'Check that the site access route and entry details are clearly shown
+  and referenced: - G1 sheet includes ''CONSTRUCTION SITE ACCESS'' section. - G2/G3
+  sheets show vehicular/pedestrian access from public road to compound gate. - Required
+  safety notes (e.g. key access, permission requirements) are stated.'
+required_references:
+- FC_Drawing
+- As-built
+- SDV_Photos
+pass_criteria: PASS if site access route is clearly illustrated on G2/G3 and corresponding
+  access notes are present on G1.
+fail_criteria: FAIL if site access details or construction site access notes are completely
+  missing from the drawing set.
+expected_patterns:
+- (?i)(access|entry|gate|road|construction site access)
+negative_constraints:
+- Accept standard access description on G1 when complemented by G2 overall site plan
+  routing

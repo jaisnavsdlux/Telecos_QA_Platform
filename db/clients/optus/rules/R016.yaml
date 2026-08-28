@@ -1,0 +1,29 @@
+id: R016
+name: Structural certificates must match cover sheet and follow correct sequence and
+  date logic
+category: Reference Validation
+scope: Cover
+description: "Verify that the structural engineering certificates (Pole, Foundation,\
+  \ Mount / Headframe) are listed in the Cover Sheet Reference Documents table: 1.\
+  \ Certificate names and reference numbers match the uploaded engineering certificates.\
+  \ 2. Dates match the provided certificates and are prior to or concurrent with the\
+  \ FC drawing issue date. 3. Logical sequence is followed:\n   - Pole & Foundation\
+  \ certificate (e.g. Civilmart / Gamcorp)\n   - Strengthening drawings (if required)\n\
+  \   - Mount / Headframe certificate & drawings (e.g. SP1 / SC184419)\nNote: 'Headframe'\
+  \ and 'Mount' are synonymous terms in this context."
+required_references:
+- FC_Drawing
+- Structural_Certificate
+- Mount_Certificate
+- Pole_Certificate
+pass_criteria: PASS if structural certificates for the pole/foundation and mount/headframe
+  are referenced on the Cover Sheet, and the certificate reference numbers/dates match
+  the engineering documents.
+fail_criteria: FAIL if structural certificates are completely omitted from the Cover
+  Sheet reference list, or have conflicting dates that post-date the drawing issue.
+expected_patterns:
+- (?i)(cert|certificate|structural|pole|mount|headframe|foundation)
+negative_constraints:
+- Treat 'Headframe' and 'Mount' as equivalent terms
+- Allow structural drawings (e.g. SP20132) to accompany or represent the mount engineering
+  reference

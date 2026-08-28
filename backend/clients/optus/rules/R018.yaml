@@ -1,0 +1,71 @@
+id: R018
+name: ServiceStream sites must include SAED references in documents
+type: medium
+match_keywords:
+- saed
+- servicestream
+- service stream
+validation_mode: hybrid
+complexity: conditional_vendor + reference_validation
+required_references:
+- FC_Drawing
+optional_references:
+- Structural_Certificate
+description: 'Validate that SAED references are included ONLY for ServiceStream vendor
+  sites.
+
+
+  If the site is not a ServiceStream project, this rule is NOT applicable.'
+decision_flow: "Step 1: Detect vendor\n\n  Priority:\n    1. Title block (FC drawings)\n\
+  \    2. Structural certificate\n    3. Other reference documents\n\nStep 2:\n\n\
+  \  IF vendor = ServiceStream:\n      → SAED reference is REQUIRED\n\n  IF vendor\
+  \ ≠ ServiceStream:\n      → Rule NOT applicable → NOT_APPLICABLE\n\n  IF vendor\
+  \ cannot be determined:\n      → UNCLEAR"
+pass_criteria: "CASE 1: ServiceStream site\n\n- SAED reference present in:\n    •\
+  \ Reference documents OR\n    • FC drawing notes\n\n------------------------------------------------\n\
+  \nCASE 2: Non-ServiceStream site\n\n- Rule not applicable → PASS"
+fail_criteria: "- Vendor is ServiceStream AND\n\n    • SAED reference missing"
+unclear_conditions: '- Vendor not identifiable
+
+
+  - Reference documents not available
+
+
+  - SAED mention partially visible or ambiguous'
+deterministic_checks:
+- check: vendor_detection
+  keywords:
+  - servicestream
+  - service stream
+  pass_evidence: ServiceStream vendor detected
+  fail_verdict: UNCLEAR
+- check: saed_detection
+  keywords:
+  - saed
+  - saed_da
+  - saed_dc
+  - saed_l3
+  - saed_lo
+  pass_evidence: SAED reference detected
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: vendor_classification
+  description: Identify project vendor
+  logic: "Extract vendor from:\n  • Title block (primary)\n  • Structural certificate\
+    \ (secondary)"
+- check: saed_reference_validation
+  description: Validate SAED reference presence
+  logic: "Search for:\n  • SAED conditions\n  • SAED references in notes or documents"
+normalization_rules:
+- lowercase text
+- trim spaces
+negative_constraints:
+- Do NOT enforce SAED requirement for non-ServiceStream sites
+- Do NOT assume vendor from partial keywords
+- Do NOT fail if vendor cannot be determined → return UNCLEAR
+- Do NOT restrict SAED detection to one document only
+notes: "- This is a conditional rule based on vendor\n\n- ServiceStream → SAED mandatory\n\
+  - Others (e.g., CPS) → NOT required\n\n- Vendor should be primarily identified from\
+  \ title block\n\n- This rule ensures:\n    Correct compliance requirements based\
+  \ on vendor type"
+scope: Cover

@@ -1,0 +1,27 @@
+id: R033
+name: Structural adequacy of mount (certificate validation)
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- Mount_Certificate
+- Structural_Certificate
+description: Validate mount structural adequacy using certification evidence.
+pass_criteria: "- Certificate-like document identified\n\n- Certifier name present\n\
+  \n- Certificate ID present (not drawing number)\n\n- Date present\n\n- Loading <\
+  \ 100%\n  OR explicitly adequate"
+fail_criteria: "- Loading ≥ 100% AND no strengthening mentioned\n\n- Certificate clearly\
+  \ invalid:\n    • Wrong document type\n    • Drawing used as certificate"
+unclear_conditions: '- No certificate document found
+
+  - Certificate not extractable
+
+  - Partial data only'
+negative_constraints:
+- Do NOT fail if certificate missing → UNCLEAR
+- Do NOT rely on file names
+- Do NOT treat drawings as certificates
+notes: 'This is a conditional validation rule.
+
+  Missing certificate ≠ FAIL.'
+scope: Cover, G4

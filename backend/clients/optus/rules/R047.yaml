@@ -1,0 +1,23 @@
+id: R047
+name: Street name shown is correct?
+type: medium
+match_keywords:
+- street name
+- road name
+- access route
+- EWP location
+- site access road
+validation_mode: google_maps_crosscheck
+description: Verify that the street/road names shown in the drawing are correct by
+  cross-referencing site coordinates with external sources such as Google Maps or
+  RFNSA data. Ensure that all access roads and surrounding street labels match real-world
+  naming.
+pass_criteria: Street names in the drawing match accurately with Google Maps or RFNSA
+  data based on site coordinates.
+fail_criteria: Street names are incorrect, missing, or do not match Google Maps/RFNSA
+  reference data.
+expected_patterns: []
+scope: G1, G2
+required_references:
+- FC_Drawing
+- Google_Maps

@@ -1,0 +1,28 @@
+id: R002
+name: Drawing sheets must have valid standard scale
+category: Drawing Quality
+scope: G2, G3, G3-1, G4
+description: Check all applicable drawing sheets follow standard scale as per Optus
+  DFC checklist. Cover sheet, G1 (Site Specifications), A-series (Antenna System),
+  P-series (Plumbing), and E-series (Electrical) are exempt and may NOT have a scale.
+  Reference standard OSD sheets also do NOT require a scale check. Other drawing sheets
+  (G2, G3, G3-1, G4, F1, S1) MUST have a valid standard scale (e.g., 1:100, 1:200,
+  1:500, 1:1000, 1:2000) or a valid detail scale (e.g. DETAIL 1 SCALE 1:100).
+required_references:
+- FC_Drawing
+pass_criteria: 'PASS if for each applicable drawing sheet (G2, G3, G3-1, G4, F1, S1):
+  - A standard scale is present in the title block or on the drawing (e.g., 1:100,
+  1:200, 1:500, 1:1000, 1:2000) OR - A detail scale (e.g. "DETAIL SCALE 1:20", "DETAIL
+  1 SCALE 1:100", "SCALE 1:500 (A1), 1:1000 (A3)") is present. - Cover sheet, G1,
+  A-series, P-series, and E-series sheets are EXEMPT and do not require scale.'
+fail_criteria: FAIL if any applicable drawing sheet (G2, G3, G3-1, G4, F1, S1) completely
+  lacks any scale or uses a non-standard scale ratio (e.g., 1:15, 1:30).
+expected_patterns:
+- 1\s*:\s*\d+
+- SCALE\s*1\s*:\s*\d+
+- DETAIL\s*(SCALE|\d+)?\s*1\s*:\s*\d+
+negative_constraints:
+- Do NOT check non-drawing sheets (Cover, G1, A-series, P-series, E-series, OSD standard
+  drawings)
+- Do NOT fail if a detail scale or dual A1/A3 scale is present
+- Do NOT fail 1:2000 or 1:2500 for large overall site plans (G2)

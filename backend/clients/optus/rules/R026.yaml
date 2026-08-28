@@ -1,0 +1,67 @@
+id: R026
+name: G1 site details and coordinates must match RFNSA
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- RFNSA
+scope: G1
+complexity: structured_comparison + precision_validation
+description: "Validate that G1 site specifications match RFNSA data.\n\nFields validated:\n\
+  \  - Coordinates (PRIMARY - strict)\n  - Address (structured comparison)\n  - Site\
+  \ number (secondary reference)"
+pass_criteria: "STEP 1: Coordinate Validation (CRITICAL)\n\n- Latitude & Longitude\
+  \ present in G1\n\n- Matches RFNSA within tolerance:\n    ±0.0001\n\n------------------------------------------------\n\
+  \nSTEP 2: Address Validation (STRUCTURED)\n\nCompare components:\n\n- Lot / Plan\
+  \ → MUST match exactly\n\n- Street name:\n    • Allow normalization (Rd = Road)\n\
+  \    • Must refer to same street\n\n- Suburb / State / Postcode → MUST match\n\n\
+  - Site descriptor (e.g., reserve name):\n    • Preferred but not mandatory\n\n------------------------------------------------\n\
+  \nFINAL:\n\n- Coordinates match\n- Address core components match"
+fail_criteria: '- Coordinates missing
+
+
+  - Coordinate mismatch beyond tolerance
+
+
+  - Lot/Plan mismatch between G1 and RFNSA
+
+
+  - Suburb / State / Postcode mismatch
+
+
+  - Completely different address structure'
+unclear_conditions: '- RFNSA data incomplete
+
+
+  - Coordinates partially extracted
+
+
+  - Address components not clearly identifiable'
+deterministic_checks:
+- check: coordinate_detection
+  regex_patterns:
+  - -?\d{1,2}\.\d+
+  pass_evidence: Coordinates detected
+  fail_verdict: FAIL
+- check: lot_plan_detection
+  regex_patterns:
+  - (lot\s*\d+)
+  - (plan\s*\d+)
+  pass_evidence: Lot/Plan detected
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: coordinate_comparison
+  description: Compare RFNSA vs G1 coordinates
+  logic: "Compute delta:\n  lat_diff <= 0.0001\n  lon_diff <= 0.0001"
+- check: address_component_comparison
+  description: Structured address validation
+  logic: "Extract and compare:\n  • Lot / Plan\n  • Street name (normalized)\n  •\
+    \ Suburb\n  • State\n  • Postcode"
+negative_constraints:
+- Do NOT rely on full string match for address
+- Do NOT fail for Rd vs Road differences
+- Do NOT fail if site descriptor is missing
+- Do NOT re-validate site ID (handled in R008)
+notes: "- Coordinates are the primary identity check\n\n- Address validation is component-based:\n\
+  \    • Lot/Plan = critical\n    • Locality = mandatory\n    • Street = normalized\
+  \ match\n\n- This rule ensures:\n    Physical site alignment with RFNSA data"

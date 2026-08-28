@@ -1,0 +1,28 @@
+id: R025
+name: Site details present in header/title block
+type: medium
+validation_mode: auto
+description: 'Validate presence and basic correctness of site details in header/title
+  block.
+
+  This rule DOES NOT perform strict RFNSA comparison (handled in R008).'
+pass_criteria: '- Site Code present
+
+  - Site Name present
+
+  - Address present'
+fail_criteria: '- Missing site code
+
+  - Missing site name
+
+  - Missing address'
+negative_constraints:
+- Do NOT compare with RFNSA (handled in R008)
+- Do NOT fail due to mismatch (only presence check)
+notes: 'This is a presence/visibility rule only.
+
+  All correctness validation is handled in R008.'
+scope: Cover, G1, G2, G3, G4
+required_references:
+- FC_Drawing
+- RFNSA

@@ -1,0 +1,33 @@
+id: R008
+name: Site identity must match RFNSA (Master Rule)
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- RFNSA
+description: "Master validation rule for site identity.\nValidates that core site\
+  \ identity in FC drawings matches RFNSA.\n\nFields validated:\n  - Site ID (PRIMARY\
+  \ KEY)\n  - Site Name\n  - Address (Lot / Plan / Street)\n  - JV (if applicable)"
+pass_criteria: "- Site ID matches RFNSA EXACTLY\n- Site Name matches (minor formatting\
+  \ allowed)\n- Address matches:\n    • Lot number\n    • Plan number\n    • Street\
+  \ name"
+fail_criteria: "- Site ID mismatch (CRITICAL FAIL)\n- Address mismatch in:\n    •\
+  \ Lot number\n    • Plan number\n- Site Name mismatch (major difference)"
+priority_logic: 'Site ID → Highest priority
+
+  Address → Second priority
+
+  Site Name → Supporting'
+normalization_rules:
+- uppercase all text
+- remove commas
+- normalize lot/plan keywords
+- trim spaces
+negative_constraints:
+- Do NOT duplicate validation done in R025/R026/R027
+- Do NOT fail due to formatting differences
+- If RFNSA missing → return UNCLEAR
+notes: 'This is the ONLY rule responsible for final identity validation.
+
+  Other rules (R025, R026, R027) act as supporting checks only.'
+scope: Cover, G1, G2, G3, G4

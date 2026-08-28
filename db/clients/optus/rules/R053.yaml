@@ -1,0 +1,100 @@
+id: R053
+name: North direction and site orientation must be correct and consistent
+type: high
+match_keywords:
+- north
+- north arrow
+- orientation
+- latitude
+- longitude
+- site layout
+validation_mode: hybrid
+complexity: cross_document + optional_external
+required_references:
+- FC_Drawing
+optional_references:
+- As-built
+- Google_Maps
+decision_priority: '1. G3 sheet → primary orientation reference
+
+  2. G2 sheet → secondary validation
+
+  3. G1 → latitude & longitude reference
+
+  4. Google Maps → real-world validation (if available)
+
+  5. As-built → supporting validation'
+description: 'Validate that the North direction is correctly represented and that
+
+  site orientation aligns with geographic reality.
+
+
+  North arrow must be straight (not rotated), and the layout should
+
+  align with coordinates from G1 and external references if available.'
+scope: G2, G3
+location_hint:
+  region: north_arrow_section
+pass_criteria: "STEP 1: North Arrow Validation\n\n- North arrow present in G3\n- Arrow\
+  \ is straight (aligned vertically upward)\n- No rotated or angled north block\n\n\
+  ------------------------------------------------\n\nSTEP 2: Cross-Sheet Consistency\n\
+  \n- G3 orientation aligns with G2\n- No mismatch between G2 and G3\n\n------------------------------------------------\n\
+  \nSTEP 3: Coordinate Alignment (if available)\n\n- Latitude and Longitude present\
+  \ in G1\n\n- Site orientation logically aligns with:\n    • Coordinates (G1)\n \
+  \   • Google Maps (if available)\n    • As-built (if available)\n\n------------------------------------------------\n\
+  \nFINAL:\n\n- Orientation is consistent across all available references"
+fail_criteria: "- North arrow missing in G3\n\n- North arrow is rotated / not straight\n\
+  \n- Orientation mismatch between:\n    • G3 and G2\n\n- Site layout clearly contradicts:\n\
+  \    • Coordinates (G1)\n    • Google Maps (if available)\n\n- Known incorrect orientation\
+  \ from As-built not corrected"
+unclear_conditions: '- North arrow not clearly visible
+
+
+  - Latitude/Longitude missing
+
+
+  - Google Maps not available AND orientation cannot be inferred
+
+
+  - G2 sheet missing'
+deterministic_checks:
+- check: north_arrow_detection
+  keywords:
+  - north
+  - n
+  pass_evidence: North arrow detected
+  fail_verdict: FAIL
+- check: coordinate_detection
+  regex_patterns:
+  - \b-?\d{1,3}\.\d{3,}\b
+  pass_evidence: 'Coordinates detected: {match}'
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: orientation_alignment
+  description: Validate orientation consistency
+  logic: "Compare:\n  • G3 vs G2 orientation\n  • Layout direction vs north arrow"
+- check: geo_alignment
+  description: Validate real-world alignment
+  logic: "If coordinates available:\n  Compare with Google Maps\n\nIf As-built available:\n\
+    \  Cross-check orientation"
+normalization_rules:
+- lowercase text
+- trim spaces
+negative_constraints:
+- Do NOT rely only on Google Maps
+- Do NOT fail if Google Maps is unavailable
+- Do NOT assume correctness if north arrow exists
+- Do NOT ignore cross-sheet mismatch
+notes: '- G3 is the primary orientation sheet
+
+
+  - If G3 is correct, G2 is typically aligned
+
+
+  - North arrow must always be straight (no rotation)
+
+
+  - Coordinates from G1 are used for geographic validation
+
+
+  - Google Maps validation is optional but recommended'

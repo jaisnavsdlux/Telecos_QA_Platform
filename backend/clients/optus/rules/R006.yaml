@@ -1,0 +1,24 @@
+id: R006
+name: All drafting text must be in uppercase
+category: Drawing Quality
+scope: G1, G2, G3, G4, A1, A2, P1, F1
+description: 'All drafting text and engineering annotations must be in uppercase.
+  Explicit Allowed Exceptions as per Optus DFC BA Checklist: 1. Email IDs (commonly
+  found in G1 sheet under Construction Site Access). 2. Units of measurement: ''m''
+  (meter), ''mm'' (millimeter), ''km'' (kilometer), ''m²''. 3. Program names such
+  as ''eJV'' (''e'' lowercase is explicitly permitted). 4. Pre-printed title block
+  copyright/template legal strings.'
+required_references:
+- FC_Drawing
+pass_criteria: PASS if engineering callouts, notes, and sheet annotations are written
+  in UPPERCASE, allowing the specific exceptions for email IDs, measurement units
+  (m, mm, km), program name 'eJV', and title block template text.
+fail_criteria: FAIL if general drafting annotations, equipment tags, or custom notes
+  contain random mixed-case or lowercase body text outside of the permitted exceptions.
+expected_patterns:
+- '[A-Z0-9\s\W]+'
+negative_constraints:
+- Do NOT flag email addresses (e.g. name@domain.com)
+- Do NOT flag measurement units (e.g. 40m, 10mm², 15km)
+- Do NOT flag program name 'eJV' (lowercase 'e' is explicitly allowed)
+- Do NOT flag standard title block template/copyright boilerplate

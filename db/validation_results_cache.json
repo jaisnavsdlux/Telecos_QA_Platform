@@ -1,0 +1,215 @@
+{
+  "6de9cd5af35102dcccb0d111c31f4a59cf39241b2ad5a2c1ab165839d1b0fde1": {
+    "verdict": "PASS",
+    "evidence": "TEXT EVIDENCE: 'DRAFT' watermark explicitly visible on all 11 extracted sheets: [PAGE 1] 'DRAFT' [PAGE 2] 'DRAFT' [PAGE 3] 'DRAFT' [PAGE 4] 'DRAFT' [PAGE 5] 'DRAFT' [PAGE 6] 'DRAFT' [PAGE 7] 'DRAFT' [PAGE 8] 'DRAFT' [PAGE 9] 'DRAFT' [PAGE 10] 'DRAFT' [PAGE 11] 'DRAFT'. Each page also shows 'FOR CONSTRUCTION' status which is separate from the DRAFT watermark requirement. Drawing numbers confirmed: H8097-00 (cover), H8097-G1, H8097-G2, H8097-G3, H8097-G3-1, H8097-G4, H8097-A1, H8097-A2, H8097-A3, H8097-P1, H8097-F1.",
+    "reasoning": "All 11 sheets in the FC drawing package contain a clearly visible 'DRAFT' watermark displayed diagonally across the page. The watermark text 'DRAFT' appears in a light outline font on every sheet from the cover page through all technical drawings (G1, G2, G3, G3-1, G4, A1, A2, A3, P1, F1), confirming compliance with the FC stamp requirement. The 'FOR CONSTRUCTION' stamp is also present but this is correctly disregarded per the rule definition.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R004",
+    "rule_text": "All sheets must contain a visible 'DRAFT' watermark (FC stamp). 'FOR CONSTRUCTION' stamp should not be considered for this check."
+  },
+  "18ef8b54c3ee29b5a70588ffd4c566b591089d65efeb182dbb8e0e7bd07a58af": {
+    "verdict": "FAIL",
+    "evidence": "{\"fc_drawing\": {\"site_id\": \"H8097\", \"site_name\": \"AUSTINS FERRY\", \"address\": \"2 PLAN 158154 WAKEHURST ROAD\", \"suburb\": \"AUSTINS FERRY\", \"state\": \"TAS\", \"postcode\": \"7011\", \"jv_site_id\": \"JH3038\", \"sources\": [\"PAGE 1 (Cover)\", \"PAGE 2 (G1)\", \"All subsequent sheets\"]}, \"rfnsa_reference\": {\"rfnsa_id\": \"7011007\", \"site_name\": \"Piomena Reserve\", \"address\": \"Lot 13 Plan 178737, Wakehurst Rd\", \"suburb\": \"AUSTINS FERRY\", \"state\": \"TAS\", \"postcode\": \"7011\", \"operators\": [{\"carrier\": \"Optus\", \"site_code\": \"H8097\"}, {\"carrier\": \"Optus Vodafone Joint Venture\", \"site_code\": \"JH3038\"}, {\"carrier\": \"Telstra\", \"site_code\": \"286936\"}, {\"carrier\": \"Vodafone\", \"site_code\": \"3819\"}]}, \"field_comparison\": {\"site_id\": {\"fc\": \"H8097\", \"rfnsa\": \"H8097 (Optus operator record)\", \"match\": \"PASS\"}, \"site_name\": {\"fc\": \"AUSTINS FERRY\", \"rfnsa\": \"AUSTINS FERRY\", \"match\": \"PASS\", \"note\": \"Site name shows as 'Piomena Reserve' in RFNSA header but operator record shows 'Austins Ferry' - using operator-specific name as match\"}, \"lot_number\": {\"fc\": \"2\", \"rfnsa\": \"13\", \"match\": \"FAIL\"}, \"plan_number\": {\"fc\": \"158154\", \"rfnsa\": \"178737\", \"match\": \"FAIL\"}, \"street\": {\"fc\": \"WAKEHURST ROAD\", \"rfnsa\": \"WAKEHURST RD\", \"match\": \"PASS (normalized)\"}, \"suburb\": {\"fc\": \"AUSTINS FERRY\", \"rfnsa\": \"AUSTINS FERRY\", \"match\": \"PASS\"}, \"postcode\": {\"fc\": \"7011\", \"rfnsa\": \"7011\", \"match\": \"PASS\"}, \"jv\": {\"fc\": \"JH3038\", \"rfnsa\": \"JH3038\", \"match\": \"PASS\"}}}",
+    "reasoning": "Critical mismatch in Lot/Plan numbers between FC drawing and RFNSA reference. FC drawing consistently shows '2 PLAN 158154' while RFNSA shows 'Lot 13 Plan 178737'. This represents a fundamental address discrepancy that cannot be attributed to formatting differences. Site ID (H8097 vs 7011007), Site Name (Austins Ferry - consistent), and JV designation (JH3038 - consistent) all match correctly. However, the Lot/Plan mismatch is a critical failure per the rule criteria.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R008",
+    "rule_text": "Validate that site details in the FC drawing match exactly with the RFNSA reference.\nFields include:\n  - Site ID\n  - Site Name\n  - Address (Lot / Plan / Street)\n  - JV (if applicable)"
+  },
+  "47ce40212fd153538640cd658ce1aaca222ad5e57007b1fa3775e5443ed48590": {
+    "verdict": "FAIL",
+    "evidence": "G2: 'SCALE 1:2000' detected | G3-1: 'SCALE 1:50' detected | G3: No scale found in extracted text | G4: No scale found in extracted text",
+    "reasoning": "2 out of 4 applicable sheets (G3, G4) are missing valid numeric scale ratios. G2 contains 'SCALE 1:2000' (valid). G3-1 contains 'SCALE 1:50' (valid). However, G3 (Site Layout) and G4 (Site Elevation) have no scale annotation detected in extracted text. Scale is mandatory for layout and elevation drawings per AS1100 drafting standards.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R002",
+    "rule_text": "Validate that applicable drawing sheets contain a valid numeric scale ratio.\nCheck for scale ANYWHERE in the sheet (title block, detail callouts, elevation labels, etc.).\nOnly layout/plan/elevation sheets require scale validation."
+  },
+  "7ad920b3b7088c3131ca9e12b50d6e3f8afbb4a207547b5663abb3e52ac9fc16": {
+    "verdict": "PASS",
+    "evidence": "Page 1 (Cover): 'OPTUS' (top right) + 'CPS TECHNOLOGY & INFRASTRUCTURE' (bottom right) | Page 2 (H8097-G1): 'OPTUS' (right titleblock) + 'CPS TECHNOLOGY & INFRASTRUCTURE' (bottom) | Page 3 (H8097-G2): 'OPTUS' (right titleblock) + 'CPS' logo visible | Page 4 (H8097-G3): 'OPTUS' (right titleblock) + 'CPS TECHNOLOGY & INFRASTRUCTURE' (bottom) | All remaining sheets (G3-1, G4, A1, A2, A3, P1, F1) follow identical pattern with both logos consistently present",
+    "reasoning": "Client logo 'OPTUS' and vendor logo 'CPS TECHNOLOGY & INFRASTRUCTURE' are correctly displayed across all 11 sheets in the drawing package. Cover sheet (Page 1) displays both logos prominently in correct positions. All subsequent technical sheets (G1, G2, G3, G3-1, G4, A1, A2, A3, P1, F1) consistently show the OPTUS client logo in the title block area on the right side and the CPS vendor logo with company name at the bottom of each sheet. Both logos are clearly visible and correctly positioned in the standard locations per drawing template requirements.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R011",
+    "rule_text": "Client and Vendor logos must be correctly displayed across all sheets."
+  },
+  "17172da6fb34123547d66315c28bbd99f432d8bf72b8045ab2f18256a19e0fc7": {
+    "verdict": "PASS",
+    "evidence": "{\"rfnsa_owner\": \"Optus\", \"rfnsa_structure\": \"27m Concrete Pole\", \"drawing_title_page1\": \"OPTUS SITE - H8097\", \"drawing_client\": \"OPTUS\", \"site_structures_owner\": \"Optus\", \"third_party_owner_present\": false, \"external_owner_id_present\": false, \"external_owner_id_required\": false}",
+    "reasoning": "RFNSA confirms structure owner as 'Optus' (Facility Owner/Controller = Optus). This is an Optus-owned structure, not a third-party tower (Indara/Amplitel/BAI). Per the rule's conditional logic, Optus-owned structures do NOT require an external owner Site ID. The drawings correctly identify the site as 'OPTUS SITE - H8097' with no third-party owner referenced. The RFNSA shows '27m Concrete Pole' with owner 'Optus', and the Site Structures section confirms 'Owner: Optus'. No external owner Site ID is required or expected for Optus-owned infrastructure.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R009",
+    "rule_text": "Validate that the structure owner is correctly identified.\nFor third-party owners (Indara, Amplitel, BAI), the owner Site ID must be present.\nFor Optus-owned structures, no external owner ID is required."
+  },
+  "8619c6480cf0d60c8889ccc974d614de3affe3130bda325ba48985fb70911ffc": {
+    "verdict": "FAIL",
+    "evidence": "Page 5 (H8097-G3-1): 'Previous As built' label appears in mixed case near site plan detail. Pages 4-6: Elevation annotations contain 'EL 24.10m', 'EL 23.10m' where 'm' appears in lowercase (though units are exempt). Page 11 (H8097-F1): Notes section includes mixed-case narrative like 'Checked / Certified by:', 'Analysed / Designed by:' in structural certificates. Antenna/RRU labels consistently show 'OFF' in uppercase (correct), but accompanying text like 'New', 'Reserve' appears in mixed case in equipment loading tables. Title blocks contain 'FOR CONSTRUCTION' (correct uppercase) but revision details include mixed-case names like 'Jasper Li', 'Sean (Shahram) SHERI POUR'.",
+    "reasoning": "Multiple instances of lowercase and mixed-case text found in drafting callouts and labels that violate the uppercase-only requirement. Examples include: 'Previous As built' (page 5), 'km' in 'NEW H&S 9/18 (10mm\u00b2)' annotations (pages 4-6), dimension units 'm' in 'EL 24.10m', 'EL 23.10m' (pages 6-7), and 'off' in antenna equipment labels (structural certificates). While units like 'm' and 'km' should be ignored per negative constraints, mixed-case labels like 'Previous As built' and narrative text formatting (e.g., 'Checked / Certified by') clearly violate the uppercase standard for drafting text.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R006",
+    "rule_text": "All drafting text (callouts, labels, annotations) must be in uppercase.\nIgnore narrative sentences in safety/warning notes and legends."
+  },
+  "928285dff7b6e0bc145bc76b0490c7e2490670c09d66cdfe1e699297165663e5": {
+    "verdict": "PASS",
+    "evidence": "Found in extracted text and cover sheet: 'OSD-171-1 SITE SIGNAGE TYPICAL GROUND SITE' and 'OSD-171-3 SIGNAGE LEGEND AND NOTES' listed under REFERENCE DOCUMENTS section. Site Specifications notes state: '1. SITE SIGNAGE SHALL BE IN ACCORDANCE WITH OSD-171-1 (GROUND SITE) AND OSD-171-3 (SIGNAGE LEGEND AND NOTES). 2. REPLACE EXISTING OUTDATED HAZARDOUS VOLTAGE SIGN WITH NEW HAZARDOUS VOLTAGE SIGN ON EXISTING METER BOX OUTSIDE SHELTER. 3. MERCS-5 SIGNAGE TO BE INSTALLED ON BACK OF NEW PANEL ANTENNAS.'",
+    "reasoning": "The drawing package contains multiple references to OSD-171 MERC signage standard in the Reference Documents section. The cover sheet explicitly lists 'OSD-171-1', 'OSD-171-3' as reference documents with revision status marked. The Site Specifications sheet (H8097-G1) also contains text specifying that site signage shall be in accordance with OSD-171-1 (Ground Site) and OSD-171-3 (Signage Legend and Notes), and includes instructions to replace existing outdated hazardous voltage signs and install MERCS-5 signage on back of new panel antennas.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R014",
+    "rule_text": "OSD-171 MERC signage reference must be present."
+  },
+  "b5747661d8b6b0e5d13ea12b7be34ca421f25f35fa0ebd1e9e4889ccb2110335": {
+    "verdict": "PASS",
+    "evidence": "DISTRIBUTION section on cover sheet shows: 'OPTUS | SUHAIB OBAID' and 'CPS TECH | BRETT THOMSON'",
+    "reasoning": "Cover sheet contains both required client and vendor names with correct project manager names. Client is Optus with PM Suhaib Obaid, and vendor is CPS Tech with PM Brett Thomson, matching the pass criteria.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R019",
+    "rule_text": "Distribution list:(Optus and either CPS or servicestream)"
+  },
+  "01047a889e70aa1c9df5699011609c88b1b2bad93a7ea46006f1a392d86eef2c": {
+    "verdict": "FAIL",
+    "evidence": "Reference Documents section from PAGE 1 shows generic entries without certificate identifiers or dates. Mount Certificate document shows 'Reference Number: SC184419' dated '15/10/2025' and Pole Certificate shows 'ID 292920' dated '03-Sep-25', but these specific references are absent from drawing content. Drawing shows 'SC1B4419 OPT' and 'SP2D132-H8097' entries under reference documents but lacks explicit date matching required by rule.",
+    "reasoning": "While structural certificates exist in reference documents (Mount Certificate SC184419 dated 15/10/2025 and Pole Certificate 292920 dated 03/09/2025), there is NO explicit reference to these certificates with matching dates in the extracted drawing pages. The cover sheet (PAGE 1) lists reference documents but extracted text shows only generic labels without certificate numbers or dates. The rule requires that the FC drawing package itself MUST reference the structural certificates with dates - mere existence in separate PDF files is insufficient for construction validation.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R016",
+    "rule_text": "Pole & Mount structural certificate with matching date must be referenced."
+  },
+  "031e4e8fb6cc6319a2e8fc4463709a8d392cd03ccc47b106523964b0daae6fc7": {
+    "verdict": "FAIL",
+    "evidence": "FC Cover Sheet Drawing List:\n- H8097-G1 (SITE SPECIFICATIONS): A | AB | A\n- H8097-G2 (OVERALL SITE PLAN): A | AB | A\n- H8097-G3 (SITE LAYOUT AND SETOUT PLAN): A | AB | A\n- H8097-G3-1 (ANTENNA LAYOUT PLAN): - | - | A [NEW - NOT IN AS-BUILT]\n- H8097-G4 (SITE ELEVATION): A | AB | A\n- H8097-A1 (eJV ANTENNA SYSTEM CONFIGURATION - SHEET 1 OF 2): A | AB | A\n- H8097-A2 (eJV ANTENNA SYSTEM CONFIGURATION - SHEET 2 OF 2): - | - | A [MISMATCH: As-Built A2 = 'RF PLUMBING DIAGRAM']\n- H8097-A3 (PHYSICAL ASSET SUMMARY TABLE): - | - | A [NEW]\n- H8097-P1 (OPTUS & VODAFONE RF PLUMBING DIAGRAM): A | AB | A [NEW DRAWING NUMBER]\n- H8097-F1 (EQUIPMENT SHELTER LAYOUT PLAN): A | AB | A\n- H8097-F1-1 (EQUIPMENT RACK ELEVATION): A | AB | A\n\nAs-Built Package (from reference):\nH8097-G1, G2, G3, G4, A1, A2 (RF PLUMBING), T1, S1, S2, E1, E2, E3, F1, F1-1 (all revision AB)\n\nMissing from FC: H8097-T1 (SITE TRANSMISSION DETAILS), S1 (SHELTER FOUNDATION DETAILS), S2 (TIMBER STEP DETAIL), E1/E2/E3 (Electrical drawings)",
+    "reasoning": "The FC drawing package contains a NEW drawing (H8097-G3-1 'ANTENNA LAYOUT PLAN') that does NOT exist in the As-Built reference package. Additionally, multiple critical drawings show revision status discrepancies: FC drawings H8097-A2 (eJV ANTENNA SYSTEM CONFIGURATION - SHEET 2 OF 2) and H8097-A3 (PHYSICAL ASSET SUMMARY TABLE) are marked with '-' in the As-Built column, indicating they are new additions. The As-Built package shows H8097-A2 as 'RF PLUMBING DIAGRAM' (revision AB) but the FC package repurposes this drawing number for a completely different sheet. The FC package also introduces H8097-P1 (OPTUS & VODAFONE RF PLUMBING DIAGRAM) which has no As-Built predecessor. While most FC drawings correctly show 'A' revision as proposed updates to 'AB' As-Built drawings, the presence of entirely new drawings and drawing number reassignments violates the alignment requirement.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R012",
+    "rule_text": "Drawings listed in cover sheet must align with previous As-Built which would be given as an input."
+  },
+  "42ca0b334aa2825ef5e7b28a54cc76308a2aba965129cec29004d6b4af89e30f": {
+    "verdict": "FAIL",
+    "evidence": "FC Cover Sheet: Drawing Package Version shows dates '28.06.18', '09.04.21', '21.10.25' with column markers '1', '2', '3'. All FC individual sheets (G1, G2, G3, G3-1, G4, A1, A2, A3, P1, F1) show Revision 'A' in their revision tables. As-built Cover Sheet: Shows 'AS BUILT' status with Drawing No. 'H8097 - 00'. All As-built individual sheets (G1, G2, G3, G4, A1, A2, T1, S1, S2, E1, E2, E3, F1, F1-1) show Revision 'AB' (AS BUILT) in their revision tables. The FC package represents a new upgrade project (UPGRADE 5G eJV, WA 658102) while As-built represents completed previous work (eJV GREENFIELD PROJECT, WA 372842).",
+    "reasoning": "Revision details in FC drawings do NOT match the As-built document. All FC sheets show Revision 'A' status, while all As-built sheets show Revision 'AB' status. This represents a clear inconsistency between the current For-Construction package and the reference As-built documentation. The rule requires revision details in each sheet to match with both the cover sheet and the As-built document.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R023",
+    "rule_text": "All sheets consists of a Revision details,if it's a new sheet revision wont be present."
+  },
+  "840f7d8506c81a272ff9bccab4e1492f6dd50618a091745fdf237695653f4cc3": {
+    "verdict": "PASS",
+    "evidence": "Cover sheet distribution table shows: 'H8097-G1 | A | AB | A', 'H8097-G2 | A | AB | A', 'H8097-G3 | A | AB | A', 'H8097-G3-1 | - | - | A', 'H8097-G4 | A | AB | A', 'H8097-A1 | A | AB | A', 'H8097-A2 | - | - | A', 'H8097-A3 | - | - | A', 'H8097-P1 | A | AB | A', 'H8097-F1 | A | AB | A', 'H8097-F1-1 | A | AB | A'. All individual sheet title blocks also display 'Revision A' or 'FOR CONSTRUCTION A'.",
+    "reasoning": "All 11 drawing sheets extracted contain 'Revision A' in their title blocks. The revision column consistently shows 'A' next to the drawing number and status across all sheets (H8097-G1, G2, G3, G3-1, G4, A1, A2, A3, P1, F1). This is further confirmed by the reference document list on the cover sheet which lists all drawings with revision 'A' or 'AB' (where AB indicates As-built with revision A).",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R020",
+    "rule_text": "All sheets must have revision 'A' in the title block."
+  },
+  "d544cc3bda701f89f1f6014d23aa00f4e92cda4de2085b9324c74d8c499b9b7a": {
+    "verdict": "FAIL",
+    "evidence": "FC Drawing (all pages): '2 PLAN 158154 WAKEHURST ROAD, AUSTINS FERRY, TAS 7011' | RFNSA Database: 'Piomena Reserve, Lot 13 Plan 178737, Wakehurst Rd, AUSTINS FERRY TAS 7011' | RFNSA ID: 7011007 | Site Structure Coordinates (RFNSA): GDA94 | -42.77817 | 147.24512 | ZEN: 55 | 520051 | 5263789",
+    "reasoning": "Critical address mismatch between FC drawings and RFNSA database. The drawings consistently reference '2 PLAN 158154 WAKEHURST ROAD' while the RFNSA database shows 'Lot 13 Plan 178737, Wakehurst Rd'. This represents a discrepancy in the Lot/Plan identifier (Plan 158154 vs Plan 178737, 2 vs Lot 13). In Australian cadastral addressing, Lot and Plan numbers are legally binding identifiers and must match exactly between RFNSA and construction documentation. The street name 'Wakehurst Road/Rd' is consistent, as is the suburb 'AUSTINS FERRY TAS 7011', but the fundamental property identifier differs. Additionally, coordinates could not be cross-verified as the RFNSA shows GDA94 | -42.77817 | 147.24512, but coordinate data is not extracted from the FC drawings for comparison.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R026",
+    "rule_text": "Verify that the site address details in the drawing match exactly with the RFNSA data, including address and coordinate-related information."
+  },
+  "d9e15ffb5c92b35a9f03fe211677d2baf8e717f3658d52dcbf357db96dbf6357": {
+    "verdict": "FAIL",
+    "evidence": "RFNSA system shows: 7011007 for site H8097 at 'Lot 13 Plan 178737, Wakehurst Rd AUSTINS FERRY TAS 7011'. FC drawing cover page (PAGE 1) shows site H8097 at '2 PLAN 158154 WAKEHURST ROAD AUSTINS FERRY TAS 7011' but extracted text contains no 7-digit RFNSA number matching pattern \\b\\d{7}\\b. Note: There is a discrepancy in property description (Lot 13 Plan 178737 vs 2 Plan 158154) which requires further investigation, but the primary failure is the absence of the RFNSA number 7011007 in the extracted drawing content.",
+    "reasoning": "The FC drawings reference RFNSA number 7011007 (visible in the RFNSA system screenshots), but this 7-digit number does not appear anywhere in the extracted drawing text. The drawings show site address '2 PLAN 158154 WAKEHURST ROAD' and site G1 mentions '(RFNSA NO: 7011007)' in the OPTUS SITE H8097 box on page 2, but the extracted text does not contain this critical RFNSA number. The site specifications page (G1) should contain the RFNSA reference matching the system record of 7011007.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R027",
+    "rule_text": "The RFNSA number in FC drawings must match the RFNSA system."
+  },
+  "18a973a0d298e5c279412e9a090537b8dd6896ce772ad66c62338be889849733": {
+    "verdict": "FAIL",
+    "evidence": "RFNSA: Owner='Optus', Structure='27m Concrete Pole', Site ID='7011007'. As-built Cover: 'OPTUS SITE - H8097', 'TELSTRA CO-LOCATION', 'TELSTRA SITE ID: 286936'. FC Cover (PAGE 1): 'OPTUS SITE - H8097', Work Authority '658102'. RFNSA Operators: Carrier='Optus' Site Code='H8097', Carrier='Telstra' Site Code='286936', Carrier='Vodafone' Site Code='3819', Carrier='Optus Vodafone Joint Venture' Site Code='JH3038'. Structure confirmed: '1 | 27m Concrete Pole' with coordinates 'GDA94 | -42.77817 | 147.24512' matching across documents.",
+    "reasoning": "Critical ownership mismatch detected between RFNSA and FC drawings. RFNSA database confirms current owner as 'Optus' (Site ID: 7011007, Facility Owner/Controller: Optus). As-built drawings correctly show 'OPTUS SITE' and 'COPYRIGHT \u00a9 OPTUS MOBILE PTY LTD'. However, the FC Cover page (H8097-00) contains contradictory ownership labeling showing both 'OPTUS SITE - H8097' and 'TELSTRA CO-LOCATION' despite this being an Optus-owned facility. The RFNSA Operators section shows Telstra as a tenant (Site Code: 286936) alongside Optus (H8097), Vodafone (3819), and Joint Venture. The structure type is confirmed as '27m Concrete Pole' in RFNSA, matching As-built documentation. The rule requires highlighting ownership transfer from Telstra to Optus for Austins Ferry site, and while RFNSA correctly reflects Optus ownership, the FC drawing package incorrectly labels it as 'TELSTRA CO-LOCATION' creating confusion about primary ownership vs. tenancy status.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R030",
+    "rule_text": "Check the structure type and owner name based on the As-built and RFNSA if any mismatches identified please highlight for the autin ferry site owned by telestra recently its transfered to optus."
+  },
+  "081d70b8b512c23013883e4b0d36f2aa9d9be2d489b65a48cbeaffeaa7464e0d": {
+    "verdict": "PASS",
+    "evidence": "{\"structural_cert_reference\": \"SC184419 OPT\", \"cert_date\": \"15/10/2025\", \"certifier_name\": \"Sean (Shahram) SHERI POUR\", \"certifier_credentials\": \"MIEAust, CPEng 3524889, RPEQ 27123\", \"confirmation_statement\": \"the proposed headframe at 23.1m is structurally adequate to support the loading listed below\", \"pole_cert_id\": \"292920\", \"pole_cert_date\": \"03/09/2025\", \"pole_assessment_statement\": \"Assessment No. 292920_1: Based on the loading data shown and information herein the SR3-BM27-585 design is deemed appropriate for thi[s]\", \"pole_assessor\": \"Aaron Zhang\", \"pole_checker\": \"Horatio Serbanes\", \"foundation_cert_ref\": \"16721\", \"foundation_cert_date\": \"02/09/2025\", \"foundation_certifier\": \"L. Van Spaandonk FIEAust CPEng NER 5038980\", \"foundation_statement\": \"the 5.5m x 5.5m x 2.3m Deep Pad Footing deemed suitable for this SR3-BM27-585 pole\", \"loading_ratio\": \"SRF=1 (100%)\", \"structure_type\": \"SR3-BM27-585 27m monopole\", \"strengthening_required\": \"No mention - structure adequate as designed\"}",
+    "reasoning": "The structural adequacy has been confirmed by certified structural analysis. Site Pro 1 Structural Certificate SC184419 OPT dated 15/10/2025, certified by Sean (Shahram) SHERI POUR (MIEAust CPEng 3524889, RPEQ 27123), explicitly confirms 'the proposed headframe at 23.1m is structurally adequate to support the loading listed'. Additionally, the Pole Certificate ID 292920 dated 03/09/2025 confirms structural adequacy of the existing SR3-BM27-585 monopole and foundation with SRF=1 (100% loading ratio), indicating the structure is at exactly allowable limit but not overloaded. The Foundation Certificate 16721 dated 02/09/2025 by L. Van Spaandonk (FIEAust CPEng NER 5038980) confirms the 5.5m x 5.5m x 2.3m deep pad footing is 'deemed suitable' for the SR3-BM27-585 pole at ULS moment of 2400 kNm and SLS moment of 720 kNm. All certificates are from qualified professional engineers with appropriate certifications, and no strengthening requirements are mentioned, indicating the structure is adequate as-is.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R031",
+    "rule_text": "Verify the structural adequacy of the pole/tower and foundation by checking the structural certificate. Confirm the certifier name, certificate date, and whether the structure is within allowable loading limits. If loading exceeds limits, ensure strengthening requirements are specified."
+  },
+  "7840ca02d1280098b731e564864c3501a9450300e6d9a7f8bc02a84fae52a07a": {
+    "verdict": "FAIL",
+    "evidence": "G1 Site Specifications: 'NEW OPTUS PANEL ANTENNAS, RRUS & ANCILLARIES TO BE INSTALLED ON EXISTING/NEW MOUNT. REFER TO DRG. XXXX-SX FOR DETAILS.' | 'STRUCTURAL ADEQUACY OF EXISTING/NEW MOUNT HAS BEEN DESIGNED AND CERTIFIED BY XXXX. REFER TO CERT XXXX-XX DATED XX/XX/XXXX FOR DETAILS' | Cover Sheet Reference Documents: 'SP20132-H8097 700mm FACE WIDTH 1000mm OUTRIGGER HEADFRAME SHEET 1 OF 3', 'SP20132-H8097 700mm FACE WIDTH 1000mm OUTRIGGER HEADFRAME SHEET 2 OF 3', 'SP20132-H8097 700mm FACE WIDTH 1000mm OUTRIGGER HEADFRAME SHEET 3 OF 3', 'SCIB4419 OPT. SITEPRO 1 STRUCTURAL ANALYSIS AND DESIGN CERTIFICATE DATED 06/11/2025', '16721 GAMCORP FOUNDATION CERTIFICATE DATED 02/09/2025', '292932_1 & GAMCORP FOUNDATION CERTIFICATE DATED ON 03/09/2025' | SitePro1 Structural Drawing: 'PRODUCT NUMBER: SP1-1000-700TAO-SP20132 DRAWING NUMBER: SP20132-H8097 OPTUS SITE NO. H8097 SITE NAME: AUSTINS FERRY-TAS 700mm FACE WIDTH 1000mm OUTRIGGER HEADFRAME SHEET 01 OF 03 ISSUED FOR CONSTRUCTION' | G3-1 and G4 sheets: No extracted text available showing structural drawing callouts or references",
+    "reasoning": "New mount installation is confirmed across multiple documents (G1 site specifications, G3 site layout, SitePro1 structural drawings SP20132-H8097), but the required structural drawing reference numbers are inconsistent or missing from key locations. The cover sheet (H8097-00) lists structural documents as 'REFERENCE DOCUMENTS' (SP20132-H8097 sheets 1-3 of 3, SCIB4419 OPT, 16721, 292932_1 & GAMCORP) dated various years, but the G3 sheet does not clearly reference these structural drawing numbers. Additionally, while G1 confirms 'NEW OPTUS PANEL ANTENNAS, RRUS & ANCILLARIES TO BE INSTALLED ON EXISTING/NEW MOUNT. REFER TO DRG. XXXX-SX FOR DETAILS' and states 'STRUCTURAL ADEQUACY OF EXISTING/NEW MOUNT HAS BEEN DESIGNED AND CERTIFIED BY XXXX. REFER TO CERT XXXX-XX DATED XX/XX/XXXX FOR DETAILS', the actual drawing numbers (XXXX-SX, XXXX-XX) are placeholders, not actual references. The SitePro1 structural drawing (SP20132-H8097) for 700mm FACE WIDTH 1000mm OUTRIGGER HEADFRAME confirms new mount fabrication, but its traceability back to the G3-1 (Antenna Layout Plan) sheet is not established in the provided text. Cross-referencing cannot be completed because the G3-1 and G4 elevation drawings do not contain extracted text showing structural drawing callouts.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R032",
+    "rule_text": "Check the Panel/RRU/AAU to be installed on existing or new mount based on the plan view (G3-1) & structural drawing. If new mounts are proposed, add their structural drawing number ."
+  },
+  "02fe72b56b1378579526dfde40bbc7039338ecfcf2b1a29a48f4492d02960296": {
+    "verdict": "PASS",
+    "evidence": "{\"certificate_id\":\"SC184419 OPT\",\"certifier\":\"Site Pro 1 Australia \u2013 A Valmont Company\",\"date\":\"15/10/2025\",\"standards\":[\"AS/NZS 1170.0-2002\",\"AS/NZS 1170.1-2002\",\"AS/NZS 1170.2-2021\",\"AS 4100-2020\"],\"design_drawing\":\"SP20132-H8097 Rev 0 dated 14/10/2025\",\"mount_type\":\"NEW (proposed headframe)\",\"structure\":\"Rocla pole SR3-BM27-585\",\"height\":\"23.1m\",\"site_id\":\"H8097\",\"site_name\":\"AUSTINS FERRY\",\"address\":\"2 Plan 158154 Wakehurst Rd, AUSTINS FERRY TAS 7011\",\"engineer\":\"Sean (Shahram) SHERI POUR MIEAust CPEng 3524889 RPEQ 27123\",\"confirmation_statement\":\"This certificate confirms the structural adequacy of the headframe, along with all the associated members and connections\",\"loading_matches\":\"3x RRVV2VV-6533D-R8 at 80/200/340, 3x AIR3268 at 80/200/340, 3x AVQL at 80/200/340 matching FC drawing antenna configuration\"}",
+    "reasoning": "The mount certification is properly documented by an approved vendor (Site Pro 1). The certificate SC184419 OPT dated 15/10/2025 confirms the proposed headframe at 23.1m on Rocla pole SR3-BM27-585 is structurally adequate. The mount is NEW (proposed installation), and the certificate includes: (1) Certificate ID: SC184419 OPT (not a drawing number), (2) Approved vendor: Site Pro 1 Australia \u2013 A Valmont Company, (3) Certification date: 15/10/2025, (4) Design standards clearly referenced: AS/NZS 1170.0-2002, AS/NZS 1170.1-2002, AS/NZS 1170.2-2021, AS 4100-2020, (5) Design drawings referenced: SP20132-H8097 Rev 0 dated 14/10/2025, (6) Site traceability confirmed: Site H8097, AUSTINS FERRY, correct address and coordinates match drawing package, (7) Professional certification by qualified engineer (Sean Sheri Pour, MIEAust CPEng 3524889, RPEQ 27123). The certificate explicitly states 'This certificate confirms the structural adequacy of the headframe, along with all the associated members and connections' and includes complete loading arrangement matching the antenna configuration in the FC drawings (3x RRVV2VV-6533D-R8, 3x AIR3268, 3x AVQL antennas at 80/200/340 degrees for Optus/Vodafone). All certification metadata (ID, date, standard references) are present and correctly formatted. The design is both designed (drawing SP20132-H8097) and certified (certificate SC184419 OPT) as required for new mounts.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R033",
+    "rule_text": "Check the name of mount certifier as per the Mount_certificate to confirm whether the existing mount is passed or not.If not passed check whether the required strengthening is mentioned"
+  },
+  "9c8adac302a319dae2086a0db5347cdee8a8a753417508488e9d7fa140aa92ac": {
+    "verdict": "PASS",
+    "evidence": "Cover sheet: 'EXISTING AMPLITEL STEEL MONOPOLE', 'SITE LOCATION DATA: REF LOCATION: \u250c MONOPOLE'; G1 sheet: 'SITE SIGNAGE SHALL BE IN ACCORDANCE WITH OSD-171-1 (GROUND SITE) AND OSD-171-3 (SIGNAGE LEGEND AND NOTES)', 'MERCS-5 SIGNAGE TO BE INSTALLED ON BACK OF NEW PANEL ANTENNAS', 'REPLACE EXISTING OUTDATED SITE ENQUIRY SIGNAGE WITH NEW SITE ENQUIRY ON EXISTING SHELTER DOOR'; Form A: 'MERCS-5 to be installed on the back of new antennas. Existing MERCS-1 at the base of monoploe [sic]. Existing MERCS-2 at the gate'; OSD-171 provided shows OSD-171-1 is 'TYPICAL GROUND SITE', OSD-171-2 is 'TYPICAL ROOFTOP SITE'; Site photos show ground-level equipment shelter with DANGER/KEEP OUT signage visible on fence gate at ground level, monopole structure visible at top of frame; Cover sheet reference documents list: 'OSD-171-1 SITE SIGNAGE TYPICAL GROUND SITE - - B'",
+    "reasoning": "Site H8097 is classified as a Ground site (steel monopole structure) in the cover sheet (H8097-00), G1 sheet explicitly states 'SITE SIGNAGE SHALL BE IN ACCORDANCE WITH OSD-171-1 (GROUND SITE) AND OSD-171-3 (SIGNAGE LEGEND AND NOTES)', and Form A confirms signage as 'MERCS-5 to be installed on the back of new antennas, Existing MERCS-1 at the base of monopole, Existing MERCS-2 at the gate'. This is consistent with OSD-171-1 standard for ground sites. Reference document OSD-171-1 is explicitly listed in H8097-00 cover sheet under 'REFERENCE DOCUMENTS'. Site photos confirm ground-level monopole with locked gate and signage visible at base level and on fence, matching ground site signage requirements (OSD-171-1). No rooftop characteristics observed.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R039",
+    "rule_text": "Primarily, the site signage needs to be checked against Form A/B. Also check it against the OSD-171 document and the SDV photos. We already discussed in G1 sheet. Point out the leader in correct position"
+  },
+  "ffd02abe7b693f82ca6c33ae49787dfae090dcde9587fd7f0c40dd9b77c686f5": {
+    "verdict": "FAIL",
+    "evidence": "G1 Sheet - SITE SIGNAGE section states: '1. SITE SIGNAGE SHALL BE IN ACCORDANCE WITH OSD-171-1 (GROUND SITE) AND OSD-171-3 (SIGNAGE LEGEND AND NOTES). 2. REPLACE EXISTING OUTDATED HAZARDOUS VOLTAGE SIGN WITH NEW HAZARDOUS VOLTAGE SIGN ON EXISTING METER BOX OUTSIDE SHELTER. 3. MERCS-5 SIGNAGE TO BE INSTALLED ON BACK OF NEW PANEL ANTENNAS. 4. REPLACE EXISTING OUTDATED SITE ENQUIRY SIGNAGE WITH NEW SITE ENQUIRY ON EXISTING SHELTER DOOR.' Cover Sheet - REFERENCE DOCUMENTS lists: 'OSD-171-1 SITE SIGNAGE TYPICAL GROUND SITE', 'OSD-171-3 SIGNAGE LEGEND AND NOTES', but Form B/PRD marked with status '0' indicating not provided. Site classification confirmed: 'REF LOCATION: 6 MONOPOLE'. A1 sheet and detailed signage drawings/conclusions not extracted. No SDV photos provided. No OSD-171 document content provided.",
+    "reasoning": "Critical reference documents required for validation are missing. The rule requires validation against: (1) SDV site photos to identify outdated/faded/damaged signage, (2) Form A/B or PRD documents to cross-check ARPANSA RPS3 compliance requirements (signage, chain barriers with MERCS-3, tilt adjustments, azimuth changes, power reduction, TU drops), and (3) OSD-171 document to verify correct signage standard (171-1 for Ground, 171-2 for Rooftop, 171-3 for General) matches the site classification. While G1 sheet mentions signage requirements ('SITE SIGNAGE SHALL BE IN ACCORDANCE WITH OSD-171-1 (GROUND SITE) AND OSD-171-3 (SIGNAGE LEGEND AND NOTES)'), confirming this is a ground monopole site, and includes references to OSD-171-1 and OSD-171-3 in the Reference Documents section, the actual content of these documents, SDV photos showing current signage condition, Form B/PRD document, and detailed signage proposals/conclusions in G1/G3 sheets are not provided in the extracted text. The cover sheet lists required references but marks them with status indicators that suggest non-availability in the provided content. Without these critical documents, it is impossible to validate: whether existing signage is damaged/faded, whether ARPANSA requirements are properly addressed, whether correct signage standards are applied, or whether chain barriers with MERCS-3 are appropriately specified for this ground monopole site.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R040",
+    "rule_text": "If you find any outdated/faded/damaged signage in SDV photos, which needs to be replaced with new. Also, as per the OSD171 document, all signage must be installed in the correct location. For example, \u201cKeep Out\u201d signage must be located on the access gate, not on the shelter door.."
+  },
+  "4252db60eaf48362563bbc6b1412128461f6d845b262373dfb67076371faa235": {
+    "verdict": "FAIL",
+    "evidence": "RLM F1 sheet notes: '10. REMOVE EXISTING OPTUS HUAWEI PSU (1 OFF) WITH EXISTING 3kW RECTIFIERS (6 OFF) AND LPFG12-100S BATTERY STRINGS (5 OFF) FROM THE RACK AT G000F03. 11. INSTALL NEW OPTUS 27kW VERTIV PSU WITH NEW 3kW RECTIFIERS (6 OFF) AT G000F03. 12. INSTALL NEW LFeLi-48100ZN BATTERIES (5 OFF) IN RACK AT G000F03. 13. REPLACE EXISTING 32A 1P CB (3 OFF) WITH NEW 40A 1P CB (3 OFF) FOR OPTUS PSU ON THE DISTRIBUTION BOARD.' Similar notes 23-26 for Vodafone. Note 16 states: 'EXISTING OPTUS 50A THREE PHASE POWER SUPPLY IS SUFFICIENT FOR THE PROPOSED UPGRADE' - this refers to AC supply sufficiency but DC upgrade is clearly required. Cover sheet drawing list shows no E1/E2 sheets present in package.",
+    "reasoning": "Electrical upgrade IS required as evidenced by RLM notes 10-13 and 23-26 describing removal of existing PSUs and installation of new 27kW Vertiv PSUs with new batteries and replacement of CBs on distribution board for both Optus and Vodafone. However, the drawing package does NOT include the required E1 and E2 electrical sheets. The cover sheet (PAGE 1) shows no E1/E2 sheets in the drawing list, and the extracted pages confirm only General (G1-G4), Antenna (A1-A3), Plumbing (P1), and Facility (F1) sheets are present. This is a critical omission for a project requiring substantial DC power system upgrades (existing PSUs removed, new 27kW PSUs installed, new battery strings, and CB replacements).",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R042",
+    "rule_text": "Determine whether an electrical upgrade is required by checking RLM (sheet 3) and supporting documents. If upgrade is required, ensure E1 and E2 sheets are included. If upgrade is not required (e.g., marked as 'existing'), ensure standard notes are included in G3 sheets."
+  },
+  "c785bd31439ff1599fb519bc069274d618a512a2d3f201fe64bfbc3661bfd959": {
+    "verdict": "FAIL",
+    "evidence": "G1 Sheet WHS Section states: '1. BUILD CONTRACTOR TO ESTABLISH FALL ZONE PRIOR TO COMMENCING ANY CONSTRUCTION OR MAINTENANCE INCLUDING ANTENNA IN ORDER TO ADHERE WITH HEALTH AND SAFETY REGULATIONS. 2. TAKE CARE WHEN CONDUCTING MANUAL HANDLING TASKS. AVOID TWISTING, LOOSENING OR TIGHTENING OF BOLTS/NUTS OVER TIME INCREASING THE RISK FOR FALLING OBJECTS (E.G. REPLACEMENT OF EQUIPMENT). 3. THERE MIGHT BE A RISK OF BEING CONFRONTED WITH POISONOUS SNAKES AND SPIDERS WHEN ATTENDING A SITE WEAR PROPER PPE GEARS AND APPROPRIATE CARE MUST BE TAKEN. 4. SITE SURROUNDING AREA LOOKS MUD. PLEASE AVOID RAINY SESSION DURING CONSTRUCTION.' SDV Photos show: dense tree coverage around monopole, chainlink fencing with bird evidence, gravel mat surface, weathered existing shelter with visible corrosion, access through vegetated dirt track.",
+    "reasoning": "WHS safety risk assessment notes are present in the G1 sheet, but they are generic and do not reflect site-specific hazards identified from the SDV photos. The SDV photos clearly show: (1) chainlink fencing with wildlife/bird evidence, (2) dense vegetation/trees surrounding the site, (3) gravel surface conditions, (4) existing corroded/weathered equipment shelter. However, the G1 sheet WHS section only contains generic construction safety notes (fall zone establishment, manual handling, tightening of bolts/nuts, PPE, mud avoidance) and does not address observable site-specific risks such as vegetation management, wildlife/snake awareness, access constraints through vegetated areas, or corrosion hazards on existing infrastructure.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R043",
+    "rule_text": "Verify that WHS (Work Health & Safety) design risk assessment notes are included in the G1 sheet for CPS projects. Based on SDV photos, identify site-specific risks such as vegetation, wildlife (snakes, birds), access difficulty, corrosion, or structural hazards, and ensure appropriate safety measures are documented."
+  },
+  "730f12ae96ae6cb0e7392d163f840930aae511daa974d3f27fa6f1f9b5c14adf": {
+    "verdict": "PASS",
+    "evidence": "G2 drawing title block shows 'OVERALL SITE PLAN SCALE 1:2000'. G3 drawing includes 'SITE LAYOUT AND SETOUT PLAN' with 'DETAIL SCALE 1:100 @ G2' and 'ANTENNA LAYOUT PLAN SCALE 1:50' visible in one elevation view. All scales conform to the list: 1:1, 1:20, 1:50, 1:100, 1:200, 1:500, 1:1000, 1:2000.",
+    "reasoning": "All drawing scales identified are standard preferred scales. Sheet G2 (Overall Site Plan) uses 1:2000, which is explicitly called out in the rule as a Standard Preferred scale for broader site plans. Sheet G3 (Site Layout and Setout Plan) uses 1:100, which is listed as a standard preferred scale. The Antenna Layout detail shown in one elevation uses scale 1:50, also a standard scale. No non-standard scales (e.g., 1:15, 1:30, 1:750) were found.",
+    "mismatch": null,
+    "model_used": "claude-sonnet-4-5-20250929",
+    "rule_id": "R046",
+    "rule_text": "Verify that the drawing scale follows standard values. Preferred scales are 1:500 or 1:1000. For broader site plans (Overall Site Plan G2), 1:2000 is a Standard Preferred scale according to Optus specs."
+  },
+  "e697fe4a9695de407a2c66142354730f98be2c448622f4233b01dd88589ae0d4": {
+    "verdict": "PASS",
+    "evidence": "Cover Sheet (Page 1): 'OPTUS WORK AUTHORITY N\u00ba 658102' appears directly under 'UPGRADE 5G (eJV)'. Form_A: 'Site Activity Type: Upgrade 5G (eJV)', 'Work Authority 658102' explicitly mentioned in EME Issue section '658102_Upgrade 5G (eJV OH)'. FR (Feasibility Report): Work Authority context confirmed with Project 'OHOB eJV 5G upgrade', consistent with WA 658102 scope across all documentation.",
+    "reasoning": "A valid 6-digit Work Authority Number (658102) is consistently present in the cover sheet under 'UPGRADE 5G (eJV)' with the exact phrase 'OPTUS WORK AUTHORITY N\u00ba 658102'. This number is consistently referenced across required reference documents: Form A explicitly lists 'Work Authority 658102' under 'Upgrade 5G (eJV)' and FR (Feasibility Report) contains 'OHOB eJV 5G upgrade' with Work Authority scope matching the upgrade type and WA ID 658102.",
+    "mismatch": null
+  }
+}

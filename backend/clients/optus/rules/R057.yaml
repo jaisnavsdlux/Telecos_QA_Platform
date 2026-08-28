@@ -1,0 +1,96 @@
+id: R057
+name: Compound area and lease boundary must match As-built and lease references (Indara)
+type: high
+match_keywords:
+- compound
+- lease
+- boundary
+- dimension
+- site area
+validation_mode: hybrid
+complexity: cross_document
+required_references:
+- FC_Drawing
+- Lease_Plan
+- As-built
+optional_references:
+- As-built
+- Lease_Document
+- SDV_Photos
+applicability: Applicable for Indara sites only.
+decision_priority: '1. Lease document → legal boundary (highest priority)
+
+  2. As-built → baseline dimensions
+
+  3. G2 / G3 → implementation in drawings
+
+  4. SDV photos → visual confirmation'
+description: 'Validate that the compound area and lease boundary shown in drawings
+
+  are accurate and consistent with lease documents, As-built drawings,
+
+  and actual site conditions.'
+scope: G2, G3
+location_hint:
+  region: compound_boundary
+pass_criteria: "STEP 1: Compound Representation\n\n- Compound area is clearly shown\
+  \ in drawings\n- Boundaries are properly marked\n\n------------------------------------------------\n\
+  \nSTEP 2: Dimension Validation\n\n- Compound dimensions match:\n    • As-built drawings\
+  \ (if available)\n    • Lease document (if available)\n\n------------------------------------------------\n\
+  \nSTEP 3: Lease Boundary Validation\n\n- Lease boundary clearly defined in drawings\n\
+  \n- Lease dimensions align with:\n    • Lease document (primary)\n    • As-built\
+  \ (secondary)\n\n------------------------------------------------\n\nSTEP 4: Photo\
+  \ Alignment (if available)\n\n- Compound layout aligns with SDV photos:\n    • Fence\n\
+  \    • Boundary walls\n    • Site enclosure\n\n------------------------------------------------\n\
+  \nFINAL:\n\n- Compound and lease boundaries are accurate and consistent"
+fail_criteria: "- Compound area not shown in drawings\n\n- Missing or unclear boundary\
+  \ markings\n\n- Dimension mismatch between:\n    • Drawing vs As-built\n    • Drawing\
+  \ vs Lease document\n\n- Lease boundary incorrect or missing\n\n- Significant mismatch\
+  \ with SDV photos"
+unclear_conditions: '- Lease document not available
+
+
+  - As-built not available
+
+
+  - Dimensions partially visible or unreadable
+
+
+  - Compound boundary not clearly identifiable'
+deterministic_checks:
+- check: dimension_detection
+  regex_patterns:
+  - \b\d+(\.\d+)?\s*m\b
+  pass_evidence: 'Dimensions detected: {match}'
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: compound_detection
+  description: Identify compound boundary
+  logic: "Detect:\n  • Fence lines\n  • Boundary markings\n  • Enclosed site area"
+- check: dimension_comparison
+  description: Compare dimensions across documents
+  logic: "Compare:\n  • Drawing vs As-built\n  • Drawing vs Lease document"
+- check: photo_alignment
+  description: Validate visual alignment with SDV
+  logic: "Identify:\n  • Fence\n  • Boundary walls\n  • Site enclosure"
+normalization_rules:
+- lowercase text
+- trim spaces
+negative_constraints:
+- Do NOT rely only on drawings
+- Do NOT ignore lease document if available
+- Do NOT pass if dimensions clearly mismatch
+- Do NOT fail if references are missing → return UNCLEAR
+notes: '- Lease document is the legal source of truth
+
+
+  - As-built provides baseline but may be outdated
+
+
+  - SDV photos confirm actual boundary condition
+
+
+  - Critical for legal and site ownership validation
+
+
+  - Applies only to Indara sites'

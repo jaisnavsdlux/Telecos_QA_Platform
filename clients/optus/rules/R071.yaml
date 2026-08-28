@@ -1,0 +1,20 @@
+id: R071
+name: Designated walkway and step overs shown as necessary (Rooftop sites only)
+category: Site Safety & Access
+scope: G3, G4
+description: 'Check walkway and step-over requirements for Rooftop sites: - For rooftop
+  sites with metal roof sheets: Walkways are mandatory to access all antennas safely
+  without stepping on roof sheeting. - For concrete slab rooftops: Walkways are not
+  mandatory unless specified by landlord. - For Ground Monopole / Tower sites: This
+  rule is strictly NOT APPLICABLE.'
+required_references:
+- FC_Drawing
+pass_criteria: PASS if walkways/step-overs are shown on applicable rooftop drawings,
+  OR if the site is a Ground Monopole / Tower site and correctly evaluated as NOT_APPLICABLE.
+fail_criteria: FAIL only if the site is confirmed as a sheeted metal rooftop installation
+  but omits mandatory antenna walkways.
+expected_patterns:
+- (?i)(walkway|step[- ]*over|monopole|ground|roof|not applicable)
+negative_constraints:
+- Automatically evaluate as NOT_APPLICABLE for ground-based concrete monopoles and
+  lattice towers

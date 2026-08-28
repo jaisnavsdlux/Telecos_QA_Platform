@@ -1,0 +1,27 @@
+id: R043
+name: WHS design risk assessment note included for CPS only
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- SDV_Photos
+decision_priority: '1. Project type detection
+
+  2. G1 → WHS note presence
+
+  3. SDV Photos → supporting only'
+description: Validate WHS risk assessment notes in G1 for CPS projects.
+pass_criteria: "- If CPS project:\n    • WHS note present\n    • Notes are reasonable\n\
+  \n- If ServiceStream:\n    → NOT APPLICABLE"
+fail_criteria: "- CPS project AND WHS note missing\n\n- Critical risk clearly visible\
+  \ in photos\n  AND not mentioned in notes"
+unclear_conditions: '- Project type unclear
+
+
+  - Photos not available or unclear'
+negative_constraints:
+- Do NOT require full risk mapping
+- Do NOT fail based on minor omissions
+- Do NOT rely only on photos
+notes: Focus on presence + reasonable coverage, not perfection.
+scope: G1

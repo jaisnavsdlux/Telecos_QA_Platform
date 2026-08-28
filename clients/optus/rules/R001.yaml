@@ -1,0 +1,71 @@
+id: R001
+name: Correct drawing template must be used based on input watermark
+type: medium
+match_keywords:
+- optus
+- template
+- watermark
+- draft
+- child
+validation_mode: hybrid
+complexity: conditional_template_validation
+required_references:
+- FC_Drawing
+description: 'Validate that the correct drawing template is used in the output
+
+  based on watermark presence in the FIRST PAGE of the input drawing.'
+scope: Cover, G1
+decision_logic: "Step 1: Extract Page 1 of input drawing\n\nStep 2: Detect watermark\
+  \ on Page 1:\n\n    Indicators:\n      • Diagonal large text\n      • Contains \"\
+  CHILD\"\n      • Contains \"CPS\"\n      • Contains \"EJV\"\n      • Contains \"\
+  DO NOT REMOVE THIS WATERMARK\"\n\nStep 3:\n\n    IF watermark present:\n       \
+  \ Expected → Child CAD template\n\n    IF watermark NOT present:\n        Expected\
+  \ → Optus standard template\n\nStep 4: Validate output template across all sheets"
+pass_criteria: "- Watermark correctly detected on Page 1\n\nAND\n\n- Output template\
+  \ matches expected:\n\n    CASE 1: Watermark present\n        → Output uses child\
+  \ CAD template\n\n    CASE 2: No watermark\n        → Output uses Optus standard\
+  \ template"
+fail_criteria: "- Watermark present but:\n    • Output uses standard Optus template\n\
+  \n- No watermark but:\n    • Output uses child CAD template\n\n- Output template\
+  \ inconsistent across sheets"
+unclear_conditions: '- Page 1 not available
+
+
+  - Watermark partially visible or unreadable
+
+
+  - Output template cannot be identified'
+deterministic_checks:
+- check: watermark_detection
+  keywords:
+  - child
+  - cps
+  - ejv
+  - watermark
+  - draft
+  pass_evidence: 'Watermark indicators detected: {found}'
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: watermark_classification
+  description: Detect watermark on first page
+  logic: "Identify:\n  • Diagonal overlay text\n  • Large semi-transparent text\n\
+    \  • Keywords: CHILD, CPS, EJV"
+- check: template_classification
+  description: Identify output template type
+  logic: "Classify:\n  • Child CAD template\n  • Optus standard template"
+- check: template_mapping
+  description: Validate correct mapping
+  logic: "Map:\n  Input (Page 1 watermark) → Expected template → Output template"
+normalization_rules:
+- lowercase text
+- trim spaces
+negative_constraints:
+- Do NOT check watermark beyond Page 1
+- Do NOT assume template based only on "OPTUS"
+- Do NOT ignore diagonal watermark patterns
+- Do NOT validate only one sheet → check all output sheets
+notes: "- Watermark appears ONLY on first page\n\n- Example watermark:\n    \"CHILD\
+  \ 1: CPS TECH_5G (EJV)\"\n\n- Watermark is diagonal and semi-transparent\n\n- Presence\
+  \ of watermark indicates:\n    → Child CAD template required\n\n- Absence indicates:\n\
+  \    → Optus standard template required\n\n- This rule ensures correct template\
+  \ usage based on drawing lifecycle"

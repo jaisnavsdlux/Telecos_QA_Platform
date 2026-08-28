@@ -1,0 +1,21 @@
+id: R051
+name: Surrounding features and site context on G2 overall site plan
+category: Site Layout & Context
+scope: G2
+description: 'Verify that the Overall Site Plan (G2 sheet) clearly represents the
+  surrounding geographic context: - Road names / access roads (e.g. Wakehurst Road).
+  - Property boundaries and fence lines. - Surrounding landmarks (e.g. parks, reserve,
+  vegetation). - True North point indicator. - EWP set-up annotation / notes if applicable.'
+required_references:
+- FC_Drawing
+- As-built
+pass_criteria: PASS if the G2 Overall Site Plan depicts the road access (e.g. Wakehurst
+  Road), property boundaries, North symbol, and site orientation aligned with As-Built
+  records.
+fail_criteria: FAIL if the G2 sheet fails to show the access road, north arrow, or
+  site property boundaries.
+expected_patterns:
+- (?i)(road|wakehurst|boundary|north|plan|site)
+negative_constraints:
+- Do NOT require high-precision CAD coordinates for EWP setup if the access road and
+  note callout (e.g. Note 3 on Wakehurst Road) are clearly designated

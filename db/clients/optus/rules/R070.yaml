@@ -1,0 +1,66 @@
+id: R070
+name: Panel/AAU antenna model, dimensions, and orientation validation
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- FR
+- RLM
+optional_references:
+- FC_Drawings
+complexity: multi_attribute_validation
+description: "Validate that panel/AAU antennas are correctly represented in drawings,\n\
+  including:\n  - Antenna model and dimensions\n  - Antenna presence and placement\n\
+  \  - Azimuth (orientation) consistency"
+decision_priority: '1. RLM → primary technical specification
+
+  2. FR → supporting reference
+
+  3. FC drawings → implementation'
+decision_flow: "Step 1: Extract antenna data from RLM/FR:\n  • Model\n  • Dimensions\n\
+  \  • Azimuth\n\nStep 2: Validate drawing:\n  • Antenna blocks present\n  • RRU blocks\
+  \ present (if applicable)\n\nStep 3: Compare:\n  • Model / dimension consistency\n\
+  \  • Azimuth alignment"
+pass_criteria: "- Antenna blocks (panel/AAU) present in drawing\n\n- Antenna model/dimensions\
+  \ match RLM/FR\n\n- Azimuth:\n    • Shown in drawing\n    • Matches RLM/FR (allow\
+  \ small tolerance ±2–5°)\n\n- Callouts correctly label:\n    • Antenna number\n\
+  \    • Azimuth\n    • Model reference\n\n------------------------------------------------\n\
+  \nFINAL:\n\n- Antenna configuration is consistent across all sources"
+fail_criteria: "- Antenna missing in drawing\n\n- Model/dimension mismatch with RLM/FR\n\
+  \n- Azimuth:\n    • Missing OR\n    • Clearly incorrect\n\n- Callouts incorrect\
+  \ or inconsistent\n\n- Multiple antennas incorrectly labeled or ordered"
+unclear_conditions: '- RLM or FR not available
+
+
+  - Antenna details not readable in drawing
+
+
+  - Azimuth partially visible'
+semantic_checks:
+- check: antenna_detection
+  description: Detect panel/AAU blocks
+- check: rru_detection
+  description: Detect RRU blocks
+- check: model_extraction
+  description: Extract antenna model from RLM/FR
+- check: azimuth_validation
+  description: Compare azimuth values
+  logic: Allow tolerance ±2–5 degrees
+- check: callout_validation
+  description: Validate antenna labels and annotations
+negative_constraints:
+- Do NOT require exact textual match for model (allow formatting differences)
+- Do NOT fail for minor azimuth deviation (tolerance allowed)
+- Do NOT rely only on drawings (must compare with RLM/FR)
+notes: '- RLM is the source of truth for antenna configuration
+
+
+  - FR supports validation if RLM unclear
+
+
+  - Azimuth is critical for network alignment
+
+
+  - Higher antenna tags should be placed closest to antenna blocks when multiple antennas
+  exist'
+scope: A1, A2, G3

@@ -1,0 +1,70 @@
+id: R044
+name: Corrosion protection validation (ServiceStream only)
+type: high
+validation_mode: hybrid
+complexity: conditional_vendor + category_based_validation
+required_references:
+- FC_Drawing
+- Structural_Certificate
+optional_references:
+- FC_Drawings
+description: 'Validate corrosion protection notes based on corrosivity category.
+
+
+  This rule applies ONLY to ServiceStream projects.'
+decision_priority: '1. Vendor detection (applicability gate)
+
+  2. Structural certificate → corrosivity category
+
+  3. G1 sheet → corrosion note validation'
+decision_flow: "Step 1: Detect vendor\n\n  IF vendor ≠ ServiceStream:\n      → NOT\
+  \ APPLICABLE (N/A)\n\n  IF vendor = ServiceStream:\n      → proceed\n\nStep 2: Extract\
+  \ corrosivity category (C1–CX) from structural certificate\n\nStep 3:\n\n  IF category\
+  \ = C1–C4:\n      → corrosion protection may be N/A\n\n  IF category = C5–CX:\n\
+  \      → protection MUST be defined\n\nStep 4: Validate G1"
+pass_criteria: "CASE 1: ServiceStream + C1–C4\n\n- Category identified\n\n- Corrosion\
+  \ protection may be:\n    • Defined OR\n    • Marked as N/A\n\n------------------------------------------------\n\
+  \nCASE 2: ServiceStream + C5–CX\n\n- Category identified\n\n- Corrosion protection\
+  \ note present in G1\n\n- Protection method defined (e.g., coating, stainless steel)\n\
+  \n------------------------------------------------\n\nCASE 3: Non-ServiceStream\n\
+  \n- Rule not applicable → PASS / N/A"
+fail_criteria: "- ServiceStream project AND:\n\n    • Corrosion note missing in G1\n\
+  \n- Category = C5–CX AND:\n\n    • Protection method not defined\n\n- Mismatch between\
+  \ structural certificate and G1"
+unclear_conditions: '- Vendor cannot be determined
+
+
+  - Structural certificate not available
+
+
+  - Corrosivity category not extractable'
+deterministic_checks:
+- check: corrosion_keywords
+  keywords:
+  - corrosion
+  - C1
+  - C2
+  - C3
+  - C4
+  - C5
+  - CX
+  pass_evidence: 'Corrosion reference found: {found}'
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: vendor_detection
+  description: Identify vendor from title block or certificate
+- check: category_extraction
+  description: Extract corrosivity category from certificate
+- check: g1_note_validation
+  description: Validate corrosion note presence
+  logic: "Look for:\n  • corrosion protection note\n  • material specification\n \
+    \ • coating / galvanization reference"
+negative_constraints:
+- Do NOT validate for non-ServiceStream sites
+- Do NOT assume category without certificate
+- Do NOT fail if certificate missing → UNCLEAR
+- Do NOT require protection definition for C1–C4
+notes: "- This is a vendor-specific rule (ServiceStream only)\n\n- Corrosivity categories:\n\
+  \    • C1–C4 → low/moderate → protection may be N/A\n    • C5–CX → high → protection\
+  \ mandatory\n\n- Structural certificate is the source of truth"
+scope: Cover, G4

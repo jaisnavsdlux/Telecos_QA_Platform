@@ -1,0 +1,21 @@
+id: R028
+name: Optus site number shown correct
+type: high
+match_keywords:
+- optus site number
+validation_mode: auto
+required_references:
+- FC_Drawing
+- RFNSA
+description: The Optus Site Number must match the RFNSA system.
+pass_criteria: Optus Site Number matches RFNSA.
+fail_criteria: Optus Site Number is missing or incorrect.
+expected_patterns:
+- '[A-Z]\d{4,5}'
+deterministic_checks:
+- check: regex_search
+  patterns:
+  - \b[A-Z]\d{4,5}\b
+  pass_evidence: 'Optus site number found: {match}'
+  fail_evidence: Optus site number not found
+scope: Cover, G1

@@ -1,0 +1,21 @@
+id: R064
+name: Antenna tags (ID and azimuth) must match RLM/FR and be correctly positioned
+category: RF & Antenna Details
+scope: G3, G3-1, A1, A2
+description: Validate that antenna tags (antenna number, operator label O/V, and azimuth)
+  are correctly shown on the drawing sheets (G3, G3-1, A1, A2), aligned with the RLM
+  and FR schedules.
+required_references:
+- FC_Drawing
+- RLM
+- FR
+pass_criteria: PASS if antenna tags (e.g. 11-V, 12-V, 21-V, 22-V, 31-V) and azimuth
+  bearings (e.g. 20°, 120°, 240°) shown on G3/G3-1 or Antenna Schedule sheets (A1/A2)
+  align with the RLM / FR configuration.
+fail_criteria: FAIL if antenna tags or azimuths on the drawing contradict the RLM/FR
+  schedule without justification.
+expected_patterns:
+- (?i)(antenna|azimuth|sector|vodafone|optus|\b\d{2}-[ovj]\b)
+negative_constraints:
+- Check Antenna schedule sheets A1/A2 alongside G3/G3-1 layout plans
+- Allow minor azimuth angle tolerances (±2-5°)

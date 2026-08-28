@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Audit Reports Hub — Strelza Telecos QA</title>
+<link rel="stylesheet" href="/static/css/style.css" />
+<style>
+  .reports-layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 20px;
+    height: calc(100vh - 140px);
+  }
+  .reports-sidebar-list {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 6px;
+  }
+  .pdf-preview-pane {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+  }
+  .pages-scroll-container {
+    flex: 1;
+    overflow-y: auto;
+    background: #080c14;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .report-page-image {
+    max-width: 840px;
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--border);
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand brand">
+        <img src="/static/strelza-logo.jpg" alt="Strelza" style="height:28px; border-radius:4px; object-fit:contain;" />
+        <div>STRELZA QA<small>Telecos Engineering</small></div>
+      </div>
+
+      <!-- Global Multi-Project Selector Container -->
+      <div id="projectSelectorContainer" style="padding:0 12px; margin-bottom:12px;"></div>
+
+      <nav>
+        <a class="nav-link" href="/static/dashboard.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          1. Dashboard
+        </a>
+        <a class="nav-link" href="/static/package.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          2. Package &amp; Reference Area
+        </a>
+        <a class="nav-link" href="/static/checkpoints.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 12 18 16 13"/></svg>
+          3. Checkpoint Validation
+        </a>
+        <a class="nav-link active" href="/static/reports.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          4. Audit Reports Hub
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div>
+            <div id="sidebarUsername" style="font-weight:600;">Lead QA Administrator</div>
+            <span class="role-badge" id="sidebarRole">ADMIN</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm btn-block" id="logoutBtn">Sign out</button>
+      </div>
+    </aside>
+
+    <main class="main" style="max-width:100%;">
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div>
+          <h1>Compliance Audit Reports Hub</h1>
+          <p>Reports are dynamically archived in stack order (newest on top). Click any report to view all pages or download the PDF file.</p>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="btn btn-primary" id="downloadPdfBtn" onclick="downloadSelectedReport()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span id="downloadBtnLabel">Download PDF Report</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Split Reports Layout -->
+      <div class="reports-layout">
+        <!-- Left: Reports Stack List -->
+        <div class="reports-sidebar-list" id="reportItemsContainer">
+          <div style="padding:24px; text-align:center; color:var(--text-muted);">
+            <span class="spinner"></span> Loading reports stack…
+          </div>
+        </div>
+
+        <!-- Right: Multi-Page Visualizer Area -->
+        <div class="report-viewer-panel">
+          <div class="report-viewer-header">
+            <div>
+              <div id="activeReportTitle" style="font-weight:600; font-size:15px; color:var(--text);">Report Document Preview</div>
+              <div id="activeReportMeta" style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">Select a report to view high-resolution pages</div>
+            </div>
+            <div>
+              <span id="activeReportBadge" class="badge badge-pass">60 PASS / 0 FAIL / 11 N/A</span>
+            </div>
+          </div>
+
+          <div class="report-pages-container" id="reportPagesContainer">
+            <div style="padding:60px 20px; text-align:center; color:var(--text-muted);">
+              Select a report from the stack on the left to inspect pages.
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/static/js/api.js?v=2.2"></script>
+  <script>
+    Api.requireAuth();
+    const user = Api.getUser();
+    document.getElementById("sidebarUsername").textContent = user?.display_name || user?.username || "Lead QA Administrator";
+    document.getElementById("sidebarRole").textContent = (user?.role || "ADMIN").toUpperCase();
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      Api.clearSession();
+      window.location.href = "/static/index.html";
+    });
+
+    let reportsList = [];
+    let activeReport = null;
+
+    const listContainer = document.getElementById("reportItemsContainer");
+    const pagesContainer = document.getElementById("reportPagesContainer");
+    const activeTitle = document.getElementById("activeReportTitle");
+    const activeMeta = document.getElementById("activeReportMeta");
+    const activeBadge = document.getElementById("activeReportBadge");
+    const downloadBtnLabel = document.getElementById("downloadBtnLabel");
+
+    async function loadReports() {
+      try {
+        const activePid = Api.getActiveProjectId();
+        reportsList = await Api.get(`/api/projects/${encodeURIComponent(activePid)}/reports`);
+        
+        if (!reportsList || !reportsList.length) {
+          listContainer.innerHTML = `
+            <div style="padding:32px 16px; text-align:center;">
+              <div style="font-size:28px; margin-bottom:8px;">📑</div>
+              <div style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px;">No Audit Reports Yet</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-bottom:16px;">This project has not been validated against the 71 Optus BA rules yet.</div>
+              <a href="/static/checkpoints.html" class="btn btn-sm btn-primary" style="display:inline-block;">▶ Run Validation</a>
+            </div>
+          `;
+          pagesContainer.innerHTML = `
+            <div style="padding:60px 20px; text-align:center; color:var(--text-muted);">
+              No reports generated yet for project <strong>${escapeHtml(activePid)}</strong>.
+            </div>
+          `;
+          activeTitle.textContent = "No Reports Available";
+          activeMeta.textContent = "Run a checkpoint validation to generate the compliance audit PDF.";
+          activeBadge.style.display = "none";
+          document.getElementById("downloadPdfBtn").style.display = "none";
+          return;
+        }
+
+        document.getElementById("downloadPdfBtn").style.display = "inline-flex";
+        activeBadge.style.display = "inline-flex";
+        renderList();
+        selectReport(reportsList[0]);
+      } catch (err) {
+        listContainer.innerHTML = `<div style="padding:24px; text-align:center; color:var(--fail);">Failed to load reports: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function renderList() {
+      listContainer.innerHTML = reportsList.map((r, index) => {
+        const failCount = r.verdict_summary?.fail || 0;
+        const passCount = r.verdict_summary?.pass || 0;
+        const naCount = r.verdict_summary?.na || 0;
+        const badgeClass = failCount > 0 ? "badge-fail" : "badge-pass";
+        const badgeLabel = `${passCount} PASS ${failCount > 0 ? '/ ' + failCount + ' FAIL' : ''} ${naCount > 0 ? '/ ' + naCount + ' N/A' : ''}`;
+
+        return `
+          <div class="report-card-item ${activeReport?.id === r.id ? 'active' : ''}" onclick="selectReportById('${escapeHtml(r.id)}')">
+            <div class="report-card-header">
+              <div class="report-card-site">
+                <span>📍 ${escapeHtml(r.site_id)}</span>
+                ${index === 0 ? '<span style="background:rgba(94,200,216,0.2); color:var(--cyan); padding:1px 6px; border-radius:3px; font-size:9px; margin-left:6px;">LATEST RUN</span>' : ''}
+              </div>
+              <span class="badge ${badgeClass}" style="font-size:9px; padding:2px 6px;">${badgeLabel}</span>
+            </div>
+
+            <div class="report-card-filename" title="${escapeHtml(r.filename)}">
+              📑 ${escapeHtml(r.filename)}
+            </div>
+
+            <div class="report-card-desc">${escapeHtml(r.title)}</div>
+
+            <div class="report-card-footer">
+              <span>⏱ ${escapeHtml(r.timestamp)}</span>
+              <span class="mono">${r.size_kb} KB &bull; ${r.pages} pgs</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    window.selectReportById = function(id) {
+      const r = reportsList.find(item => item.id === id);
+      if (r) selectReport(r);
+    };
+
+    function selectReport(r) {
+      activeReport = r;
+      activeTitle.textContent = r.title;
+      activeMeta.textContent = `${r.pages} Pages • ${r.size_kb} KB • Generated ${r.timestamp}`;
+      const failCount = r.verdict_summary?.fail || 0;
+      const passCount = r.verdict_summary?.pass || 0;
+      const naCount = r.verdict_summary?.na || 0;
+      activeBadge.className = `badge ${failCount > 0 ? 'badge-fail' : 'badge-pass'}`;
+      activeBadge.textContent = `${passCount} PASS / ${failCount} FAIL / ${naCount} N/A`;
+      downloadBtnLabel.textContent = `Download ${r.filename}`;
+
+      renderPages(r);
+      renderList();
+    }
+
+    function renderPages(r) {
+      const numPages = r.pages || 6;
+      const activePid = Api.getActiveProjectId();
+      let pagesHtml = "";
+      for (let p = 1; p <= numPages; p++) {
+        pagesHtml += `
+          <div style="width:100%; display:flex; flex-direction:column; align-items:center; margin-bottom:12px;">
+            <div style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:6px;">Page ${p} of ${numPages}</div>
+            <img class="report-page-image" src="/api/reports/${escapeHtml(r.id)}/page/${p}?project_id=${encodeURIComponent(activePid)}&t=${Date.now()}" alt="Page ${p}" loading="lazy" />
+          </div>
+        `;
+      }
+      pagesContainer.innerHTML = pagesHtml;
+    }
+
+    window.downloadSelectedReport = function() {
+      if (!activeReport) return;
+      const activePid = Api.getActiveProjectId();
+      const downloadLink = document.createElement("a");
+      downloadLink.href = `/api/reports/${encodeURIComponent(activeReport.id)}/download?project_id=${encodeURIComponent(activePid)}`;
+      downloadLink.download = activeReport.filename;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    };
+
+    initProjectSelector("projectSelectorContainer", () => loadReports());
+    loadReports();
+  </script>
+</body>
+</html>

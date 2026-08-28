@@ -1,0 +1,92 @@
+id: R054
+name: Drawings must reflect actual site conditions based on SDV photos
+type: high
+match_keywords:
+- sdv
+- photos
+- as-built
+- existing
+- site condition
+- mismatch
+validation_mode: hybrid
+complexity: cross_document
+required_references:
+- FC_Drawing
+- SDV_Photos
+- As-built
+optional_references:
+- As-built
+decision_priority: '1. SDV Photos → source of truth (actual site condition)
+
+  2. G3 sheet → primary drawing validation
+
+  3. As-built → baseline reference (not authoritative)'
+description: 'Validate that all existing site conditions shown in drawings
+
+  accurately reflect SDV photos.
+
+
+  If As-built matches SDV photos → retain existing design.
+
+
+  If mismatch exists → drawings must be updated to match SDV photos.'
+scope: G3
+location_hint:
+  region: general_layout
+pass_criteria: "STEP 1: SDV Photo Validation\n\n- Site features visible in SDV photos\
+  \ are identified:\n    • Steps / retaining walls\n    • Access paths\n    • Structures\
+  \ / objects\n\n------------------------------------------------\n\nSTEP 2: Drawing\
+  \ Alignment\n\n- G3 drawing reflects actual site condition from SDV photos\n\n------------------------------------------------\n\
+  \nSTEP 3: As-built Handling\n\n- If As-built matches SDV → retained correctly\n\n\
+  - If As-built DOES NOT match SDV:\n    → Drawing is updated to reflect SDV (NOT\
+  \ As-built)\n\n------------------------------------------------\n\nSTEP 4: Photo\
+  \ Quality Check\n\n- No duplicate SDV photos present\n\n------------------------------------------------\n\
+  \nFINAL:\n\n- Drawing represents real site condition accurately"
+fail_criteria: "- SDV photos show site condition not reflected in drawing\n\n- Drawing\
+  \ blindly follows As-built despite mismatch with SDV\n\n- Missing updates for visible\
+  \ site features:\n    • Steps\n    • Retaining wall\n    • Access path\n    • Structures\n\
+  \n- Duplicate SDV photos present"
+unclear_conditions: '- SDV photos missing
+
+
+  - SDV photos unclear or insufficient
+
+
+  - Site features cannot be reliably identified'
+deterministic_checks:
+- check: photo_presence
+  keywords:
+  - photo
+  - sdv
+  pass_evidence: SDV photos detected
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: photo_feature_extraction
+  description: Identify site features from SDV photos
+  logic: "Detect:\n  • Steps / retaining walls\n  • Access paths\n  • Structures\n\
+    \  • Terrain features"
+- check: drawing_feature_extraction
+  description: Extract features from G3 drawing
+  logic: "Identify:\n  • Existing structures\n  • Access routes\n  • Site elements"
+- check: feature_alignment
+  description: Compare drawing vs SDV
+  logic: "For each feature in SDV:\n  Check if represented in drawing"
+- check: asbuilt_override_logic
+  description: Validate correct reference priority
+  logic: "If As-built conflicts with SDV:\n  SDV takes precedence"
+- check: duplicate_photo_detection
+  description: Identify duplicate SDV photos
+  logic: Detect repeated or identical images
+normalization_rules:
+- lowercase text
+- trim spaces
+negative_constraints:
+- Do NOT treat As-built as absolute truth
+- Do NOT pass if SDV and drawing mismatch
+- Do NOT assume correctness without SDV validation
+- Do NOT ignore duplicate SDV photos
+notes: "- SDV photos represent actual site condition and override As-built\n\n- As-built\
+  \ drawings may be outdated and must not be blindly trusted\n\n- G3 is the primary\
+  \ sheet for site condition validation\n\n- Example:\n    Timber steps visible in\
+  \ SDV but missing in drawing → FAIL\n\n- This is a foundational rule affecting overall\
+  \ drawing accuracy"

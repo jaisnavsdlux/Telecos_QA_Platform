@@ -1,0 +1,22 @@
+id: R039
+name: Site hazards must reflect site conditions and As-Built requirements
+category: Site Hazards & Safety
+scope: G1
+description: 'Check that the Site Hazards section (on G1 sheet) reflects site-specific
+  conditions based on As-Built and SDV photos: - Standard hazard categories include:
+  Working at heights, RF radiation, electrical hazards, snakes/spiders, tripping hazards.
+  - Site-specific hazards: overhead power lines, uneven terrain, traffic/roadside
+  access.'
+required_references:
+- FC_Drawing
+- SDV_Photos
+- As-built
+pass_criteria: PASS if the G1 sheet contains the 'SITE HAZARDS' / 'EXISTING SITE HAZARDS'
+  section with safety points covering site-specific hazards.
+fail_criteria: FAIL if the Site Hazards section is completely missing from the G1
+  specifications sheet.
+expected_patterns:
+- (?i)(hazard|hazards|safety|working at heights|radiation|overhead)
+negative_constraints:
+- Acknowledge that standard hazard clauses apply across most sites and do not require
+  unique wording for every individual point

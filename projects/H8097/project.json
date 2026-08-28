@@ -1,0 +1,21 @@
+{
+  "id": "H8097",
+  "name": "AUSTINS FERRY",
+  "code": "H8097",
+  "structure_type": "CONCRETE MONOPOLE (26.8m)",
+  "drawing_revision": "FOR CONSTRUCTION (Rev 1.0)",
+  "primary_drawing": "H8097_AUSTINS FERRY_FC_05122025_Final PDF After QC validation.pdf",
+  "created_at": "2026-08-25 10:00:00",
+  "sheets": [
+    "Sheet Cover: Title Block & Drawing Index",
+    "Sheet G1: Site Specifications & Access",
+    "Sheet G2: Overall Site Plan",
+    "Sheet G3: Site Layout & Setout Plan",
+    "Sheet G3-1: Antenna Layout & Clearance",
+    "Sheet G4: Site Elevation",
+    "Sheet A1: Antenna Schedule (Optus & Vodafone)",
+    "Sheet A2: Antenna Configuration Detail",
+    "Sheet P1: RF Plumbing Diagram",
+    "Sheet F1: Equipment Shelter Layout Plan"
+  ]
+}

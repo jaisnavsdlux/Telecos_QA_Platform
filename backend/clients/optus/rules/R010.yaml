@@ -1,0 +1,25 @@
+id: R010
+name: Work authority number must be valid and consistent across documents
+category: Reference Validation
+scope: Cover, G1, A1
+description: 'The Work Authority (WA) Number is a 6-digit number assigned to the project.
+  Sources to cross-verify: 1. Cover sheet title block (e.g., ''OPTUS WORK AUTHORITY
+  N° 658102'' or ''CHILD1: ... WA658102''). 2. FR Excel file (Antenna system tab ->
+  Scope of Works Summary box) OR the 6-digit number in the FR / Form A filename. 3.
+  Form A document. Note: Parent watermarks (e.g., WA14530926) represent network capacity
+  parents; the 6-digit project WA (e.g. 658102) is the primary work authority to validate.'
+required_references:
+- FC_Drawing
+- FR
+pass_criteria: PASS if a 6-digit WA number is identified on the Cover Sheet title
+  block / drawing metadata (e.g., 658102) and is consistent with the FR Scope of Works,
+  Form A, or reference filenames.
+fail_criteria: FAIL if the 6-digit Work Authority number is completely missing from
+  the cover sheet, or directly contradicts the project WA number stated in the FR
+  / Form A.
+expected_patterns:
+- (?i)(wa|work\s*authority)[^\d]*\d{6}
+negative_constraints:
+- Do NOT fail because of longer parent capacity watermark IDs (e.g. WA14530926); look
+  for the 6-digit project WA (e.g. 658102)
+- Do NOT fail if WA is stated in filename or Antenna system tab of FR

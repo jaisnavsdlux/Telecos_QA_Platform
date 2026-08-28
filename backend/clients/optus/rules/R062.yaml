@@ -1,0 +1,21 @@
+id: R062
+name: Earthing notes on G3 for Indara rooftop sites (Rooftop sites only)
+category: Electrical & Earthing
+scope: G3
+description: 'Check if site owner is INDARA and site type is ROOFTOP: - If site owner
+  is Indara AND site is a Rooftop site -> Earthing notes MUST be included in the G3
+  sheet. - If the site is a Ground Monopole, Tower, or owned by Optus/Amplitel/Telstra
+  -> This rule is NOT APPLICABLE.'
+required_references:
+- FC_Drawing
+- Lease_Plan
+pass_criteria: PASS if Earthing notes are present on G3 for Indara rooftop sites,
+  OR if the site is a Ground Monopole / non-Indara site and correctly recognized as
+  NOT_APPLICABLE.
+fail_criteria: FAIL only if the site is confirmed as an Indara Rooftop installation
+  but completely omits earthing notes from the G3 layout sheet.
+expected_patterns:
+- (?i)(earthing|earth|indara|monopole|ground|not applicable)
+negative_constraints:
+- Automatically evaluate as NOT_APPLICABLE if structure is a ground-based monopole
+  or tower

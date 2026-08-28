@@ -1,0 +1,80 @@
+id: R024
+name: Drawing status must be "FOR CONSTRUCTION" across all sheets
+type: high
+match_keywords:
+- drawing status
+- for construction
+validation_mode: auto
+description: 'Validate that drawing status in each sheet:
+
+  - Is present in the title block
+
+  - Is set to "FOR CONSTRUCTION"
+
+  - Is consistent across all sheets
+
+
+  Drawing status is a critical field indicating approval stage.'
+scope: Cover, G1, G2, G3, G4
+location_hint:
+  region: title_block
+  typical_position: bottom_right
+pass_criteria: '- Drawing status is present in each sheet
+
+  - Drawing status is exactly "FOR CONSTRUCTION"
+
+  - Same status is used across all sheets'
+fail_criteria: '- Drawing status missing in any sheet
+
+  - Drawing status not equal to "FOR CONSTRUCTION"
+
+  - Inconsistent status across sheets'
+deterministic_checks:
+- check: status_detection
+  description: Detect drawing status in title block
+  keywords:
+  - for construction
+  pass_evidence: FOR CONSTRUCTION detected
+  fail_evidence: FOR CONSTRUCTION not found
+  fail_verdict: FAIL
+semantic_checks:
+- check: status_extraction
+  description: Extract drawing status from each sheet
+  logic: '- Extract from title block region (bottom-right)
+
+    - Identify status text (e.g., FOR CONSTRUCTION)'
+- check: per_sheet_validation
+  description: Validate each sheet individually
+  logic: '- Iterate through all sheets
+
+    - Ensure status is present in each'
+- check: consistency_validation
+  description: Ensure uniform status across document
+  logic: '- Collect status values from all sheets
+
+    - Ensure all are identical'
+normalization_rules:
+- lowercase → uppercase
+- trim extra spaces
+negative_constraints:
+- Do NOT rely on keyword presence outside title block
+- Ignore watermark text (e.g., DRAFT watermark)
+- Allow minor spacing variations (FOR  CONSTRUCTION)
+- Do NOT fail if OCR noise slightly alters formatting
+notes: '- Drawing status is typically located in bottom-right title block
+
+  - "FOR CONSTRUCTION" is the required status for FC drawings
+
+  - Other statuses (e.g., DRAFT) must NOT replace this field IN THE TITLE BLOCK
+
+  - DRAFT watermark in the background is a REVIEW OVERLAY and is NOT a conflict with
+  FOR CONSTRUCTION
+
+  - A drawing can simultaneously have a DRAFT watermark AND a FOR CONSTRUCTION title
+  block — this is NORMAL
+
+  - Only validate the formal title block field, not background overlays
+
+  - This is a multi-sheet consistency validation rule'
+required_references:
+- FC_Drawing

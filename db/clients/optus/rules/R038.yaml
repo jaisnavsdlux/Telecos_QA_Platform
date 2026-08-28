@@ -1,0 +1,33 @@
+id: R038
+name: Site hazards must reflect site conditions
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- SDV_Photos
+- As-built
+description: Validate that site hazards in FC drawings reflect actual site conditions.
+decision_priority: '1. SDV Photos (if available)
+
+  2. FC Drawing (G1 hazards section)
+
+  3. As-built (baseline only)'
+pass_criteria: "- Site hazards section exists in G1\n\n- Hazards are reasonable and\
+  \ relevant\n\n- IF SDV photos available:\n    • No major hazard is completely missing"
+fail_criteria: '- Critical hazard visible in photos BUT completely missing in drawings
+
+
+  - Hazards section missing entirely'
+unclear_conditions: '- SDV photos not provided
+
+
+  - Hazards cannot be reliably extracted from photos'
+negative_constraints:
+- Do NOT fail for generic wording alone
+- Do NOT expect perfect 1:1 hazard mapping
+- Do NOT assume hazards from unclear images
+- Do NOT fail if photos missing → UNCLEAR
+notes: 'Hazards are often semi-generic.
+
+  Only fail if a clear, critical hazard is omitted.'
+scope: G1

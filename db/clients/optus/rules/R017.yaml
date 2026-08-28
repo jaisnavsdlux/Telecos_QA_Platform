@@ -1,0 +1,22 @@
+id: R017
+name: All required OSD is mentioned or not?
+category: Standard Drawings
+scope: Cover, G1
+description: 'Verify that standard OSD drawings corresponding to the proposed scope
+  of works are included on the Cover Sheet: - If new cable ladder is proposed -> OSD-550
+  should be referenced. - If new fencing/compound works are proposed -> relevant fencing
+  OSD should be referenced. - General standard drawings (OSD-100, OSD-171) must be
+  included. - If specific items (e.g. new fencing, cable ladder) are NOT in proposed
+  scope, their specific OSDs are NOT mandatory.'
+required_references:
+- FC_Drawing
+- OSD_171
+pass_criteria: PASS if standard OSD references (e.g. OSD-100, OSD-171 series, OSD-550
+  if applicable) are listed on the Cover Sheet matching the proposed scope of works.
+fail_criteria: FAIL if fundamental OSD references (OSD-100, OSD-171) are completely
+  missing, or if major new civil infrastructure is proposed without standard OSD citations.
+expected_patterns:
+- (?i)OSD[- ]*\d+
+negative_constraints:
+- Do NOT fail if specialized OSDs (e.g. OSD-550) are omitted when that specific work
+  is not part of the active scope

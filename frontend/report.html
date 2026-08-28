@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Compliance Report — Telecos Drawing QA Validator</title>
+<link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand brand">
+        <span class="regmark"><span class="dot"></span></span>
+        <div>TELECOS QA<small>Multimodal AI Engine</small></div>
+      </div>
+      <nav>
+        <a class="nav-link" href="/static/operation.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Validate Drawing
+        </a>
+        <a class="nav-link active" href="/static/report.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Audit Report (PDF)
+        </a>
+        <a class="nav-link" href="/static/admin.html" id="navAdmin">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Checkpoints Studio
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div id="sidebarUsername">Lead Engineer</div>
+          <div class="role" id="sidebarRole">ADMIN</div>
+        </div>
+        <button class="btn btn-ghost btn-sm btn-block" id="logoutBtn">Sign out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1>Drawing Compliance Audit Report</h1>
+          <p id="reportMeta">Austins Ferry (H8097) &bull; Monopole Structure &bull; 71 Standards Evaluated</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a class="btn btn-primary" href="/download_latest_report" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF Report
+          </a>
+        </div>
+      </div>
+
+      <!-- Summary Strip -->
+      <div class="summary-strip">
+        <div class="summary-tile pass"><div class="value">59</div><div class="label">Pass</div></div>
+        <div class="summary-tile fail"><div class="value">0</div><div class="label">Fail</div></div>
+        <div class="summary-tile unclear"><div class="value">1</div><div class="label">Unclear</div></div>
+        <div class="summary-tile na"><div class="value">11</div><div class="label">Not Applicable</div></div>
+        <div class="summary-tile"><div class="value">1.39M</div><div class="label">Input Tokens (0 Cache)</div></div>
+      </div>
+
+      <!-- Embedded High-Fidelity PDF Viewer -->
+      <section class="card" style="overflow:hidden; margin-bottom:24px;">
+        <div style="padding:14px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+          <h3 style="margin:0;">Live PDF Audit Document</h3>
+          <span style="font-size:12px; color:var(--cyan); font-family:var(--font-mono);">6 Pages &bull; Formatted with Evidence</span>
+        </div>
+        <iframe src="/download_latest_report" style="width:100%; height:620px; border:none; background:#0e131d;" title="Compliance PDF"></iframe>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/js/api.js?v=2.2"></script>
+  <script src="/static/js/report.js"></script>
+</body>
+</html>

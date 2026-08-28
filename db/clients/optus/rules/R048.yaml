@@ -1,0 +1,30 @@
+id: R048
+name: All existing electrical/fiber O/H or U/G services shown
+type: high
+match_keywords:
+- overhead power
+- underground cable
+- fiber
+- UG line
+- OH line
+- electrical service
+validation_mode: google_maps_crosscheck
+description: Verify that all existing electrical and fiber services (overhead and
+  underground) are correctly represented. Overhead lines should be validated using
+  Google Maps based on site coordinates, while underground services must be validated
+  against As-Built drawings.
+pass_criteria: All overhead and underground electrical/fiber services are correctly
+  shown and match Google Maps (for O/H) and As-Built drawings (for U/G).
+fail_criteria: Electrical/fiber services are missing, incorrectly shown, or inconsistent
+  with Google Maps or As-Built references.
+expected_patterns:
+- power
+- fiber
+- cable
+- UG
+- OH
+scope: G2
+required_references:
+- FC_Drawing
+- As-built
+- SDV_Photos

@@ -1,0 +1,21 @@
+id: R059
+name: Callout referencing standards (Existing vs Proposed OSD references)
+category: CAD Standards
+scope: G2, G3, G3-1, G4, P1, F1
+description: 'General Rule 2 for callout referencing across drawing sheets: - Existing
+  infrastructure callouts (e.g. Existing Optus / Telstra equipment, existing fence,
+  existing cables) must be clearly labeled, but do NOT require OSD drawing reference
+  numbers. - New / Proposed infrastructure callouts should include the relevant reference
+  standard (e.g. OSD reference or manufacturer drawing reference).'
+required_references:
+- FC_Drawing
+- As-built
+pass_criteria: PASS if all existing on-site infrastructure is labeled with 'EXISTING'
+  callouts, without being penalized for omitting OSD reference numbers on existing
+  items.
+fail_criteria: FAIL if major existing infrastructure is unlabelled, or if proposed
+  new structures omit engineering standard references.
+expected_patterns:
+- (?i)(existing|proposed|new|shelter|compound|fence)
+negative_constraints:
+- Do NOT require OSD reference numbers for existing infrastructure items

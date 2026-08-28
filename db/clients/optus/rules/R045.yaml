@@ -1,0 +1,21 @@
+id: R045
+name: North located and pointed in upper direction
+type: medium
+match_keywords:
+- north
+- north symbol
+- north block
+- MGA north
+validation_mode: cad_only
+description: Verify that the north symbol (north block) is present and oriented correctly
+  in the drawing. The north arrow must always point straight upwards without any tilt
+  or directional deviation.
+pass_criteria: North symbol is present and correctly aligned pointing straight upwards.
+fail_criteria: North symbol is missing, tilted, rotated, or not pointing in the upward
+  direction.
+expected_patterns:
+- N
+- north
+scope: G2, G3
+required_references:
+- FC_Drawing

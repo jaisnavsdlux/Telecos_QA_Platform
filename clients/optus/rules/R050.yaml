@@ -1,0 +1,83 @@
+id: R050
+name: Surrounding features must match real-world conditions and references
+type: medium
+match_keywords:
+- buildings
+- parks
+- roads
+- trees
+- vegetation
+- site surroundings
+validation_mode: hybrid
+complexity: visual
+required_references:
+- FC_Drawing
+- As-built
+- SDV_Photos
+optional_references:
+- As-built
+- G2_Drawing
+input_expectation: "The system will be provided with:\n\n1. FC drawing:\n   - G2 sheet\
+  \ (if available)\n\n2. Reference documents:\n   - Google Maps (primary)\n   - As-built\
+  \ drawings (optional)\n\nThe system must:\n- Extract surrounding features from G2\
+  \ drawing (if present)\n- Compare with As-built ONLY if G2 is present\n- Validate\
+  \ against Google Maps for real-world alignment\n\nIf Google Maps is unavailable:\n\
+  → verdict: UNCLEAR"
+description: Validate that surrounding site features such as buildings, roads, vegetation,
+  and nearby infrastructure are correctly represented on G2 overall site plan consistent
+  with As-built drawings and site context.
+scope: G2
+location_hint:
+  region: site_layout
+pass_criteria: PASS if G2 depicts surrounding context (roads, adjacent structures,
+  compound boundary, North arrow) with clear engineering callouts.
+fail_criteria: "- Key surrounding features missing in G2 (if available)\n\n- Mismatch\
+  \ between:\n    • Drawing and Google Maps\n\n- If G2 is present:\n    • Mismatch\
+  \ between drawing and As-built\n\n- Incorrect spatial placement or orientation\n\
+  \n- True north missing or incorrect"
+deterministic_checks:
+- check: surroundings_keyword_detection
+  keywords:
+  - road
+  - building
+  - tree
+  - vegetation
+  - north
+  pass_evidence: 'Surrounding elements detected: {found}'
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: g2_feature_extraction
+  description: Extract surrounding features from G2
+  logic: "Identify:\n  • Roads\n  • Buildings\n  • Vegetation\n  • North direction"
+- check: map_feature_detection
+  description: Detect features from Google Maps
+  logic: "Identify:\n  • Roads\n  • Buildings\n  • Vegetation / open areas"
+- check: conditional_validation_logic
+  description: Apply validation based on G2 availability
+  logic: "IF G2 sheet is present:\n  • Compare features with As-built\n  • Cross-check\
+    \ with Google Maps\n\nIF G2 sheet is NOT present:\n  • Skip As-built comparison\n\
+    \  • Validate using Google Maps only\n\nIF Google Maps is unavailable:\n  → verdict:\
+    \ UNCLEAR"
+- check: spatial_alignment
+  description: Validate placement and orientation
+  logic: 'Ensure surrounding features align spatially
+
+    between drawing and Google Maps'
+confidence_logic: 'HIGH → G2 + As-built + Maps all align
+
+  MEDIUM → G2 + Maps align
+
+  LOW → Maps only or partial feature visibility'
+normalization_rules:
+- lowercase text
+- trim spaces
+negative_constraints:
+- Do NOT assume features if not visible
+- Do NOT fail due to missing As-built if G2 is absent
+- Do NOT enforce As-built comparison unless G2 is present
+- Do NOT rely only on keywords → require spatial validation
+- Do NOT fail if Google Maps unavailable → return UNCLEAR
+notes: "- Google Maps is the primary real-world reference\n\n- As-built is used ONLY\
+  \ when G2 sheet is present\n\n- G2 drawing represents planned layout of surroundings\n\
+  \n- Validation hierarchy:\n    G2 → As-built (if G2 present) → Google Maps\n\n-\
+  \ This rule ensures:\n    Drawing surroundings = Real-world surroundings"

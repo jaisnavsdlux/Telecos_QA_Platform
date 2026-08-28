@@ -1,0 +1,46 @@
+id: R003
+name: Check scale with viewport
+type: high
+match_keywords:
+- check scale with viewport
+- scale with viewport
+validation_mode: cad_only
+description: Verify that standard engineering drawing scales (e.g. 1:20, 1:50, 1:100,
+  1:200, 1:500, 1:1000, 1:2000, or NTS for details) are indicated on graphical layout
+  and elevation sheets. Non-graphical sheets such as Title/Cover sheets, General Notes
+  (G1), and schedule tables (A-series) are standardly exempt from scale annotations.
+pass_criteria: PASS if standard drawing scales are clearly annotated on layout and
+  elevation sheets (G2, G3, G4), with Cover/G1/A-series recognized as text-only sheets
+  exempt from scales.
+fail_criteria: Scale is missing, multiple conflicting scales are visible in the same
+  view, or a non-standard scale (e.g., 1:75, 1:150, 1:300, 1:600) is used.
+expected_patterns:
+- '1:1'
+- '1:2'
+- '1:5'
+- '1:10'
+- '1:20'
+- '1:25'
+- '1:50'
+- 1:75
+- 1:100
+- 1:125
+- 1:150
+- 1:200
+- 1:250
+- 1:300
+- 1:400
+- 1:500
+- 1:600
+- 1:800
+- 1:1000
+- 1:2000
+- 1:5000
+non_standard_patterns:
+- 1:75
+- 1:150
+- 1:300
+- 1:600
+scope: G2, G3, G3-1, G4
+required_references:
+- FC_Drawing

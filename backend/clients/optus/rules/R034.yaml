@@ -1,0 +1,62 @@
+id: R034
+name: Antenna/RRU maintenance access validation (EWP vs Ladder/Lad-Saf)
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- SDV_Photos
+- As-built
+optional_references:
+- As-built
+- FC_Drawings
+complexity: access_classification + conditional_validation
+description: "Validate antenna/RRU maintenance access method based on site conditions.\n\
+  \nAccess types:\n  - EWP (Elevated Work Platform)\n  - Ladder / Step Pegs with Lad-Saf\n\
+  \nPhotos are the primary source of truth."
+decision_priority: '1. Site Photos (primary – actual condition)
+
+  2. As-built (secondary – historical)
+
+  3. Drawings (supporting)'
+decision_flow: "Step 1: Detect access method from photos\n\n  IF ladder / step pegs\
+  \ / Lad-Saf detected:\n      → Ladder-based access\n\n  ELSE:\n      → Check drawings\
+  \ / notes for EWP indication\n\nStep 2:\n\n  IF ladder-based:\n      → Certification\
+  \ validation required\n\n  IF no ladder AND EWP indicated:\n      → PASS\n\n  IF\
+  \ no ladder AND no EWP indication:\n      → UNCLEAR"
+pass_criteria: "CASE 1: Ladder / Lad-Saf present\n\n- Ladder-based access confirmed\
+  \ from photos\n\n- Certification evidence present OR\n  no contradiction in provided\
+  \ references\n\n------------------------------------------------\n\nCASE 2: EWP\
+  \ access\n\n- No ladder / step pegs visible in photos\n\n- EWP indicated in:\n \
+  \   • Drawings OR\n    • Notes OR\n    • Site layout (G3)\n\n------------------------------------------------\n\
+  \nFINAL:\n\n- Access method correctly identified and validated"
+fail_criteria: "- Ladder / step pegs present BUT:\n    • Certification missing\n \
+  \   • OR explicitly invalid/unsafe\n\n- Clear contradiction:\n    • Drawings show\
+  \ ladder\n    • Photos show no ladder\n\n- Incorrect access method defined"
+unclear_conditions: '- Photos do not clearly show access area
+
+
+  - No ladder detected AND no EWP evidence
+
+
+  - Certification not readable'
+semantic_checks:
+- check: photo_access_detection
+  description: Detect physical access elements
+  logic: "Identify:\n  • ladder\n  • step pegs\n  • Lad-Saf rail"
+- check: ewp_detection
+  description: Detect EWP indication
+  logic: "Look for:\n  • \"EWP\"\n  • \"Elevated Work Platform\"\n  • EWP setup location\
+    \ in G3"
+- check: certification_validation
+  description: Validate ladder certification
+  logic: "If ladder present:\n  check:\n    • certification mention\n    • inspection\
+    \ validity (if available)"
+negative_constraints:
+- Do NOT assume EWP without supporting evidence
+- Do NOT require certification if ladder not present
+- Do NOT rely only on As-built if photos contradict
+- Do NOT fail if photos missing → return UNCLEAR
+notes: "- Photos override all other references\n\n- Default industry trend:\n    No\
+  \ ladder → likely EWP (but must be confirmed)\n\n- Ladder access requires certification\
+  \ validation\n\n- This rule ensures:\n    Safe and compliant maintenance access"
+scope: G1, G4

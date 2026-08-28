@@ -1,0 +1,48 @@
+id: R007
+name: Detect and highlight "Prior to Installation/Fabrication" notes
+type: high
+match_keywords:
+- prior to installation
+- prior to fabrication
+- structural MU
+validation_mode: hybrid
+description: Verify standard contractor verification and fabrication notes (e.g. site
+  checking prior to fabrication and construction) are present in the general notes
+  block or structural sheet notes.
+pass_criteria: PASS if standard pre-fabrication verification notes or structural condition
+  notes are present in the general notes block (G1/G2) or structural drawings.
+fail_criteria: FAIL if drawing set completely omits required site verification notes.
+expected_patterns:
+- PRIOR TO INSTALLATION
+- PRIOR TO FABRICATION
+- BEFORE INSTALLATION
+- PRE[- ]FABRICATION
+deterministic_checks:
+- check: note_presence_detection
+  regex_patterns:
+  - PRIOR TO INSTALLATION
+  - PRIOR TO FABRICATION
+  - BEFORE INSTALLATION
+  - PRE[- ]FABRICATION
+  pass_evidence: 'Relevant note found: {match}'
+  fail_verdict: NOT_APPLICABLE
+  fail_evidence: No prior-to-installation/fabrication notes found
+semantic_checks:
+- check: highlight_detection
+  description: "If note is present, verify it is emphasized using:\n  • bold text\n\
+    \  • boxed note\n  • callout\n  • separate instruction block"
+negative_constraints:
+- Do NOT fail if notes are not present
+- Do NOT assume structural MU notes must exist
+- Do NOT restrict search only to G1/G2; include structural sheets if available
+output_logic: "IF note_found = false:\n    verdict = PASS\n    status = NOT_APPLICABLE\n\
+  \nIF note_found = true:\n    evaluate highlight → PASS or FAIL"
+notes: '- This is a conditional detection rule, not a mandatory presence rule
+
+  - Most projects may not contain such notes
+
+  - Focus should be on detection accuracy first, then highlighting validation'
+scope: Cover, G1, G2, G3
+required_references:
+- FC_Drawing
+- FR

@@ -1,0 +1,86 @@
+id: R023
+name: Revision details must follow lifecycle and match cover sheet
+type: high
+match_keywords:
+- revision
+- rev
+- issue
+validation_mode: hybrid
+complexity: cross_document + lifecycle_validation
+required_references:
+- FC_Drawing
+- As-built
+optional_references:
+- As-built
+description: 'Validate that revision details across FC sheets, cover sheet,
+
+  and As-built reference follow correct lifecycle and are internally consistent.
+
+
+  IMPORTANT:
+
+  "Matching As-built" means correct progression, not identical values.'
+scope: Cover, G1, G2, G3, G4
+decision_flow: "Step 1: Extract revision from:\n  • Cover sheet\n  • All FC sheets\n\
+  \nStep 2: Validate internal consistency:\n  → All FC sheets must match cover sheet\
+  \ revision\n\nStep 3: If As-built available:\n  → Validate lifecycle progression"
+pass_criteria: "STEP 1: FC Consistency\n\n- All FC sheets use same revision (typically\
+  \ \"A\")\n- Cover sheet matches FC revision\n\n------------------------------------------------\n\
+  \nSTEP 2: Lifecycle Alignment (if As-built available)\n\n- As-built revision exists\
+  \ (e.g., AB)\n\n- For existing sheets:\n    • Sheet exists in As-built\n    • FC\
+  \ revision is updated (e.g., AB → A)\n\n- For new sheets:\n    • Not present in\
+  \ As-built\n    • Only revision \"A\" OR no history\n\n------------------------------------------------\n\
+  \nFINAL:\n\n- Revision is consistent and follows correct lifecycle progression"
+fail_criteria: '- FC sheets have inconsistent revisions
+
+
+  - Cover sheet revision does not match FC sheets
+
+
+  - FC sheet retains As-built revision (e.g., AB instead of A)
+
+
+  - Existing sheet not updated from As-built revision
+
+
+  - Missing revision identifier in title block'
+unclear_conditions: '- As-built not available (skip lifecycle check)
+
+
+  - Revision not readable
+
+
+  - Sheet mapping between FC and As-built unclear'
+deterministic_checks:
+- check: fc_revision_detection
+  regex_patterns:
+  - \bA\b
+  pass_evidence: FC revision A detected
+  fail_verdict: UNCLEAR
+- check: asbuilt_revision_detection
+  regex_patterns:
+  - \bAB\b
+  pass_evidence: As-built revision AB detected
+  fail_verdict: UNCLEAR
+semantic_checks:
+- check: cover_revision_extraction
+  description: Extract revision from cover sheet
+- check: fc_revision_consistency
+  description: Ensure all FC sheets match cover sheet
+- check: sheet_mapping
+  description: Match FC sheets to As-built
+  logic: 'If sheet exists in As-built → existing
+
+    Else → new'
+- check: lifecycle_validation
+  description: Validate revision progression
+  logic: "Existing:\n  AB → A (valid)\n\nInvalid:\n  AB → AB (not updated)"
+negative_constraints:
+- Do NOT require FC revision to equal As-built revision
+- Do NOT fail if revision history table is empty
+- Do NOT rely only on revision dates
+- Do NOT validate single sheet only
+notes: "- Cover sheet is the revision authority\n\n- As-built provides historical\
+  \ baseline (AB)\n\n- FC represents new issue (A)\n\n- Revision history table may\
+  \ be empty for new sheets\n\n- This rule validates:\n    • Internal consistency\n\
+  \    • Correct lifecycle progression"

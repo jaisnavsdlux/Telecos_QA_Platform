@@ -1,0 +1,68 @@
+id: R068
+name: Safety handrails and anchor points validation (Rooftop sites only)
+type: high
+validation_mode: hybrid
+required_references:
+- FC_Drawing
+- SDV_Photos
+- As-built
+optional_references:
+- As-built
+- FC_Drawings
+complexity: conditional_site + safety_validation
+description: 'Validate presence and correctness of safety handrails and anchor points
+
+  for rooftop sites using SDV photos as primary reference.'
+decision_priority: '1. Site type detection (rooftop)
+
+  2. SDV photos (actual condition – source of truth)
+
+  3. As-built (baseline)
+
+  4. FC drawings (support)'
+decision_flow: "Step 1: Detect site type\n\n  IF site ≠ rooftop:\n      → NOT APPLICABLE\
+  \ (N/A)\n\nStep 2: Detect safety systems from photos\n\n  Identify:\n    • Handrails\
+  \ (edge protection)\n    • Anchor points (fall arrest)\n\nStep 3: Cross-check with:\n\
+  \    • As-built\n    • G3 / elevation drawings"
+pass_criteria: "CASE 1: Handrails\n\n- Handrails present where required (roof edges\
+  \ / fall zones)\n\nOR\n\n- Not present BUT:\n    • Anchor-based safety system exists\n\
+  \n------------------------------------------------\n\nCASE 2: Anchor Points\n\n\
+  - Anchor points present and visible in photos\n\n- Consistent with As-built / drawings\n\
+  \n------------------------------------------------\n\nFINAL:\n\n- At least one valid\
+  \ fall protection system is present\n- Drawings do not contradict site condition"
+fail_criteria: '- No handrails AND no anchor points present
+
+
+  - Safety system shown in drawings but not present in photos
+
+
+  - Clear unsafe condition (unprotected roof access)
+
+
+  - Anchor/handrail contradicts As-built'
+unclear_conditions: '- Photos do not show roof edges
+
+
+  - Safety elements not visible
+
+
+  - Site type unclear'
+semantic_checks:
+- check: handrail_detection
+  description: Detect rooftop handrails
+  logic: "Identify:\n  • edge railings\n  • guard rails"
+- check: anchor_detection
+  description: Detect anchor points
+  logic: "Identify:\n  • anchor bolts\n  • lifeline anchors\n  • safety eyelets"
+- check: safety_consistency
+  description: Compare with drawings
+  logic: "Ensure no contradiction between:\n  • photos\n  • as-built\n  • G3"
+negative_constraints:
+- Do NOT validate for non-rooftop sites
+- Do NOT fail if only one system (handrail OR anchor) exists
+- Do NOT rely only on drawings (photos override)
+- Do NOT fail if photos missing → return UNCLEAR
+notes: "- Photos are the source of truth\n\n- Safety can be ensured by:\n    • Edge\
+  \ protection (handrails)\n    • Fall arrest (anchor points)\n\n- At least one system\
+  \ must be present\n\n- This is a safety-critical rule"
+scope: G3, G4

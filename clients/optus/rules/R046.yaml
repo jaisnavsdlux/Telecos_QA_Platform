@@ -1,0 +1,83 @@
+id: R046
+name: Scale must be standard and appropriate based on site coverage (G2)
+type: medium
+match_keywords:
+- scale
+- 1:500
+- 1:1000
+- 1:2000
+- 1:2500
+validation_mode: hybrid
+input_expectation: 'The system will be provided with:
+
+
+  1. G2 sheet (Overall Site Plan)
+
+  2. Drawing scale annotation
+
+
+  The system must:
+
+  - Detect scale used in drawing
+
+  - Evaluate site coverage (roads, site extent)
+
+  - Validate whether chosen scale is appropriate'
+description: "Validate that the drawing scale is both:\n1. A standard scale, and\n\
+  2. Appropriate for the site extent\n\nPreferred scales:\n  • 1:500\n  • 1:1000\n\
+  \nLarger scale (1:2000) is allowed ONLY when required to cover\na wider area."
+scope: G2
+pass_criteria: "STEP 1: Scale Presence\n\n- Scale is clearly mentioned in drawing\n\
+  \n------------------------------------------------\n\nSTEP 2: Standard Scale Validation\n\
+  \nAcceptable scales:\n  • 1:500\n  • 1:1000\n  • 1:2000\n\n------------------------------------------------\n\
+  \nSTEP 3: Coverage Validation\n\n- Drawing should cover:\n    • At least TWO roads\
+  \ (primary reference)\n    • Site location\n    • Access route\n\n------------------------------------------------\n\
+  \nSTEP 4: Scale Selection Logic\n\nCASE A: Compact site\n\n  - If 1:500 or 1:1000\
+  \ can cover:\n      • ≥2 roads\n      • Site + access\n\n    → PASS\n\nCASE B: Large\
+  \ / spread-out site\n\n  - If 1:500 / 1:1000 insufficient:\n      → 1:2000 allowed\n\
+  \nCASE C: Large scale used unnecessarily\n\n  - If 1:2000 used but:\n      • Only\
+  \ small area shown\n      → FAIL"
+fail_criteria: "- Scale missing\n\n- Non-standard scale used:\n    • e.g., 1:750,\
+  \ 1:1500, 1:2500\n\n- Coverage insufficient:\n    • Less than 2 roads visible\n\n\
+  - Incorrect scale usage:\n    • 1:2000 used when 1:1000 sufficient\n\n- Site or\
+  \ access route not clearly visible"
+deterministic_checks:
+- check: scale_detection
+  regex_patterns:
+  - 1:\s*500
+  - 1:\s*1000
+  - 1:\s*2000
+  - 1:\s*\d+
+  pass_evidence: 'Scale detected: {match}'
+  fail_verdict: FAIL
+  fail_evidence: Scale not found
+semantic_checks:
+- check: road_detection
+  description: Detect number of roads
+  logic: 'Identify named roads / street labels in drawing
+
+
+    If ≥2 roads present → PASS
+
+    Else → FAIL'
+- check: coverage_evaluation
+  description: Evaluate site coverage vs scale
+  logic: "Determine if selected scale appropriately fits:\n\n  • Site\n  • Access\
+    \ path\n  • Surrounding roads"
+- check: scale_appropriateness
+  description: Validate scale efficiency
+  logic: "If large scale (1:2000):\n  Ensure justified by wide coverage"
+normalization_rules:
+- remove spaces in scale
+- standardize format (1:1000)
+negative_constraints:
+- Do NOT validate non-G2 sheets
+- Do NOT pass based on scale alone (coverage required)
+- Do NOT assume roads without labels
+notes: "- Preferred working scales:\n    • 1:500\n    • 1:1000\n\n- 1:2000 is acceptable\
+  \ only for large sites\n\n- Key requirement:\n    Scale must ensure visibility of\
+  \ at least two roads\n\n- Common issue:\n    Using 1:2000 unnecessarily → reduces\
+  \ clarity\n\n- This rule ensures:\n    Readability + contextual completeness of\
+  \ site plan"
+required_references:
+- FC_Drawing

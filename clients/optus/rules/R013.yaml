@@ -1,0 +1,65 @@
+id: R013
+name: Remove R references and EME EXCLUSION ZONE from cover sheet for CPS vendor
+type: medium
+match_keywords:
+- eme exclusion zone
+- remove eme exclusion
+- r reference removal
+validation_mode: auto
+description: 'For CPS vendor drawings, the cover sheet must NOT include:
+
+  - "EME EXCLUSION ZONE" section (both heading and content)
+
+  - Any previous revision references (e.g., "R" revisions or legacy revision details)
+
+
+  NOTE:
+
+  This rule applies ONLY when the vendor is CPS.'
+scope: Cover
+applicability_condition: 'Apply this rule ONLY if vendor is identified as "CPS"
+
+  (from title block, logo, or metadata)'
+pass_criteria: '- "EME EXCLUSION ZONE" section is completely removed (no heading,
+  no content)
+
+  - No previous revision references (e.g., "R") are present in the cover sheet
+
+  - Cover sheet reflects only current project scope'
+fail_criteria: '- "EME EXCLUSION ZONE" is present in any form (heading or content)
+
+  - Any legacy revision references (e.g., "R") are present
+
+  - Old or irrelevant revision details are retained'
+deterministic_checks:
+- check: eme_exclusion_absent
+  description: Ensure EME EXCLUSION ZONE is removed
+  keywords:
+  - eme exclusion zone
+  - eme exclusion
+  pass_evidence: EME EXCLUSION ZONE not found in cover sheet
+  found_verdict: FAIL
+  fail_evidence: EME EXCLUSION ZONE present — must be removed for CPS
+- check: r_reference_absent
+  description: Ensure legacy revision references are removed
+  regex_patterns:
+  - \bREV\s*R\b
+  - \bR[0-9]*\b
+  pass_evidence: No R revision references found
+  found_verdict: FAIL
+  fail_evidence: R revision reference found — must be removed for CPS
+negative_constraints:
+- Do NOT apply this rule if vendor is not CPS
+- Do NOT fail if EME EXCLUSION ZONE is absent (this is expected)
+- Ignore revision references outside cover sheet
+notes: '- Unlike other sections, EME EXCLUSION ZONE must be fully removed (not just
+  content, but also heading)
+
+  - This is a strict vendor-specific requirement for CPS
+
+  - Vendor identification should be derived from logo, title block, or metadata
+
+  - Ensure distinction between current revision (A) and legacy revision (R)'
+required_references:
+- FC_Drawing
+- FR

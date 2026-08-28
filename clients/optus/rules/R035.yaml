@@ -1,0 +1,24 @@
+id: R035
+name: Antenna and RRU maintenance access validation (EWP vs Ladder / Lad-Saf)
+category: Site Safety & Access
+scope: G1, G2, G3, G4
+description: 'Check the antenna and RRU maintenance access method based on site conditions,
+  As-Built, and site photos: - Verify whether access is by EWP (Elevated Work Platform)
+  or by ladder / step pegs with Lad-Saf fall arrest system. - If no climbing ladder/step
+  pegs are present on site (as confirmed by site photos/As-Built for this monopole),
+  access must be specified as EWP. - If Lad-Saf is present on existing structure,
+  verify certification notes.'
+required_references:
+- FC_Drawing
+- As-built
+- SDV_Photos
+pass_criteria: PASS if antenna/RRU maintenance access method is specified (e.g. EWP
+  / boom lift access for unclimbed poles, or ladder with fall arrest system / step
+  pegs) in the General Notes (G1) or Site Layout Plan (G2/G3).
+fail_criteria: FAIL if maintenance access is completely omitted, or if climbing ladder
+  access is specified for a pole with no climbing apparatus.
+expected_patterns:
+- (?i)(ewp|ladder|access|lad[- ]*saf|maintenance)
+negative_constraints:
+- Do NOT fail if access is designated as EWP when no climbing ladder exists on the
+  structure
