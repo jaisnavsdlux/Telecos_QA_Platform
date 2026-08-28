@@ -207,17 +207,10 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
     """
     global _LLM_LAST_CALL_TIME
     
+    gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
     target_model = model or os.getenv("LLM_MODEL", "gemini-2.0-flash")
     api_base = os.getenv("LLM_API_BASE", os.getenv("OPENAI_API_BASE", "http://localhost:11434/v1")).rstrip("/")
     api_key = os.getenv("LLM_API_KEY", os.getenv("OPENAI_API_KEY", "gemma-local"))
-    
-    # Auto-route Google Gemini API Studio
-    gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
-    if gemini_key and (target_model.startswith("gemini") or not os.getenv("LLM_API_BASE")):
-        api_base = "https://generativelanguage.googleapis.com/v1beta/openai"
-        api_key = gemini_key
-        if not target_model.startswith("gemini"):
-            target_model = "gemini-2.0-flash"
     
     anthropic_key = os.getenv("ANTHROPIC_API_KEY")
     use_anthropic = (target_model.startswith("claude") or os.getenv("LLM_PROVIDER") == "anthropic") and bool(anthropic_key)
@@ -230,8 +223,85 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
             time.sleep(min_gap - elapsed)
         _LLM_LAST_CALL_TIME = time.time()
 
-        if use_anthropic:
-            # Anthropic Messages API
+        if gemini_key:
+            # ── 1. NATIVE OFFICIAL GOOGLE GEMINI REST API ──
+            gemini_parts = []
+            text_accumulator = []
+            for item in content_list:
+                if item.get("type") == "text":
+                    t_val = item.get("text", "")
+                    gemini_parts.append({"text": t_val})
+                    text_accumulator.append(t_val)
+                elif item.get("type") == "image":
+                    src = item.get("source", {})
+                    gemini_parts.append({
+                        "inline_data": {
+                            "mime_type": src.get("media_type", "image/png"),
+                            "data": src.get("data", "")
+                        }
+                    })
+
+            gemini_payload = {
+                "system_instruction": {
+                    "parts": [{"text": system_msg}]
+                },
+                "contents": [
+                    {"role": "user", "parts": gemini_parts}
+                ],
+                "generationConfig": {
+                    "temperature": 0.1,
+                    "maxOutputTokens": 2048
+                }
+            }
+
+            models_to_try = [target_model, "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
+            models_to_try = list(dict.fromkeys([m.replace("models/", "") for m in models_to_try if m]))
+            
+            raw_text = None
+            input_tokens = 0
+            output_tokens = 0
+
+            for clean_model in models_to_try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{clean_model}:generateContent?key={gemini_key}"
+                for attempt in range(3):
+                    try:
+                        res = requests.post(url, json=gemini_payload, timeout=60)
+                        if res.status_code == 429:
+                            time.sleep(3.0 * (attempt + 1))
+                            continue
+                        if res.status_code == 404:
+                            break
+                        if res.status_code != 200:
+                            if attempt == 2:
+                                raise Exception(f"Gemini API status {res.status_code}: {res.text[:300]}")
+                            time.sleep(2.0)
+                            continue
+
+                        res_json = res.json()
+                        candidates = res_json.get("candidates", [])
+                        if candidates and "content" in candidates[0]:
+                            c_parts = candidates[0]["content"].get("parts", [])
+                            if c_parts:
+                                raw_text = c_parts[0].get("text", "")
+                        
+                        usage = res_json.get("usageMetadata", {})
+                        input_tokens = usage.get("promptTokenCount", 0) or (len(system_msg) + sum(len(t) for t in text_accumulator)) // 4
+                        output_tokens = usage.get("candidatesTokenCount", 0) or (len(raw_text or "") // 4)
+                        break
+                    except Exception as g_err:
+                        if attempt == 2 and clean_model == models_to_try[-1]:
+                            raise g_err
+                        time.sleep(2.0)
+
+                if raw_text is not None:
+                    target_model = clean_model
+                    break
+
+            if raw_text is None:
+                raise Exception("Gemini API call failed across all model variants.")
+
+        elif use_anthropic:
+            # ── 2. ANTHROPIC MESSAGES API ──
             headers = {
                 "x-api-key": anthropic_key,
                 "anthropic-version": "2023-06-01",
@@ -253,13 +323,12 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
             input_tokens = usage.get("input_tokens", 0)
             output_tokens = usage.get("output_tokens", 0)
         else:
-            # Google Gemini (OpenAI Compatible) / Ollama / Cloud Chat format
+            # ── 3. STANDARD OPENAI / OLLAMA / LOCAL HOST COMPATIBLE FORMAT ──
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {api_key}"
             }
             
-            # Format messages
             openai_content = []
             text_accumulator = []
             for item in content_list:
@@ -297,7 +366,6 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
                         time.sleep(2.5 * (attempt + 1))
                         continue
                     if response.status_code != 200 and attempt == 0:
-                        # Fallback to text-only if multimodal image structure was rejected
                         fallback_messages = [
                             {"role": "system", "content": system_msg},
                             {"role": "user", "content": "\n".join(text_accumulator)}
