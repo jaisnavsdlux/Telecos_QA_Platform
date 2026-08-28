@@ -71,7 +71,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS + ["*"],
     allow_credentials=False,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
     allow_headers=["*"],
 )
 
@@ -84,16 +84,23 @@ app.include_router(validation_router)
 app.include_router(reports_router)
 app.include_router(telemetry_router)
 
-# Mount frontend UI assets with zero-caching policy
+# Mount frontend UI assets if present locally
 mount_dir = FRONTEND_DIR if os.path.exists(FRONTEND_DIR) else STATIC_DIR
 if os.path.exists(mount_dir):
     app.mount("/static", NoCacheStaticFiles(directory=mount_dir, html=True), name="static")
     app.mount("/assets", NoCacheStaticFiles(directory=mount_dir, html=True), name="assets")
 
 @app.get("/")
+@app.head("/")
 def root():
-    """Redirects root URL to the authentication portal."""
-    return RedirectResponse(url="/static/index.html")
+    """API Gateway root status endpoint."""
+    return {
+        "status": "online",
+        "service": "Strelza Telecos QA & Compliance API",
+        "version": "2.3.0",
+        "docs_url": "/docs",
+        "health_url": "/api/health"
+    }
 
 # Backward compatibility exports
 __all__ = ["app", "classify_file"]
