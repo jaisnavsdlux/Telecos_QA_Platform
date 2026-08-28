@@ -1,9 +1,23 @@
 """
 Strelza Telecos Drawing QA Validator — Main FastAPI Application.
-Modular, layered architecture with decoupled routers, Neon Postgres DB, and Cloudflare R2 storage.
+Modular, layered architecture with decoupled routers, Neon Postgres DB, and Cloudflare R2 / Backblaze B2 storage.
 """
 import os
 import sys
+import types
+
+# Ensure module resolution when running inside /app container or root
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+for p in [current_dir, parent_dir]:
+    if p and p not in sys.path:
+        sys.path.insert(0, p)
+
+if "backend" not in sys.modules and os.path.exists(os.path.join(current_dir, "config.py")):
+    backend_pkg = types.ModuleType("backend")
+    backend_pkg.__path__ = [current_dir]
+    sys.modules["backend"] = backend_pkg
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

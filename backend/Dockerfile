@@ -17,7 +17,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend application code
 COPY . .
 
+# Create symlink so 'from backend...' always resolves cleanly in container
+RUN ln -s /app /app/backend 2>/dev/null || true
+
 # Set environment variables
+ENV PYTHONPATH="/app:${PYTHONPATH}"
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
 ENV HOST=0.0.0.0
