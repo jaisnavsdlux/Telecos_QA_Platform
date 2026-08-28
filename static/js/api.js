@@ -64,7 +64,10 @@ const Api = (() => {
     }
 
     // Support dynamic Vercel-to-Render remote backend URLs
-    const baseUrl = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) ? window.APP_CONFIG.API_BASE_URL.replace(/\/$/, '') : '';
+    let baseUrl = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) ? window.APP_CONFIG.API_BASE_URL.replace(/\/$/, '') : '';
+    if (!baseUrl && (window.location.hostname.includes("vercel.app") || window.location.origin.includes("vercel.app"))) {
+      baseUrl = "https://telecos-backend.onrender.com";
+    }
     if (baseUrl && !finalPath.startsWith('http://') && !finalPath.startsWith('https://')) {
       finalPath = `${baseUrl}${finalPath.startsWith('/') ? '' : '/'}${finalPath}`;
     }
@@ -83,12 +86,15 @@ const Api = (() => {
     }
 
     if (!res.ok) {
-      let errText = "Request failed";
+      let errText = "Request failed (" + res.status + ")";
       try {
-        const body = await res.json();
+        const cloned = res.clone();
+        const body = await cloned.json();
         errText = body.detail || body.message || errText;
       } catch {
-        errText = await res.text();
+        try {
+          errText = await res.text();
+        } catch (_) {}
       }
       throw new Error(errText);
     }
