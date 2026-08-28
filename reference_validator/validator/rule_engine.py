@@ -207,22 +207,31 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
     """
     global _LLM_LAST_CALL_TIME
     
-    target_model = model or os.getenv("LLM_MODEL", "gemma4:cloud")
+    target_model = model or os.getenv("LLM_MODEL", "gemini-2.0-flash")
     api_base = os.getenv("LLM_API_BASE", os.getenv("OPENAI_API_BASE", "http://localhost:11434/v1")).rstrip("/")
     api_key = os.getenv("LLM_API_KEY", os.getenv("OPENAI_API_KEY", "gemma-local"))
+    
+    # Auto-route Google Gemini API Studio
+    gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if gemini_key and (target_model.startswith("gemini") or not os.getenv("LLM_API_BASE")):
+        api_base = "https://generativelanguage.googleapis.com/v1beta/openai"
+        api_key = gemini_key
+        if not target_model.startswith("gemini"):
+            target_model = "gemini-2.0-flash"
     
     anthropic_key = os.getenv("ANTHROPIC_API_KEY")
     use_anthropic = (target_model.startswith("claude") or os.getenv("LLM_PROVIDER") == "anthropic") and bool(anthropic_key)
 
     with _LLM_SEMAPHORE:
-        # Rate limit spacing
+        # Rate limit spacing to strictly honor 15 RPM limits
         elapsed = time.time() - _LLM_LAST_CALL_TIME
-        if elapsed < _LLM_MIN_GAP_SECONDS:
-            time.sleep(_LLM_MIN_GAP_SECONDS - elapsed)
+        min_gap = 1.0 if gemini_key else _LLM_MIN_GAP_SECONDS
+        if elapsed < min_gap:
+            time.sleep(min_gap - elapsed)
         _LLM_LAST_CALL_TIME = time.time()
 
         if use_anthropic:
-            # Anthropic Messages API without prompt caching
+            # Anthropic Messages API
             headers = {
                 "x-api-key": anthropic_key,
                 "anthropic-version": "2023-06-01",
@@ -244,7 +253,7 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
             input_tokens = usage.get("input_tokens", 0)
             output_tokens = usage.get("output_tokens", 0)
         else:
-            # Standard OpenAI / Ollama / Cloud Chat Completion format
+            # Google Gemini (OpenAI Compatible) / Ollama / Cloud Chat format
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {api_key}"
@@ -280,19 +289,26 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
             }
 
             url = f"{api_base}/chat/completions"
-            try:
-                response = requests.post(url, headers=headers, json=payload, timeout=60)
-                if response.status_code != 200:
-                    # Fallback to text-only if multimodal image structure was rejected
-                    fallback_messages = [
-                        {"role": "system", "content": system_msg},
-                        {"role": "user", "content": "\n".join(text_accumulator)}
-                    ]
-                    payload["messages"] = fallback_messages
+            response = None
+            for attempt in range(3):
+                try:
                     response = requests.post(url, headers=headers, json=payload, timeout=60)
-            except Exception as conn_err:
-                # If endpoint unreachable, raise descriptive error
-                raise Exception(f"Connection to LLM endpoint ({url}) failed: {conn_err}")
+                    if response.status_code == 429:
+                        time.sleep(2.5 * (attempt + 1))
+                        continue
+                    if response.status_code != 200 and attempt == 0:
+                        # Fallback to text-only if multimodal image structure was rejected
+                        fallback_messages = [
+                            {"role": "system", "content": system_msg},
+                            {"role": "user", "content": "\n".join(text_accumulator)}
+                        ]
+                        payload["messages"] = fallback_messages
+                        response = requests.post(url, headers=headers, json=payload, timeout=60)
+                    break
+                except Exception as conn_err:
+                    if attempt == 2:
+                        raise Exception(f"Connection to LLM endpoint ({url}) failed: {conn_err}")
+                    time.sleep(2)
 
             res_json = response.json()
             if "error" in res_json:
