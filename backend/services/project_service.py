@@ -350,8 +350,9 @@ class ProjectService:
     @staticmethod
     def get_package_files(project_id: str = "H8097") -> Dict[str, Any]:
         """Returns indexed primary drawing info and categorized companion references for a project."""
-        pdir = ProjectService.get_project_dir(project_id)
-        meta = ProjectService.get_project_meta(project_id)
+        pid = re.sub(r'[^a-zA-Z0-9_-]', '', (project_id or "H8097").upper().strip()) or "H8097"
+        pdir = ProjectService.get_project_dir(pid)
+        meta = ProjectService.get_project_meta(pid)
 
         # Primary drawing discovery
         dwg_dir = os.path.join(pdir, "drawing")
@@ -372,61 +373,69 @@ class ProjectService:
             "revision": meta.get("drawing_revision", "FOR CONSTRUCTION (Rev 1.0)")
         }
 
-        # Recursive scan of references directory
-        ref_dir = os.path.join(pdir, "references")
-        if (not os.path.exists(ref_dir) or len(os.listdir(ref_dir)) == 0) and project_id == "H8097":
-            if os.path.exists(REFERENCE_FILES_DIR):
-                ref_dir = REFERENCE_FILES_DIR
+        # Prettify category labels
+        cat_labels = {
+            "FC_Drawing": "For-Construction Drawing",
+            "FR": "FR (Feasibility Report)",
+            "RLM": "RLM (Radio Link Model)",
+            "Mount_Certificate": "Mount Structural Certificate",
+            "Pole_Certificate": "Pole Structural Certificate",
+            "Structural_Certificate": "Structural Assessment Certificate",
+            "Structural_Drawings": "Structural Engineering Drawings",
+            "SDV_Photos": "SDV Site Photos & Inspection",
+            "As-built": "As-built Baseline Drawings",
+            "Form_A": "Form A (Radiation Safety)",
+            "Form_B": "Form B (EME Hazard Assessment)",
+            "OSD": "OSD Standard Signage Drawings",
+            "PDT": "Power Design Tool (PDT)",
+            "PVA": "Power Viability Assessment (PVA)",
+            "DPD": "Detailed Planning Diagram (DPD)",
+            "RFNSA": "RFNSA National Site Database",
+            "Environmental": "Environmental & Heritage Reports",
+            "Geotech": "Geotechnical Soil Reports",
+            "Survey": "Land Survey & Topography",
+            "General_Companion": "General Engineering Companion"
+        }
+
+        # Multi-source scan across all reference package locations
+        ref_dirs_to_check = [
+            os.path.join(pdir, "references"),
+            os.path.join(LEGACY_PROJECTS_DIR, pid, "references"),
+            os.path.join(BASE_DIR, "qaInput", "reference_package"),
+            REFERENCE_FILES_DIR,
+            os.path.join(BASE_DIR, "reference_files")
+        ]
 
         categories = {}
+        seen_files = set()
         total_ref_files = 0
 
-        if os.path.exists(ref_dir):
-            for root, _, files in os.walk(ref_dir):
-                for f in sorted(files):
-                    fp = os.path.join(root, f)
-                    if not os.path.isfile(fp):
-                        continue
-                    total_ref_files += 1
-                    try:
-                        size_kb = round(os.path.getsize(fp) / 1024, 1)
-                    except Exception:
-                        size_kb = 0.0
-                    ext = os.path.splitext(f)[1].lower()
-                    cat = classify_file(f)
+        for ref_dir in ref_dirs_to_check:
+            if os.path.exists(ref_dir) and os.path.isdir(ref_dir):
+                for root, _, files in os.walk(ref_dir):
+                    for f in sorted(files):
+                        if f in seen_files:
+                            continue
+                        fp = os.path.join(root, f)
+                        if not os.path.isfile(fp):
+                            continue
+                        seen_files.add(f)
+                        total_ref_files += 1
+                        try:
+                            size_kb = round(os.path.getsize(fp) / 1024, 1)
+                        except Exception:
+                            size_kb = 0.0
+                        ext = os.path.splitext(f)[1].lower()
+                        cat = classify_file(f)
+                        cat_display = cat_labels.get(cat, cat.replace("_", " "))
 
-                    # Prettify category labels
-                    cat_labels = {
-                        "FC_Drawing": "For-Construction Drawing",
-                        "FR": "FR (Feasibility Report)",
-                        "RLM": "RLM (Radio Link Model)",
-                        "Mount_Certificate": "Mount Structural Certificate",
-                        "Pole_Certificate": "Pole Structural Certificate",
-                        "Structural_Certificate": "Structural Assessment Certificate",
-                        "Structural_Drawings": "Structural Engineering Drawings",
-                        "SDV_Photos": "SDV Site Photos & Inspection",
-                        "As-built": "As-built Baseline Drawings",
-                        "Form_A": "Form A (Radiation Safety)",
-                        "Form_B": "Form B (EME Hazard Assessment)",
-                        "OSD": "OSD Standard Signage Drawings",
-                        "PDT": "Power Design Tool (PDT)",
-                        "PVA": "Power Viability Assessment (PVA)",
-                        "DPD": "Detailed Planning Diagram (DPD)",
-                        "RFNSA": "RFNSA National Site Database",
-                        "Environmental": "Environmental & Heritage Reports",
-                        "Geotech": "Geotechnical Soil Reports",
-                        "Survey": "Land Survey & Topography",
-                        "General_Companion": "General Engineering Companion"
-                    }
-                    cat_display = cat_labels.get(cat, cat.replace("_", " "))
-
-                    if cat_display not in categories:
-                        categories[cat_display] = []
-                    categories[cat_display].append({
-                        "name": f,
-                        "size_kb": size_kb,
-                        "extension": ext
-                    })
+                        if cat_display not in categories:
+                            categories[cat_display] = []
+                        categories[cat_display].append({
+                            "name": f,
+                            "size_kb": size_kb,
+                            "extension": ext
+                        })
 
         category_list = []
         for cat_name, file_list in sorted(categories.items()):
@@ -437,7 +446,7 @@ class ProjectService:
             })
 
         return {
-            "project_id": project_id,
+            "project_id": pid,
             "primary_drawing": primary_drawing,
             "reference_categories": category_list,
             "total_reference_files": total_ref_files
