@@ -63,7 +63,7 @@ class ValidationService:
             return {"status": "idle", "message": "Execution reset to idle."}
 
     @staticmethod
-    def run_audit_background() -> None:
+    def run_audit_background(project_id: str = "H8097") -> None:
         """Executes full validation in background thread."""
         with _AUDIT_LOCK:
             LOCAL_AUDIT_STATE["status"] = "running"
@@ -105,7 +105,7 @@ class ValidationService:
                         LOCAL_AUDIT_STATE["verdicts"] = v_counts
 
             from backend.run_full_package_validation import main as run_pkg
-            run_pkg(progress_callback=progress_callback)
+            run_pkg(project_id=project_id, progress_callback=progress_callback)
 
             with _AUDIT_LOCK:
                 LOCAL_AUDIT_STATE["status"] = "completed"

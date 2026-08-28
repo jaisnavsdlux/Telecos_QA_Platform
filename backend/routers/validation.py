@@ -8,18 +8,22 @@ from backend.services.validation_service import ValidationService
 router = APIRouter(tags=["Validation Controls"])
 
 @router.get("/trigger_local_audit")
-async def trigger_local_audit(background_tasks: BackgroundTasks):
-    """Triggers the full 71-rule audit using the host PC's resources and Gemma-4 model."""
+@router.post("/trigger_local_audit")
+@router.get("/api/validation/run")
+@router.post("/api/validation/run")
+async def trigger_local_audit(background_tasks: BackgroundTasks, project_id: str = "H8097"):
+    """Triggers the full 71-rule compliance audit with real-time streaming feedback."""
     state = ValidationService.get_state()
     if state["status"] == "running":
-        return {"status": "already_running", "message": "Audit is already in progress on the host PC."}
+        return {"status": "already_running", "message": "Audit is already in progress for this workspace."}
 
-    background_tasks.add_task(ValidationService.run_audit_background)
-    return {"status": "started", "message": "Audit initiated on host PC."}
+    background_tasks.add_task(ValidationService.run_audit_background, project_id=project_id)
+    return {"status": "started", "message": f"Audit initiated for project {project_id}."}
 
 @router.get("/audit_status")
+@router.get("/api/validation/status")
 def get_audit_status():
-    """Polls real-time inference execution status."""
+    """Polls real-time inference execution status and scorecards."""
     return ValidationService.get_state()
 
 @router.post("/api/execution/pause")

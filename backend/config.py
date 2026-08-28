@@ -31,6 +31,20 @@ if not os.path.exists(RULES_DIR):
     if os.path.exists(alt_rules):
         RULES_DIR = alt_rules
 
+if not os.path.exists(REFERENCE_FILES_DIR):
+    alt_refs = os.path.join(BASE_DIR, "reference_files")
+    if os.path.exists(alt_refs):
+        REFERENCE_FILES_DIR = alt_refs
+    elif os.path.exists(os.path.join(BASE_DIR, "qaInput", "reference_package")):
+        REFERENCE_FILES_DIR = os.path.join(BASE_DIR, "qaInput", "reference_package")
+
+if not os.path.exists(DRAWINGS_DIR):
+    alt_dwg = os.path.join(BASE_DIR, "drawings")
+    if os.path.exists(alt_dwg):
+        DRAWINGS_DIR = alt_dwg
+    elif os.path.exists(os.path.join(BASE_DIR, "qaInput", "primary_drawing")):
+        DRAWINGS_DIR = os.path.join(BASE_DIR, "qaInput", "primary_drawing")
+
 # Ensure essential runtime directories exist
 for d in [DB_DIR, PROJECTS_DIR, REPORTS_DIR, FRONTEND_DIR, STATIC_DIR]:
     os.makedirs(d, exist_ok=True)

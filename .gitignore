@@ -9,14 +9,17 @@ __pycache__/
 .venv/
 venv/
 
-# Large Binary & Media Files (Stored in Cloudflare R2)
-*.pdf
+# Large Binary & Media Files (Stored in Cloudflare R2 / S3)
 *.zip
 *.MP4
 *.mp4
 *.LRF
 *.dwg
 *.dxf
+
+# Whitelist clean qaInput reference package
+!qaInput/
+!qaInput/**
 
 # Local Storage & Input Packages
 input_packages/
