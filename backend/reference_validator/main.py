@@ -62,14 +62,15 @@ def _render_pages_as_images(file_path: str, page_indices: list):
         return images
     try:
         doc = fitz.open(file_path)
-        for i in page_indices[:4]: 
+        for i in page_indices[:2]: 
             if i < len(doc):
-                pix = doc[i].get_pixmap(matrix=fitz.Matrix(2.0, 2.0))
-                b64 = base64.b64encode(pix.tobytes("png")).decode()
-                images.append({"data": b64, "media_type": "image/png"})
+                pix = doc[i].get_pixmap(matrix=fitz.Matrix(1.0, 1.0))
+                img_bytes = pix.tobytes("jpeg")
+                b64 = base64.b64encode(img_bytes).decode()
+                images.append({"data": b64, "media_type": "image/jpeg"})
         doc.close()
     except Exception as e:
-        print(f"[render_pages] Warning rendering images: {e}")
+        print(f"[render_pages] Notice rendering images: {e}")
     return images
 
 def _validate_single_rule(rule, pages, pdf_path, total_pages, ref_cache, global_context=None, model=None):
