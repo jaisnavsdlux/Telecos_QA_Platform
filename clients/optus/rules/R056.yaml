@@ -1,4 +1,10 @@
-scope: G3
+id: R056
+name: Electrical cables upgrade notes check
+description: If Electrical upgrade is required, check whether the Electrical Engineer's MU is captured in the DFC, including details such as consumer cable length and size, and submain cable length and size.
+scope: G3, G2
 required_references:
 - FC_Drawing
 - SDV_Photos
+- General_Companion
+category: Drawing Quality
+validation_mode: deterministic_first

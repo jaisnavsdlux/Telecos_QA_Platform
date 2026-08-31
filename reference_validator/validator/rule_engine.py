@@ -208,8 +208,18 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
     global _LLM_LAST_CALL_TIME
     
     gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
-    target_model = model or os.getenv("LLM_MODEL", "gemini-2.0-flash")
-    api_base = os.getenv("LLM_API_BASE", os.getenv("OPENAI_API_BASE", "http://localhost:11434/v1")).strip().rstrip("/")
+    raw_model = (model or os.getenv("LLM_MODEL", "")).strip()
+    api_base = os.getenv("LLM_API_BASE", os.getenv("OPENAI_API_BASE", "")).strip().rstrip("/")
+    
+    if api_base and (not raw_model or raw_model == "gemini-2.0-flash"):
+        target_model = "gemma4:cloud"
+    elif not raw_model:
+        target_model = "gemini-2.0-flash" if gemini_key else "gemma4:cloud"
+    else:
+        target_model = raw_model
+
+    if not api_base:
+        api_base = "http://localhost:11434/v1"
     api_key = os.getenv("LLM_API_KEY", os.getenv("OPENAI_API_KEY", "gemma-local")).strip()
     
     anthropic_key = os.getenv("ANTHROPIC_API_KEY")
@@ -438,10 +448,12 @@ def load_rules(client_id: str = "optus") -> dict:
                 try:
                     with open(filepath, "r", encoding="utf-8") as f:
                         data = yaml.safe_load(f)
-                        if data and "id" in data:
-                            rules_dict[data["id"]] = data
-                        elif data and "rule_id" in data:
-                            rules_dict[data["rule_id"]] = data
+                        if data:
+                            r_id = data.get("id") or data.get("rule_id") or os.path.splitext(filename)[0].upper()
+                            data["id"] = r_id
+                            if "name" not in data:
+                                data["name"] = data.get("description") or data.get("rule_text") or f"Rule {r_id}"
+                            rules_dict[r_id] = data
                 except Exception as e:
                     print(f"[load_rules] Error reading {filename}: {e}")
     return rules_dict

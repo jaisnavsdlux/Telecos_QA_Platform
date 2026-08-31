@@ -2,6 +2,8 @@ import concurrent.futures
 import fitz
 import base64
 import os
+import gc
+import re
 import json
 from typing import TypedDict, List, Dict, Any
 
