@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Checkpoint Validation — Strelza Telecos QA</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="alternate icon" href="/favicon.ico" />
 <link rel="stylesheet" href="/static/css/style.css" />
 <style>
   .checkpoint-row {
@@ -174,8 +176,8 @@
       <section class="card" style="overflow:hidden;">
         <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div style="display:flex; align-items:center; gap:16px;">
-            <label style="display:flex; align-items:center; gap:8px; font-weight:600; cursor:pointer; font-size:13px; color:var(--text);">
-              <input type="checkbox" id="selectAllCheckbox" checked style="accent-color:var(--cyan);" /> Select All
+            <label for="selectAllCheckbox" style="display:flex; align-items:center; gap:8px; font-weight:600; cursor:pointer; font-size:13px; color:var(--text);">
+              <input type="checkbox" id="selectAllCheckbox" aria-label="Select all compliance rules" checked style="accent-color:var(--cyan);" /> Select All
             </label>
             <span style="color:var(--border);">|</span>
             <button class="btn btn-ghost btn-sm" onclick="filterCategory('all')">All Disciplines</button>
@@ -184,7 +186,7 @@
             <button class="btn btn-ghost btn-sm" onclick="filterCategory('Rooftop')">Rooftop Only</button>
           </div>
 
-          <input type="text" id="ruleSearchInput" placeholder="Filter rules (e.g. scale, WA, GPS)..." style="padding:7px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:12px; outline:none; width:220px;" />
+          <input type="text" id="ruleSearchInput" aria-label="Filter compliance rules" placeholder="Filter rules (e.g. scale, WA, GPS)..." style="padding:7px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:12px; outline:none; width:220px;" />
         </div>
 
         <div id="checkpointTableContainer">
@@ -313,7 +315,7 @@
 
         return `
           <div class="checkpoint-row" id="row-${escapeHtml(cp.code)}">
-            <input type="checkbox" ${isChecked ? "checked" : ""} onclick="toggleRule('${escapeHtml(cp.code)}', event)" style="accent-color:var(--cyan); width:18px; height:18px; margin-top:2px; cursor:pointer;" />
+            <input type="checkbox" ${isChecked ? "checked" : ""} onclick="toggleRule('${escapeHtml(cp.code)}', event)" aria-label="Select checkpoint ${escapeHtml(cp.code)}" style="accent-color:var(--cyan); width:18px; height:18px; margin-top:2px; cursor:pointer;" />
             <div class="checkpoint-info">
               <div class="rule" style="margin-bottom:6px;">
                 <span class="code">${escapeHtml(cp.code)}</span>

@@ -155,7 +155,7 @@ async function initProjectSelector(containerId, onSwitchCallback) {
             <button type="button" onclick="openManageProjectsModal()" style="background:none; border:none; color:var(--text-muted); font-size:11px; cursor:pointer; font-weight:600; padding:0;" title="Rename, delete, or manage projects">⚙️ Manage</button>
           </div>
         </div>
-        <select id="globalProjectSelect" style="width:100%; padding:7px 10px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-size:12px; font-weight:600; outline:none; cursor:pointer;">
+        <select id="globalProjectSelect" aria-label="Active Project Selector" style="width:100%; padding:7px 10px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-size:12px; font-weight:600; outline:none; cursor:pointer;">
           ${projects.map(p => `
             <option value="${escapeHtml(p.id)}" ${p.id === activeId ? 'selected' : ''}>
               📍 ${escapeHtml(p.code)} • ${escapeHtml(p.name)}
@@ -196,21 +196,21 @@ function injectProjectModals() {
 
         <form id="createProjectForm">
           <div class="field" style="margin-bottom:12px;">
-            <label style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; font-weight:600;">
+            <label for="newSiteId" style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; font-weight:600;">
               <span>Site ID / Project Code</span>
               <span class="mono" style="color:var(--cyan); font-size:10px;">Required</span>
             </label>
-            <input type="text" id="newSiteId" placeholder="e.g. S1212, N4088, B9021" style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;" required />
+            <input type="text" id="newSiteId" aria-label="Site ID or Project Code" placeholder="e.g. S1212, N4088, B9021" style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;" required />
           </div>
 
           <div class="field" style="margin-bottom:12px;">
-            <label style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;"><span>Site Name / Location</span></label>
-            <input type="text" id="newSiteName" placeholder="e.g. Blacktown Rooftop, Sydney CBD" style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;" required />
+            <label for="newSiteName" style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;"><span>Site Name / Location</span></label>
+            <input type="text" id="newSiteName" aria-label="Site Name and Location" placeholder="e.g. Blacktown Rooftop, Sydney CBD" style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;" required />
           </div>
 
           <div class="field" style="margin-bottom:12px;">
-            <label style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;"><span>Structure Type</span></label>
-            <select id="newStructureType" style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;">
+            <label for="newStructureType" style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;"><span>Structure Type</span></label>
+            <select id="newStructureType" aria-label="Select Structure Type" style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;">
               <option value="CONCRETE MONOPOLE (26.8m)" selected>CONCRETE MONOPOLE (26.8m)</option>
               <option value="ROOFTOP MOUNT">ROOFTOP MOUNT</option>
               <option value="SELF SUPPORTING LATTICE TOWER">SELF SUPPORTING LATTICE TOWER</option>
@@ -219,13 +219,13 @@ function injectProjectModals() {
           </div>
 
           <div class="field" style="margin-bottom:16px;">
-            <label style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;"><span>Primary For-Construction CAD PDF (Optional)</span></label>
-            <input type="file" id="newDrawingFile" accept=".pdf,.dwg" style="width:100%; padding:8px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:12px;" />
+            <label for="newDrawingFile" style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;"><span>Primary For-Construction CAD PDF (Optional)</span></label>
+            <input type="file" id="newDrawingFile" aria-label="Upload Primary Drawing PDF" accept=".pdf,.dwg" style="width:100%; padding:8px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:12px;" />
           </div>
 
           <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
             <button type="button" class="btn" style="background:var(--surface-raised);" onclick="closeNewProjectModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary" id="createProjectSubmitBtn">Create &amp; Switch</button>
+            <button type="submit" class="btn btn-primary" id="createProjectSubmitBtn">Create Workspace</button>
           </div>
         </form>
       </div>
@@ -233,37 +233,22 @@ function injectProjectModals() {
 
     <!-- Manage Projects Modal -->
     <div id="manageProjectsModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:9999; justify-content:center; align-items:center;">
-      <div style="background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--cyan); border-radius:var(--radius-lg); width:94%; max-width:920px; max-height:88vh; display:flex; flex-direction:column; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15);">
+      <div style="background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--cyan); border-radius:var(--radius-lg); width:94%; max-width:680px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.18); max-height:85vh; display:flex; flex-direction:column;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
           <div>
-            <h3 style="margin:0; font-size:18px; color:var(--text);">Project Workspace Manager</h3>
-            <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Rename, switch, or delete project workspaces across the system.</div>
+            <h3 style="margin:0; font-size:17px; color:var(--text);">Project Workspace Manager</h3>
+            <p style="font-size:12px; color:var(--text-muted); margin:4px 0 0 0;">Inspect and manage all isolated telecom site repositories.</p>
           </div>
-          <div style="display:flex; gap:10px;">
-            <button type="button" class="btn btn-sm btn-primary" onclick="openNewProjectModal()">+ Add Project</button>
-            <button type="button" onclick="closeManageProjectsModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer; line-height:1;">&times;</button>
-          </div>
+          <button type="button" onclick="closeManageProjectsModal()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">&times;</button>
         </div>
 
-        <div style="flex:1; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius); margin-bottom:16px;">
-          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12px;">
-            <thead>
-              <tr style="background:var(--surface-raised); border-bottom:1px solid var(--border); color:var(--text-muted); text-transform:uppercase; font-size:10px; font-weight:700;">
-                <th style="padding:10px 14px; width:20%;">Site ID</th>
-                <th style="padding:10px 14px; width:20%;">Project Name</th>
-                <th style="padding:10px 14px; width:18%;">Structure</th>
-                <th style="padding:10px 14px; width:22%;">Drawing / Files</th>
-                <th style="padding:10px 14px; width:20%; text-align:right;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="manageProjectsTableBody">
-              <tr><td colspan="5" style="padding:24px; text-align:center; color:var(--text-muted);">Loading projects…</td></tr>
-            </tbody>
-          </table>
+        <div id="manageProjectsList" style="flex:1; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius); margin-bottom:16px;">
+          <div style="padding:24px; text-align:center; color:var(--text-muted);">Loading projects…</div>
         </div>
 
-        <div style="display:flex; justify-content:flex-end;">
-          <button type="button" class="btn" style="background:var(--surface-raised);" onclick="closeManageProjectsModal()">Done</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--border);">
+          <button type="button" class="btn btn-sm btn-primary" onclick="openNewProjectModal(); closeManageProjectsModal();">+ New Project</button>
+          <button type="button" class="btn btn-sm" style="background:var(--surface-raised);" onclick="closeManageProjectsModal()">Done</button>
         </div>
       </div>
     </div>
@@ -280,18 +265,18 @@ function injectProjectModals() {
           <input type="hidden" id="renameProjectId" />
           
           <div class="field" style="margin-bottom:12px;">
-            <label style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;">Site Identifier</label>
-            <input type="text" id="renameSiteIdDisplay" disabled style="width:100%; padding:8px 12px; background:var(--surface-raised); border:1px solid var(--border); border-radius:var(--radius); color:var(--text-muted); font-family:var(--font-mono); font-size:13px; font-weight:700;" />
+            <label for="renameSiteIdDisplay" style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;">Site Identifier</label>
+            <input type="text" id="renameSiteIdDisplay" aria-label="Site Identifier Code" disabled style="width:100%; padding:8px 12px; background:var(--surface-raised); border:1px solid var(--border); border-radius:var(--radius); color:var(--text-muted); font-family:var(--font-mono); font-size:13px; font-weight:700;" />
           </div>
 
           <div class="field" style="margin-bottom:12px;">
-            <label style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;">Site / Project Name</label>
-            <input type="text" id="renameSiteName" required style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;" />
+            <label for="renameSiteName" style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;">Site / Project Name</label>
+            <input type="text" id="renameSiteName" aria-label="Site and Project Name" required style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;" />
           </div>
 
           <div class="field" style="margin-bottom:12px;">
-            <label style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;">Structure Type</label>
-            <select id="renameStructureType" style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;">
+            <label for="renameStructureType" style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;">Structure Type</label>
+            <select id="renameStructureType" aria-label="Select Structure Type" style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;">
               <option value="CONCRETE MONOPOLE (26.8m)">CONCRETE MONOPOLE (26.8m)</option>
               <option value="ROOFTOP MOUNT">ROOFTOP MOUNT</option>
               <option value="SELF SUPPORTING LATTICE TOWER">SELF SUPPORTING LATTICE TOWER</option>
@@ -300,8 +285,8 @@ function injectProjectModals() {
           </div>
 
           <div class="field" style="margin-bottom:16px;">
-            <label style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;">Drawing Revision</label>
-            <input type="text" id="renameDrawingRevision" style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;" />
+            <label for="renameDrawingRevision" style="display:block; font-size:12px; margin-bottom:4px; font-weight:600;">Drawing Revision</label>
+            <input type="text" id="renameDrawingRevision" aria-label="Drawing Revision Code" style="width:100%; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-size:13px;" />
           </div>
 
           <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
