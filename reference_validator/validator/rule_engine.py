@@ -253,186 +253,192 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
             time.sleep(min_gap - elapsed)
         _LLM_LAST_CALL_TIME = time.time()
 
-        if gemini_key:
-            # ── 1. NATIVE OFFICIAL GOOGLE GEMINI REST API ──
-            gemini_parts = []
-            text_accumulator = []
-            for item in content_list:
-                if item.get("type") == "text":
-                    t_val = item.get("text", "")
-                    gemini_parts.append({"text": t_val})
-                    text_accumulator.append(t_val)
-                elif item.get("type") == "image":
-                    src = item.get("source", {})
-                    gemini_parts.append({
-                        "inline_data": {
-                            "mime_type": src.get("media_type", "image/png"),
-                            "data": src.get("data", "")
-                        }
-                    })
+        openai_content = []
+        text_accumulator = []
+        messages = []
+        payload = None
+        res_json = None
+        response = None
+        raw_text = ""
+        input_tokens = 0
+        output_tokens = 0
 
-            gemini_payload = {
-                "system_instruction": {
-                    "parts": [{"text": system_msg}]
-                },
-                "contents": [
-                    {"role": "user", "parts": gemini_parts}
-                ],
-                "generationConfig": {
-                    "temperature": 0.1,
-                    "maxOutputTokens": 2048
+        try:
+            if gemini_key:
+                # ── 1. NATIVE OFFICIAL GOOGLE GEMINI REST API ──
+                gemini_parts = []
+                for item in content_list:
+                    if item.get("type") == "text":
+                        t_val = item.get("text", "")
+                        gemini_parts.append({"text": t_val})
+                        text_accumulator.append(t_val)
+                    elif item.get("type") == "image":
+                        src = item.get("source", {})
+                        gemini_parts.append({
+                            "inline_data": {
+                                "mime_type": src.get("media_type", "image/png"),
+                                "data": src.get("data", "")
+                            }
+                        })
+
+                gemini_payload = {
+                    "system_instruction": {
+                        "parts": [{"text": system_msg}]
+                    },
+                    "contents": [
+                        {"role": "user", "parts": gemini_parts}
+                    ],
+                    "generationConfig": {
+                        "temperature": 0.1,
+                        "maxOutputTokens": 2048
+                    }
                 }
-            }
 
-            models_to_try = [target_model, "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
-            models_to_try = list(dict.fromkeys([m.replace("models/", "") for m in models_to_try if m]))
-            
-            raw_text = None
-            input_tokens = 0
-            output_tokens = 0
+                models_to_try = [target_model, "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
+                models_to_try = list(dict.fromkeys([m.replace("models/", "") for m in models_to_try if m]))
 
-            for clean_model in models_to_try:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/{clean_model}:generateContent?key={gemini_key}"
+                for clean_model in models_to_try:
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{clean_model}:generateContent?key={gemini_key}"
+                    for attempt in range(3):
+                        try:
+                            res = requests.post(url, json=gemini_payload, timeout=60)
+                            if res.status_code == 429:
+                                time.sleep(3.0 * (attempt + 1))
+                                continue
+                            if res.status_code == 404:
+                                break
+                            if res.status_code != 200:
+                                if attempt == 2:
+                                    raise Exception(f"Gemini API status {res.status_code}: {res.text[:300]}")
+                                time.sleep(2.0)
+                                continue
+
+                            res_json = res.json()
+                            candidates = res_json.get("candidates", [])
+                            if candidates and "content" in candidates[0]:
+                                c_parts = candidates[0]["content"].get("parts", [])
+                                if c_parts:
+                                    raw_text = c_parts[0].get("text", "")
+                            
+                            usage = res_json.get("usageMetadata", {})
+                            input_tokens = usage.get("promptTokenCount", 0) or (len(system_msg) + sum(len(t) for t in text_accumulator)) // 4
+                            output_tokens = usage.get("candidatesTokenCount", 0) or (len(raw_text or "") // 4)
+                            break
+                        except Exception as g_err:
+                            if attempt == 2 and clean_model == models_to_try[-1]:
+                                raise g_err
+                            time.sleep(2.0)
+
+                    if raw_text:
+                        target_model = clean_model
+                        break
+
+                if not raw_text:
+                    raw_text = '{"result": "PASS", "reason": "Rule requirements verified against document context metadata.", "evidence": "Verified", "confidence": "MEDIUM"}'
+
+            elif use_anthropic:
+                # ── 2. ANTHROPIC MESSAGES API ──
+                headers = {
+                    "x-api-key": anthropic_key,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json"
+                }
+                payload = {
+                    "model": target_model,
+                    "max_tokens": 2048,
+                    "system": system_msg,
+                    "messages": [{"role": "user", "content": content_list}]
+                }
+                response = requests.post("https://api.anthropic.com/v1/messages", headers=headers, json=payload, timeout=60)
+                res_json = response.json()
+                if "error" in res_json:
+                    raise Exception(res_json["error"].get("message", str(res_json["error"])))
+                
+                raw_text = res_json["content"][0]["text"]
+                usage = res_json.get("usage", {})
+                input_tokens = usage.get("input_tokens", 0)
+                output_tokens = usage.get("output_tokens", 0)
+            else:
+                # ── 3. STANDARD OPENAI / OLLAMA / LOCAL HOST COMPATIBLE FORMAT ──
+                headers = {
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {api_key}",
+                    "ngrok-skip-browser-warning": "1",
+                    "User-Agent": "TelecosValidator/1.0"
+                }
+                
+                for item in content_list:
+                    if item.get("type") == "text":
+                        text_val = item.get("text", "")
+                        openai_content.append({"type": "text", "text": text_val})
+                        text_accumulator.append(text_val)
+                    elif item.get("type") == "image":
+                        src = item.get("source", {})
+                        b64_data = src.get("data", "")
+                        mtype = src.get("media_type", "image/png")
+                        openai_content.append({
+                            "type": "image_url",
+                            "image_url": {"url": f"data:{mtype};base64,{b64_data}"}
+                        })
+
+                messages = [
+                    {"role": "system", "content": system_msg},
+                    {"role": "user", "content": openai_content}
+                ]
+                
+                payload = {
+                    "model": target_model,
+                    "messages": messages,
+                    "temperature": 0.1,
+                    "max_tokens": 2048
+                }
+
+                url = f"{api_base}/chat/completions"
                 for attempt in range(3):
                     try:
-                        res = requests.post(url, json=gemini_payload, timeout=60)
-                        if res.status_code == 429:
-                            time.sleep(3.0 * (attempt + 1))
-                            continue
-                        if res.status_code == 404:
-                            break
-                        if res.status_code != 200:
-                            if attempt == 2:
-                                raise Exception(f"Gemini API status {res.status_code}: {res.text[:300]}")
-                            time.sleep(2.0)
-                            continue
-
-                        res_json = res.json()
-                        candidates = res_json.get("candidates", [])
-                        if candidates and "content" in candidates[0]:
-                            c_parts = candidates[0]["content"].get("parts", [])
-                            if c_parts:
-                                raw_text = c_parts[0].get("text", "")
-                        
-                        usage = res_json.get("usageMetadata", {})
-                        input_tokens = usage.get("promptTokenCount", 0) or (len(system_msg) + sum(len(t) for t in text_accumulator)) // 4
-                        output_tokens = usage.get("candidatesTokenCount", 0) or (len(raw_text or "") // 4)
-                        break
-                    except Exception as g_err:
-                        if attempt == 2 and clean_model == models_to_try[-1]:
-                            raise g_err
-                        time.sleep(2.0)
-
-                if raw_text is not None:
-                    target_model = clean_model
-                    break
-
-            if raw_text is None:
-                raw_text = '{"result": "PASS", "reason": "Rule requirements verified against document context metadata.", "evidence": "Verified", "confidence": "MEDIUM"}'
-
-        elif use_anthropic:
-            # ── 2. ANTHROPIC MESSAGES API ──
-            headers = {
-                "x-api-key": anthropic_key,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json"
-            }
-            payload = {
-                "model": target_model,
-                "max_tokens": 2048,
-                "system": system_msg,
-                "messages": [{"role": "user", "content": content_list}]
-            }
-            response = requests.post("https://api.anthropic.com/v1/messages", headers=headers, json=payload, timeout=60)
-            res_json = response.json()
-            if "error" in res_json:
-                raise Exception(res_json["error"].get("message", str(res_json["error"])))
-            
-            raw_text = res_json["content"][0]["text"]
-            usage = res_json.get("usage", {})
-            input_tokens = usage.get("input_tokens", 0)
-            output_tokens = usage.get("output_tokens", 0)
-        else:
-            # ── 3. STANDARD OPENAI / OLLAMA / LOCAL HOST COMPATIBLE FORMAT ──
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {api_key}",
-                "ngrok-skip-browser-warning": "1",
-                "User-Agent": "TelecosValidator/1.0"
-            }
-            
-            openai_content = []
-            text_accumulator = []
-            for item in content_list:
-                if item.get("type") == "text":
-                    text_val = item.get("text", "")
-                    openai_content.append({"type": "text", "text": text_val})
-                    text_accumulator.append(text_val)
-                elif item.get("type") == "image":
-                    src = item.get("source", {})
-                    b64_data = src.get("data", "")
-                    mtype = src.get("media_type", "image/png")
-                    openai_content.append({
-                        "type": "image_url",
-                        "image_url": {"url": f"data:{mtype};base64,{b64_data}"}
-                    })
-
-            messages = [
-                {"role": "system", "content": system_msg},
-                {"role": "user", "content": openai_content}
-            ]
-            
-            payload = {
-                "model": target_model,
-                "messages": messages,
-                "temperature": 0.1,
-                "max_tokens": 2048
-            }
-
-            url = f"{api_base}/chat/completions"
-            response = None
-            for attempt in range(3):
-                try:
-                    response = requests.post(url, headers=headers, json=payload, timeout=60)
-                    if response.status_code == 429:
-                        time.sleep(2.5 * (attempt + 1))
-                        continue
-                    if response.status_code != 200 and attempt == 0:
-                        fallback_messages = [
-                            {"role": "system", "content": system_msg},
-                            {"role": "user", "content": "\n".join(text_accumulator)}
-                        ]
-                        payload["messages"] = fallback_messages
                         response = requests.post(url, headers=headers, json=payload, timeout=60)
-                    break
-                except Exception as conn_err:
-                    if attempt == 2:
-                        raise Exception(f"Connection to LLM endpoint ({url}) failed: {conn_err}")
-                    time.sleep(2)
+                        if response.status_code == 429:
+                            time.sleep(2.5 * (attempt + 1))
+                            continue
+                        if response.status_code != 200 and attempt == 0:
+                            fallback_messages = [
+                                {"role": "system", "content": system_msg},
+                                {"role": "user", "content": "\n".join(text_accumulator)}
+                            ]
+                            payload["messages"] = fallback_messages
+                            response = requests.post(url, headers=headers, json=payload, timeout=60)
+                        break
+                    except Exception as conn_err:
+                        if attempt == 2:
+                            raise Exception(f"Connection to LLM endpoint ({url}) failed: {conn_err}")
+                        time.sleep(2)
 
+                try:
+                    res_json = response.json()
+                except Exception:
+                    raise Exception(f"LLM endpoint ({url}) returned non-JSON response (HTTP {getattr(response, 'status_code', 'unknown')}): {getattr(response, 'text', '')[:300]}")
+
+                if "error" in res_json:
+                    raise Exception(res_json["error"].get("message", str(res_json["error"])))
+                
+                raw_text = res_json["choices"][0]["message"]["content"]
+                usage = res_json.get("usage", {})
+                img_count = sum(1 for c in openai_content if c.get("type") == "image_url")
+                base_tokens = (len(system_msg) + sum(len(t) for t in text_accumulator)) // 4
+                reported_tokens = usage.get("prompt_tokens", 0)
+                input_tokens = reported_tokens if reported_tokens > base_tokens else (base_tokens + img_count * 1600)
+                output_tokens = usage.get("completion_tokens") or len(raw_text) // 4
+        finally:
             try:
-                res_json = response.json()
+                del openai_content
+                del text_accumulator
+                del messages
+                del payload
+                del res_json
+                del response
             except Exception:
-                raise Exception(f"LLM endpoint ({url}) returned non-JSON response (HTTP {getattr(response, 'status_code', 'unknown')}): {getattr(response, 'text', '')[:300]}")
-
-            if "error" in res_json:
-                raise Exception(res_json["error"].get("message", str(res_json["error"])))
-            
-            raw_text = res_json["choices"][0]["message"]["content"]
-            usage = res_json.get("usage", {})
-            img_count = sum(1 for c in openai_content if c.get("type") == "image_url")
-            base_tokens = (len(system_msg) + sum(len(t) for t in text_accumulator)) // 4
-    finally:
-        try:
-            del openai_content
-            del text_accumulator
-            del messages
-            del payload
-            del res_json
-            del response
-        except Exception:
-            pass
-        force_memory_release()
+                pass
+            force_memory_release()
 
     # Build token usage record (no caching used in code logic -> 0)
     token_usage = {
