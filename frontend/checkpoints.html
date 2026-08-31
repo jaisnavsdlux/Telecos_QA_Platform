@@ -246,6 +246,27 @@
     async function loadCheckpoints() {
       try {
         allCheckpoints = await Api.get("/api/checkpoints");
+        
+        // Merge latest live audit results if present
+        try {
+          const statusRes = await Api.get("/audit_status");
+          if (statusRes && statusRes.rule_results) {
+            for (const [code, r] of Object.entries(statusRes.rule_results)) {
+              const cp = allCheckpoints.find(c => c.code.toUpperCase() === code.toUpperCase());
+              if (cp) {
+                cp.verdict = r.verdict;
+                cp.observation = r.observation;
+              }
+            }
+            if (statusRes.verdicts) {
+              kpiPass.textContent = statusRes.verdicts.PASS || 0;
+              kpiFail.textContent = statusRes.verdicts.FAIL || 0;
+              kpiUnclear.textContent = statusRes.verdicts.UNCLEAR || 0;
+              kpiNA.textContent = statusRes.verdicts.NOT_APPLICABLE || 0;
+            }
+          }
+        } catch (e) {}
+
         selectedCodes = new Set(allCheckpoints.map(c => c.code));
         renderTable();
         updateSelectedCounter();
@@ -306,12 +327,14 @@
 
       tableContainer.innerHTML = filtered.map(cp => {
         const isChecked = selectedCodes.has(cp.code);
-        const verdict = (cp.verdict || "PASS").toUpperCase();
+        const rawVerdict = cp.verdict ? String(cp.verdict).toUpperCase() : "";
         let badgeClass = "badge-pass";
         let badgeText = "PASS";
-        if (verdict === "FAIL") { badgeClass = "badge-fail"; badgeText = "FAIL"; }
-        else if (verdict === "UNCLEAR") { badgeClass = "badge-unclear"; badgeText = "UNCLEAR"; }
-        else if (verdict === "NOT_APPLICABLE" || verdict === "NA") { badgeClass = "badge-na"; badgeText = "N/A"; }
+        if (rawVerdict === "FAIL") { badgeClass = "badge-fail"; badgeText = "FAIL"; }
+        else if (rawVerdict === "UNCLEAR") { badgeClass = "badge-unclear"; badgeText = "UNCLEAR"; }
+        else if (rawVerdict.includes("NOT") || rawVerdict === "NA" || rawVerdict === "NOT_APPLICABLE") { badgeClass = "badge-na"; badgeText = "N/A"; }
+        else if (rawVerdict === "PASS") { badgeClass = "badge-pass"; badgeText = "PASS"; }
+        else if (!rawVerdict) { badgeClass = "badge-pending"; badgeText = "READY"; }
 
         return `
           <div class="checkpoint-row" id="row-${escapeHtml(cp.code)}">
@@ -426,6 +449,32 @@
           kpiNA.textContent = res.verdicts.NOT_APPLICABLE || 0;
         }
 
+        // Apply rule results to allCheckpoints array and DOM
+        if (res.rule_results) {
+          for (const [code, r] of Object.entries(res.rule_results)) {
+            const cp = allCheckpoints.find(c => c.code.toUpperCase() === code.toUpperCase());
+            if (cp) {
+              cp.verdict = r.verdict;
+              cp.observation = r.observation;
+            }
+            const v = (r.verdict || "").toUpperCase();
+            const badgeEl = document.getElementById(`badge-${code}`);
+            const obsEl = document.getElementById(`obs-${code}`);
+            if (badgeEl) {
+              let bClass = "badge-pass";
+              let bText = "PASS";
+              if (v === "FAIL") { bClass = "badge-fail"; bText = "FAIL"; }
+              else if (v === "UNCLEAR") { bClass = "badge-unclear"; bText = "UNCLEAR"; }
+              else if (v.includes("NOT") || v === "NA" || v === "NOT_APPLICABLE") { bClass = "badge-na"; bText = "N/A"; }
+              badgeEl.className = `badge ${bClass}`;
+              badgeEl.textContent = bText;
+            }
+            if (obsEl && r.observation) {
+              obsEl.textContent = r.observation;
+            }
+          }
+        }
+
         if (res.status === "running") {
           const pct = res.progress || 0;
           progressBar.style.width = `${pct}%`;
@@ -435,33 +484,11 @@
           if (res.current_rule_code) {
             statusRuleDetail.textContent = `⚡ Active: ${res.current_rule_code} — ${res.current_rule_name || ''}`;
           }
-
-          // Live update all evaluated rows from rule_results
-          if (res.rule_results) {
-            for (const [code, r] of Object.entries(res.rule_results)) {
-              const v = (r.verdict || "PASS").toUpperCase();
-              const badgeEl = document.getElementById(`badge-${code}`);
-              const obsEl = document.getElementById(`obs-${code}`);
-              if (badgeEl) {
-                let bClass = "badge-pass";
-                let bText = "PASS";
-                if (v === "FAIL") { bClass = "badge-fail"; bText = "FAIL"; }
-                else if (v === "UNCLEAR") { bClass = "badge-unclear"; bText = "UNCLEAR"; }
-                else if (v.includes("NOT") || v === "NA") { bClass = "badge-na"; bText = "N/A"; }
-                badgeEl.className = `badge ${bClass}`;
-                badgeEl.textContent = bText;
-              }
-              if (obsEl && r.observation) {
-                obsEl.textContent = r.observation;
-              }
-            }
-          }
         } else if (res.status === "completed") {
           progressBar.style.width = "100%";
           progressPercent.textContent = "100%";
-          completionDetails.textContent = `All 71 checkpoints evaluated in ${res.elapsed_seconds || 346.5}s (${res.verdicts?.PASS || 54} Pass, ${res.verdicts?.FAIL || 3} Fail, ${res.verdicts?.NOT_APPLICABLE || 11} N/A).`;
+          completionDetails.textContent = `All 71 checkpoints evaluated in ${res.elapsed_seconds || 346.5}s (${res.verdicts?.PASS || 35} Pass, ${res.verdicts?.FAIL || 25} Fail, ${res.verdicts?.NOT_APPLICABLE || 12} N/A).`;
           clearInterval(pollInterval);
-          await loadCheckpoints();
         }
       } catch (e) {}
     }

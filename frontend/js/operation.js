@@ -129,6 +129,21 @@ async function loadCheckpoints() {
   try {
     const res = await Api.get("/api/checkpoints");
     allCheckpoints = res;
+
+    // Merge latest audit results if present
+    try {
+      const statusRes = await Api.get("/audit_status");
+      if (statusRes && statusRes.rule_results) {
+        for (const [code, r] of Object.entries(statusRes.rule_results)) {
+          const cp = allCheckpoints.find(c => c.code.toUpperCase() === code.toUpperCase());
+          if (cp) {
+            cp.verdict = r.verdict;
+            cp.observation = r.observation;
+          }
+        }
+      }
+    } catch (e) {}
+
     renderCheckpoints();
     updateSummaryCounts();
   } catch (err) {
@@ -139,11 +154,11 @@ async function loadCheckpoints() {
 function updateSummaryCounts() {
   let pass = 0, fail = 0, unclear = 0, na = 0;
   allCheckpoints.forEach(cp => {
-    const v = (cp.verdict || "PASS").toUpperCase();
+    const v = cp.verdict ? String(cp.verdict).toUpperCase() : "";
     if (v === "PASS") pass++;
     else if (v === "FAIL") fail++;
-    else if (v === "NOT_APPLICABLE" || v === "NA") na++;
-    else unclear++;
+    else if (v.includes("NOT") || v === "NA" || v === "NOT_APPLICABLE") na++;
+    else if (v === "UNCLEAR") unclear++;
   });
   document.getElementById("countPass").textContent = pass;
   document.getElementById("countFail").textContent = fail;
@@ -168,12 +183,14 @@ function renderCheckpoints() {
   }
 
   listEl.innerHTML = filtered.map(cp => {
-    const verdict = (cp.verdict || "PASS").toUpperCase();
+    const rawVerdict = cp.verdict ? String(cp.verdict).toUpperCase() : "";
     let badgeClass = "badge-pass";
     let badgeText = "PASS";
-    if (verdict === "FAIL") { badgeClass = "badge-fail"; badgeText = "FAIL"; }
-    else if (verdict === "UNCLEAR") { badgeClass = "badge-unclear"; badgeText = "UNCLEAR"; }
-    else if (verdict === "NOT_APPLICABLE" || verdict === "NA") { badgeClass = "badge-na"; badgeText = "N/A"; }
+    if (rawVerdict === "FAIL") { badgeClass = "badge-fail"; badgeText = "FAIL"; }
+    else if (rawVerdict === "UNCLEAR") { badgeClass = "badge-unclear"; badgeText = "UNCLEAR"; }
+    else if (rawVerdict.includes("NOT") || rawVerdict === "NA" || rawVerdict === "NOT_APPLICABLE") { badgeClass = "badge-na"; badgeText = "N/A"; }
+    else if (rawVerdict === "PASS") { badgeClass = "badge-pass"; badgeText = "PASS"; }
+    else if (!rawVerdict) { badgeClass = "badge-pending"; badgeText = "READY"; }
 
     const thumbSrc = cp.reference_image || `/static/reference_images/1-Scale.png`;
 
