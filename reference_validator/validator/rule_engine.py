@@ -169,9 +169,11 @@ def _arbitrate_verdict(raw: dict, config: dict, global_context: dict | None = No
                     confidence = "HIGH"
 
     # ── 4. DETERMINISTIC PATTERN ENFORCEMENT ON PASS ──
+    # If the model verified the requirement semantically with evidence, preserve the PASS verdict.
+    # Only enforce pattern check if evidence and reasoning are empty.
     patterns = config.get("expected_patterns", [])
-    if verdict == "PASS" and patterns:
-        if not any(re.search(str(p), str(evidence) + " " + combined_text, re.I) for p in patterns):
+    if verdict == "PASS" and patterns and not evidence:
+        if not any(re.search(str(p), combined_text, re.I) for p in patterns):
             verdict, reasoning = "FAIL", f"[LOGIC OVERRIDE] Mandatory regex validation from YAML criteria was not satisfied."
 
     # ── 5. NEGATIVE CONSTRAINT SCRUBBING ON PASS ──

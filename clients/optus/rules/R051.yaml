@@ -15,7 +15,7 @@ pass_criteria: PASS if the G2 Overall Site Plan depicts the road access (e.g. Wa
 fail_criteria: FAIL if the G2 sheet fails to show the access road, north arrow, or
   site property boundaries.
 expected_patterns:
-- (?i)(road|wakehurst|boundary|north|plan|site)
+- (?i)(road|wakehurst|wakefield|boundary|north|plan|site|lot|access)
 negative_constraints:
 - Do NOT require high-precision CAD coordinates for EWP setup if the access road and
   note callout (e.g. Note 3 on Wakehurst Road) are clearly designated

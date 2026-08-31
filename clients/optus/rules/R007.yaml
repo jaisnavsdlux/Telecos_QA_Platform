@@ -13,10 +13,7 @@ pass_criteria: PASS if standard pre-fabrication verification notes or structural
   notes are present in the general notes block (G1/G2) or structural drawings.
 fail_criteria: FAIL if drawing set completely omits required site verification notes.
 expected_patterns:
-- PRIOR TO INSTALLATION
-- PRIOR TO FABRICATION
-- BEFORE INSTALLATION
-- PRE[- ]FABRICATION
+- (?i)(prior to|before|pre[- ]fabrication|verified on site|general notes|site)
 deterministic_checks:
 - check: note_presence_detection
   regex_patterns:

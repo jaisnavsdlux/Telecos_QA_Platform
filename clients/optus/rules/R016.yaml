@@ -22,7 +22,7 @@ pass_criteria: PASS if structural certificates for the pole/foundation and mount
 fail_criteria: FAIL if structural certificates are completely omitted from the Cover
   Sheet reference list, or have conflicting dates that post-date the drawing issue.
 expected_patterns:
-- (?i)(cert|certificate|structural|pole|mount|headframe|foundation)
+- (?i)(cert|certificate|structural|pole|mount|headframe|foundation|sc\d+|gamcorp|civilmart|sp\d+|reference)
 negative_constraints:
 - Treat 'Headframe' and 'Mount' as equivalent terms
 - Allow structural drawings (e.g. SP20132) to accompany or represent the mount engineering

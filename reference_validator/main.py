@@ -247,7 +247,7 @@ def extract_pages(file_path: str):
         return [], 0
 
     doc = fitz.open(target_path)
-    pages = [p.get_text() for p in doc]
+    pages = [p.get_text("text", flags=fitz.TEXTFLAGS_SEARCH | fitz.TEXT_PRESERVE_WHITESPACE | fitz.TEXT_DEHYPHENATE) for p in doc]
     total = len(doc)
     doc.close()
     del doc

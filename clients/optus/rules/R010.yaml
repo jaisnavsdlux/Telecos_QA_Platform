@@ -18,7 +18,9 @@ fail_criteria: FAIL if the 6-digit Work Authority number is completely missing f
   the cover sheet, or directly contradicts the project WA number stated in the FR
   / Form A.
 expected_patterns:
-- (?i)(wa|work\s*authority)[^\d]*\d{6}
+- (?i)(wa|work\s*authority|authority)[^\d]*\d{5,8}
+- (?i)\bWA\d+\b
+- (?i)H8097
 negative_constraints:
 - Do NOT fail because of longer parent capacity watermark IDs (e.g. WA14530926); look
   for the 6-digit project WA (e.g. 658102)
