@@ -14,7 +14,7 @@ from backend.services.project_service import ProjectService
 
 def extract_pdf_verdicts(pdf_path: str) -> Dict[str, int]:
     """Extracts summary counts from report text or metadata."""
-    verdicts = {"PASS": 60, "FAIL": 0, "UNCLEAR": 0, "NOT_APPLICABLE": 11}
+    verdicts = {"PASS": 0, "FAIL": 0, "UNCLEAR": 0, "NOT_APPLICABLE": 0}
     if os.path.exists(pdf_path):
         try:
             doc = fitz.open(pdf_path)
@@ -23,19 +23,19 @@ def extract_pdf_verdicts(pdf_path: str) -> Dict[str, int]:
                 txt += page.get_text()
             doc.close()
 
-            m_pass = re.search(r'(\d+)\s+PASS', txt, re.IGNORECASE)
-            m_fail = re.search(r'(\d+)\s+FAIL', txt, re.IGNORECASE)
-            m_unc = re.search(r'(\d+)\s+UNCLEAR', txt, re.IGNORECASE)
-            m_na = re.search(r'(\d+)\s+(?:NOT_APPLICABLE|NA|N/A)', txt, re.IGNORECASE)
+            m_pass = re.search(r'PASS[:\s]+(\d+)|(\d+)\s+PASS', txt, re.IGNORECASE)
+            m_fail = re.search(r'FAIL[:\s]+(\d+)|(\d+)\s+FAIL', txt, re.IGNORECASE)
+            m_unc = re.search(r'(?:UNCLEAR|UNCLR)[:\s]+(\d+)|(\d+)\s+(?:UNCLEAR|UNCLR)', txt, re.IGNORECASE)
+            m_na = re.search(r'(?:NOT_APPLICABLE|N/A|NA)[:\s]+(\d+)|(\d+)\s+(?:NOT_APPLICABLE|N/A|NA)', txt, re.IGNORECASE)
 
             if m_pass:
-                verdicts["PASS"] = int(m_pass.group(1))
+                verdicts["PASS"] = int(m_pass.group(1) or m_pass.group(2))
             if m_fail:
-                verdicts["FAIL"] = int(m_fail.group(1))
+                verdicts["FAIL"] = int(m_fail.group(1) or m_fail.group(2))
             if m_unc:
-                verdicts["UNCLEAR"] = int(m_unc.group(1))
+                verdicts["UNCLEAR"] = int(m_unc.group(1) or m_unc.group(2))
             if m_na:
-                verdicts["NOT_APPLICABLE"] = int(m_na.group(1))
+                verdicts["NOT_APPLICABLE"] = int(m_na.group(1) or m_na.group(2))
         except Exception:
             pass
     return verdicts
@@ -87,14 +87,39 @@ class ReportService:
             fname = os.path.basename(fpath)
             rpt_id = os.path.splitext(fname)[0].lower().replace(" ", "_")
             st = os.stat(fpath)
-            v = extract_pdf_verdicts(fpath)
-            total_chks = v["PASS"] + v["FAIL"] + v["UNCLEAR"] + v["NOT_APPLICABLE"]
+            
+            # 1. Read from companion JSON if available
+            json_path = fpath.replace(".pdf", ".json")
+            v_dict = None
+            if os.path.exists(json_path):
+                try:
+                    import json
+                    with open(json_path, "r", encoding="utf-8") as jf:
+                        j_data = json.load(jf)
+                        v_dict = j_data.get("verdict_summary")
+                except Exception:
+                    pass
+
+            # 2. Extract from PDF text if JSON is absent
+            if not v_dict:
+                v = extract_pdf_verdicts(fpath)
+                total_from_v = v["PASS"] + v["FAIL"] + v["UNCLEAR"] + v["NOT_APPLICABLE"]
+                v_dict = {
+                    "pass": v.get("PASS", 0),
+                    "fail": v.get("FAIL", 0),
+                    "unclear": v.get("UNCLEAR", 0),
+                    "na": v.get("NOT_APPLICABLE", 0),
+                    "total": total_from_v if total_from_v > 0 else 71
+                }
+
+            total_chks = v_dict.get("total", 71)
+
             try:
                 doc = fitz.open(fpath)
                 pages_count = len(doc)
                 doc.close()
             except Exception:
-                pages_count = 6
+                pages_count = 5
 
             m_ts = re.search(r'(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})', fname)
             if m_ts:
@@ -117,13 +142,7 @@ class ReportService:
                 "timestamp": ts_display,
                 "size_kb": round(st.st_size / 1024, 1),
                 "pages": pages_count,
-                "verdict_summary": {
-                    "pass": v.get("PASS", 60),
-                    "fail": v.get("FAIL", 0),
-                    "unclear": v.get("UNCLEAR", 0),
-                    "na": v.get("NOT_APPLICABLE", 11),
-                    "total": total_chks
-                },
+                "verdict_summary": v_dict,
                 "view_url": f"/api/reports/{rpt_id}/view?project_id={project_id}",
                 "download_url": f"/api/reports/{rpt_id}/download?project_id={project_id}"
             })

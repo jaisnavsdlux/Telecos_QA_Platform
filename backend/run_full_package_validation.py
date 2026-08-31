@@ -146,11 +146,34 @@ def main(project_id="H8097", progress_callback=None):
     print(f"  ✓ Saved Timestamped PDF Report to: {timestamped_report}")
     print(f"  ✓ Synced Project Report to: {project_report}")
 
-    # 7. Persist to Neon PostgreSQL Database
+    # 7. Update Project Metadata & Persist to Neon PostgreSQL Database
     verdicts = {"PASS": 0, "FAIL": 0, "UNCLEAR": 0, "NOT_APPLICABLE": 0}
     for r in results:
         v = r.get("verdict", "UNCLEAR").upper()
         verdicts[v] = verdicts.get(v, 0) + 1
+
+    try:
+        meta = ProjectService.get_project_meta(pid)
+        meta["latest_verdict"] = {
+            "pass": verdicts.get("PASS", 0),
+            "fail": verdicts.get("FAIL", 0),
+            "unclear": verdicts.get("UNCLEAR", 0),
+            "na": verdicts.get("NOT_APPLICABLE", 0),
+            "total": total_rules
+        }
+        ProjectService.save_project_meta(pid, meta)
+        
+        # Save companion JSON
+        meta_json_path = timestamped_report.replace(".pdf", ".json")
+        with open(meta_json_path, "w", encoding="utf-8") as jf:
+            json.dump({
+                "verdict_summary": meta["latest_verdict"],
+                "elapsed_seconds": round(elapsed_total, 2),
+                "timestamp": ts_str
+            }, jf, indent=2)
+        shutil.copy2(meta_json_path, project_report.replace(".pdf", ".json"))
+    except Exception as m_err:
+        print("Project meta update notice:", m_err)
 
     try:
         db = SessionLocal()

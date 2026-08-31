@@ -233,6 +233,22 @@ class ProjectService:
                                 rpts_dir = os.path.join(pdir, "reports")
                                 rpts = [f for f in os.listdir(rpts_dir) if f.endswith(".pdf")] if os.path.exists(rpts_dir) else []
 
+                                latest_v = meta.get("latest_verdict")
+                                if not latest_v and rpts:
+                                    top_rpt = os.path.join(rpts_dir, sorted(rpts, reverse=True)[0])
+                                    from backend.services.report_service import extract_pdf_verdicts
+                                    pv = extract_pdf_verdicts(top_rpt)
+                                    if pv.get("PASS", 0) + pv.get("FAIL", 0) + pv.get("NOT_APPLICABLE", 0) > 0:
+                                        latest_v = {
+                                            "pass": pv.get("PASS", 0),
+                                            "fail": pv.get("FAIL", 0),
+                                            "unclear": pv.get("UNCLEAR", 0),
+                                            "na": pv.get("NOT_APPLICABLE", 0),
+                                            "total": sum(pv.values())
+                                        }
+                                if not latest_v:
+                                    latest_v = {"pass": 0, "fail": 0, "unclear": 0, "na": 0, "total": 0}
+
                                 projects_map[clean_pid] = {
                                     "id": clean_pid,
                                     "name": meta.get("name", clean_pid),
@@ -243,13 +259,7 @@ class ProjectService:
                                     "reference_files_count": ref_count,
                                     "reports_count": len(rpts),
                                     "created_at": meta.get("created_at", ""),
-                                    "latest_verdict": {
-                                        "pass": 60 if clean_pid == "H8097" else 0,
-                                        "fail": 0,
-                                        "unclear": 0,
-                                        "na": 11 if clean_pid == "H8097" else 0,
-                                        "total": 71 if clean_pid == "H8097" else 0
-                                    }
+                                    "latest_verdict": latest_v
                                 }
         return list(projects_map.values())
 
