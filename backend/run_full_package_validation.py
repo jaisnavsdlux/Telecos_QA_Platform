@@ -27,6 +27,9 @@ def main(project_id="H8097", progress_callback=None):
     print(f"Model: {os.getenv('LLM_MODEL', 'gemini-2.0-flash')}")
     print("=" * 80)
 
+    # 0. Initialize & seed canonical workspace
+    ProjectService.get_project_dir(pid)
+
     # 1. Build Reference Mapping dynamically across uploaded project directories
     ref_dirs_to_check = [
         os.path.join(PROJECTS_DIR, pid, "references"),
@@ -34,7 +37,8 @@ def main(project_id="H8097", progress_callback=None):
         os.path.join(BASE_DIR, "projects", pid, "references"),
         os.path.join(DB_DIR, "reference_files"),
         "reference_files",
-        os.path.join("qaInput", "reference_package")
+        os.path.join("qaInput", "reference_package"),
+        os.path.join(BASE_DIR, "qaInput", "reference_package")
     ]
     
     ref_mapping = {}
@@ -54,7 +58,7 @@ def main(project_id="H8097", progress_callback=None):
                                 total_ref_files += 1
 
     # If references are missing locally (e.g. fresh Render container deployment), pull from Backblaze B2
-    if total_ref_files < 10:
+    if total_ref_files < 5:
         try:
             from backend.services.storage_service import storage
             if storage.is_s3_configured:
@@ -87,6 +91,7 @@ def main(project_id="H8097", progress_callback=None):
         os.path.join(BASE_DIR, "db", "projects", pid, "drawing"),
         os.path.join(BASE_DIR, "projects", pid, "drawing"),
         os.path.join(BASE_DIR, "qaInput", "primary_drawing"),
+        os.path.join("qaInput", "primary_drawing"),
         os.path.join(DB_DIR, "drawings"),
         "drawings"
     ]
@@ -131,16 +136,20 @@ def main(project_id="H8097", progress_callback=None):
         candidates.sort(key=lambda x: x[0], reverse=True)
         pdf_path = candidates[0][1]
     else:
-        # Fallback only if absolutely no files exist
-        os.makedirs(os.path.join(PROJECTS_DIR, pid, "drawing"), exist_ok=True)
-        pdf_path = os.path.join(PROJECTS_DIR, pid, "drawing", f"{pid}_Drawing.pdf")
-        if not os.path.exists(pdf_path):
-            import fitz
-            doc = fitz.open()
-            page = doc.new_page()
-            page.insert_text((50, 50), f"Strelza QA Validation — Project {pid}")
-            doc.save(pdf_path)
-            doc.close()
+        # Fallback to qaInput primary drawing directly
+        qa_primary = os.path.join(BASE_DIR, "qaInput", "primary_drawing", "006d7876_H8097_AUSTINS FERRY_FC_10112025 (Child CAD File).pdf")
+        if os.path.exists(qa_primary):
+            pdf_path = qa_primary
+        else:
+            os.makedirs(os.path.join(PROJECTS_DIR, pid, "drawing"), exist_ok=True)
+            pdf_path = os.path.join(PROJECTS_DIR, pid, "drawing", f"{pid}_Drawing.pdf")
+            if not os.path.exists(pdf_path):
+                import fitz
+                doc = fitz.open()
+                page = doc.new_page()
+                page.insert_text((50, 50), f"Strelza QA Validation — Project {pid}")
+                doc.save(pdf_path)
+                doc.close()
 
     pdf_name = os.path.basename(pdf_path)
     try:

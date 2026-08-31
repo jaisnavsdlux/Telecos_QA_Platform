@@ -113,7 +113,7 @@ class ProjectService:
             os.makedirs(os.path.join(legacy_pdir, "references"), exist_ok=True)
             os.makedirs(os.path.join(legacy_pdir, "reports"), exist_ok=True)
 
-            # Auto-seed baseline files for H8097 if empty or missing on fresh boot
+            # Auto-seed baseline files for H8097 from qaInput on every boot
             if pid == "H8097":
                 qa_ref_dir = os.path.join(BASE_DIR, "qaInput", "reference_package")
                 dst_ref_dir = os.path.join(pdir, "references")
@@ -121,9 +121,10 @@ class ProjectService:
                     for f in os.listdir(qa_ref_dir):
                         src_f = os.path.join(qa_ref_dir, f)
                         dst_f = os.path.join(dst_ref_dir, f)
-                        if os.path.isfile(src_f) and not os.path.exists(dst_f):
+                        if os.path.isfile(src_f):
                             try:
-                                shutil.copy2(src_f, dst_f)
+                                if not os.path.exists(dst_f) or os.path.getsize(dst_f) == 0:
+                                    shutil.copy2(src_f, dst_f)
                             except Exception:
                                 pass
 
@@ -133,9 +134,20 @@ class ProjectService:
                     for f in os.listdir(qa_dwg_dir):
                         src_f = os.path.join(qa_dwg_dir, f)
                         dst_f = os.path.join(dst_dwg_dir, f)
-                        if os.path.isfile(src_f) and not os.path.exists(dst_f):
+                        if os.path.isfile(src_f):
                             try:
-                                shutil.copy2(src_f, dst_f)
+                                if not os.path.exists(dst_f) or os.path.getsize(dst_f) == 0:
+                                    shutil.copy2(src_f, dst_f)
+                            except Exception:
+                                pass
+
+                # Purge any 1-page blank stubs from drawing folder
+                if os.path.exists(dst_dwg_dir):
+                    for f in os.listdir(dst_dwg_dir):
+                        fp = os.path.join(dst_dwg_dir, f)
+                        if os.path.isfile(fp) and f.lower().startswith(f"{pid.lower()}_drawing.pdf") and os.path.getsize(fp) < 50000:
+                            try:
+                                os.remove(fp)
                             except Exception:
                                 pass
 
