@@ -434,19 +434,24 @@
             statusRuleDetail.textContent = `⚡ Active: ${res.current_rule_code} — ${res.current_rule_name || ''}`;
           }
 
-          // Live update row if latest_result exists
-          if (res.latest_result) {
-            const code = res.latest_result.code;
-            const verdict = res.latest_result.verdict;
-            const badgeEl = document.getElementById(`badge-${code}`);
-            const rowEl = document.getElementById(`row-${code}`);
-            if (badgeEl) {
-              badgeEl.className = `badge badge-${verdict.toLowerCase().replace('_', '')}`;
-              badgeEl.textContent = verdict;
-            }
-            if (rowEl) {
-              rowEl.classList.add("row-updated");
-              setTimeout(() => rowEl.classList.remove("row-updated"), 2000);
+          // Live update all evaluated rows from rule_results
+          if (res.rule_results) {
+            for (const [code, r] of Object.entries(res.rule_results)) {
+              const v = (r.verdict || "PASS").toUpperCase();
+              const badgeEl = document.getElementById(`badge-${code}`);
+              const obsEl = document.getElementById(`obs-${code}`);
+              if (badgeEl) {
+                let bClass = "badge-pass";
+                let bText = "PASS";
+                if (v === "FAIL") { bClass = "badge-fail"; bText = "FAIL"; }
+                else if (v === "UNCLEAR") { bClass = "badge-unclear"; bText = "UNCLEAR"; }
+                else if (v.includes("NOT") || v === "NA") { bClass = "badge-na"; bText = "N/A"; }
+                badgeEl.className = `badge ${bClass}`;
+                badgeEl.textContent = bText;
+              }
+              if (obsEl && r.observation) {
+                obsEl.textContent = r.observation;
+              }
             }
           }
         } else if (res.status === "completed") {

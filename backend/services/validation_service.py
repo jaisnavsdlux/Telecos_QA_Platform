@@ -85,12 +85,13 @@ class ValidationService:
                     if current_res:
                         r_id = current_res.get("rule_id", f"R{current:03d}")
                         r_verdict = current_res.get("verdict", "PASS").upper()
+                        r_obs = current_res.get("reasoning") or current_res.get("observation") or current_res.get("reason", "")
                         LOCAL_AUDIT_STATE["current_rule_code"] = r_id
                         LOCAL_AUDIT_STATE["current_rule_name"] = current_res.get("rule_text", r_id)
                         LOCAL_AUDIT_STATE["latest_result"] = {
                             "code": r_id,
                             "verdict": r_verdict,
-                            "observation": current_res.get("observation", ""),
+                            "observation": r_obs,
                             "confidence": current_res.get("confidence", 0.95)
                         }
                         LOCAL_AUDIT_STATE["rule_results"][r_id] = LOCAL_AUDIT_STATE["latest_result"]
