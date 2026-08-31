@@ -130,26 +130,43 @@ def main(project_id="H8097", progress_callback=None):
         except Exception as e:
             print(f"Notice downloading drawing from B2: {e}")
 
+    # Purge any old 1-page blank stubs from all drawing directories
+    for ddir in drawing_dirs_to_check:
+        if os.path.exists(ddir) and os.path.isdir(ddir):
+            for root, _, files in os.walk(ddir):
+                for f in files:
+                    if f.lower().startswith(f"{pid.lower()}_drawing.pdf"):
+                        try:
+                            os.remove(os.path.join(root, f))
+                        except Exception:
+                            pass
+
     pdf_path = None
     if candidates:
         # Pick the highest-scored CAD PDF drawing (actual FC Child CAD Package)
         candidates.sort(key=lambda x: x[0], reverse=True)
         pdf_path = candidates[0][1]
-    else:
-        # Fallback to qaInput primary drawing directly
-        qa_primary = os.path.join(BASE_DIR, "qaInput", "primary_drawing", "006d7876_H8097_AUSTINS FERRY_FC_10112025 (Child CAD File).pdf")
-        if os.path.exists(qa_primary):
-            pdf_path = qa_primary
-        else:
-            os.makedirs(os.path.join(PROJECTS_DIR, pid, "drawing"), exist_ok=True)
-            pdf_path = os.path.join(PROJECTS_DIR, pid, "drawing", f"{pid}_Drawing.pdf")
-            if not os.path.exists(pdf_path):
-                import fitz
-                doc = fitz.open()
-                page = doc.new_page()
-                page.insert_text((50, 50), f"Strelza QA Validation — Project {pid}")
-                doc.save(pdf_path)
-                doc.close()
+    
+    if not pdf_path or not os.path.exists(pdf_path) or os.path.getsize(pdf_path) < 50000:
+        # Resolve real CAD package from repository paths
+        known_cad_paths = [
+            os.path.join(BASE_DIR, "qaInput", "primary_drawing", "006d7876_H8097_AUSTINS FERRY_FC_10112025 (Child CAD File).pdf"),
+            os.path.join("qaInput", "primary_drawing", "006d7876_H8097_AUSTINS FERRY_FC_10112025 (Child CAD File).pdf"),
+            os.path.join(BASE_DIR, "db", "projects", "H8097", "drawing", "006d7876_H8097_AUSTINS FERRY_FC_10112025 (Child CAD File).pdf"),
+            os.path.join(BASE_DIR, "qaInput", "primary_drawing", "H8097_AUSTINS FERRY_FC_05122025_Final PDF After QC validation.pdf")
+        ]
+        for kp in known_cad_paths:
+            if os.path.exists(kp) and os.path.getsize(kp) > 50000:
+                pdf_path = kp
+                # Copy to project drawing folder for future instant access
+                try:
+                    dst = os.path.join(PROJECTS_DIR, pid, "drawing", os.path.basename(kp))
+                    os.makedirs(os.path.dirname(dst), exist_ok=True)
+                    if not os.path.exists(dst) or os.path.getsize(dst) == 0:
+                        shutil.copy2(kp, dst)
+                except Exception:
+                    pass
+                break
 
     pdf_name = os.path.basename(pdf_path)
     try:
