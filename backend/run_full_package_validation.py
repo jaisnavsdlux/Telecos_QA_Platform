@@ -12,7 +12,7 @@ if sys.platform == "win32":
 
 load_dotenv()
 
-from backend.config import PROJECTS_DIR, REPORTS_DIR, RULES_DIR, DB_DIR
+from backend.config import PROJECTS_DIR, REPORTS_DIR, RULES_DIR, DB_DIR, BASE_DIR
 from backend.services.project_service import classify_file, ProjectService
 from backend.reference_validator.validator.rule_engine import load_rules, get_token_logs
 from backend.reference_validator.main import run_validation
