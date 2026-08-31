@@ -124,30 +124,30 @@ class ProjectService:
             # Auto-seed baseline files for H8097 from qaInput on every boot
             if pid == "H8097":
                 qa_ref_dir = os.path.join(BASE_DIR, "qaInput", "reference_package")
-                dst_ref_dir = os.path.join(pdir, "references")
                 if os.path.exists(qa_ref_dir):
-                    for f in os.listdir(qa_ref_dir):
-                        src_f = os.path.join(qa_ref_dir, f)
-                        dst_f = os.path.join(dst_ref_dir, f)
-                        if os.path.isfile(src_f):
-                            try:
-                                if not os.path.exists(dst_f) or os.path.getsize(dst_f) == 0:
+                    for dst_ref_dir in [os.path.join(pdir, "references"), os.path.join(legacy_pdir, "references")]:
+                        os.makedirs(dst_ref_dir, exist_ok=True)
+                        for f in os.listdir(qa_ref_dir):
+                            src_f = os.path.join(qa_ref_dir, f)
+                            dst_f = os.path.join(dst_ref_dir, f)
+                            if os.path.isfile(src_f):
+                                try:
                                     shutil.copy2(src_f, dst_f)
-                            except Exception:
-                                pass
+                                except Exception:
+                                    pass
 
                 qa_dwg_dir = os.path.join(BASE_DIR, "qaInput", "primary_drawing")
-                dst_dwg_dir = os.path.join(pdir, "drawing")
                 if os.path.exists(qa_dwg_dir):
-                    for f in os.listdir(qa_dwg_dir):
-                        src_f = os.path.join(qa_dwg_dir, f)
-                        dst_f = os.path.join(dst_dwg_dir, f)
-                        if os.path.isfile(src_f):
-                            try:
-                                if not os.path.exists(dst_f) or os.path.getsize(dst_f) == 0:
+                    for dst_dwg_dir in [os.path.join(pdir, "drawing"), os.path.join(legacy_pdir, "drawing")]:
+                        os.makedirs(dst_dwg_dir, exist_ok=True)
+                        for f in os.listdir(qa_dwg_dir):
+                            src_f = os.path.join(qa_dwg_dir, f)
+                            dst_f = os.path.join(dst_dwg_dir, f)
+                            if os.path.isfile(src_f):
+                                try:
                                     shutil.copy2(src_f, dst_f)
-                            except Exception:
-                                pass
+                                except Exception:
+                                    pass
 
                 # Purge any 1-page blank stubs from drawing folder
                 if os.path.exists(dst_dwg_dir):
