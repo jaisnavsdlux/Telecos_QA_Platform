@@ -289,6 +289,14 @@
           });
         });
 
+        // Prioritize PDF, Excel, and CAD engineering documents at the top before raw inspection images
+        allFilesFlat.sort((a, b) => {
+          const isDocA = /\.(pdf|xlsx|xlsm|docx|doc|dwg|dxf)$/i.test(a.name) ? 0 : 1;
+          const isDocB = /\.(pdf|xlsx|xlsm|docx|doc|dwg|dxf)$/i.test(b.name) ? 0 : 1;
+          if (isDocA !== isDocB) return isDocA - isDocB;
+          return a.name.localeCompare(b.name);
+        });
+
         document.getElementById("refSummaryCount").textContent = `${data.total_reference_files || allFilesFlat.length} companion files categorized across ${allCategories.length} engineering disciplines`;
 
         renderCategoryPills();

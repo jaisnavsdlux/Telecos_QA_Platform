@@ -497,10 +497,12 @@ class ProjectService:
 
         category_list = []
         for cat_name, file_list in sorted(categories.items()):
+            # Sort files within each category so core documents (PDF/XLSX) are listed first
+            file_list.sort(key=lambda x: (0 if any(x.get("name", "").lower().endswith(ext) for ext in [".pdf", ".xlsx", ".xlsm", ".docx", ".dwg"]) else 1, x.get("name", "").lower()))
             category_list.append({
                 "category": cat_name,
                 "count": len(file_list),
-                "files": file_list[:50]
+                "files": file_list[:60]
             })
 
         return {
