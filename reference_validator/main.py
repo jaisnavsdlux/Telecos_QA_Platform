@@ -65,7 +65,7 @@ def _detect_page_indices(pages: list, scope: str, total_pages: int) -> list:
                         matched_indices.add(p)
 
     if not matched_indices:
-        return list(range(min(2, total_pages)))
+        return list(range(min(10, total_pages)))
 
     return sorted(list(matched_indices))
 
