@@ -233,14 +233,17 @@ def run_rule(rule: dict, pdf_text: str, rule_extra: dict | None = None, global_c
             "cache_read_input_tokens": 0
         }
         _log_token_usage(fallback_token_usage)
-        return {
-            "rule_id": rule_id,
-            "verdict": deterministic_verdict,
-            "reasoning": deterministic_reason,
+        
+        raw_fallback = {
+            "result": deterministic_verdict,
+            "reason": deterministic_reason,
             "evidence": deterministic_evidence,
-            "confidence": "HIGH",
-            "token_usage": fallback_token_usage
+            "confidence": "HIGH"
         }
+        arbitrated = _arbitrate_verdict(raw_fallback, config, global_context)
+        arbitrated["token_usage"] = fallback_token_usage
+        arbitrated["rule_id"] = rule_id
+        return arbitrated
     finally:
         try:
             del user_content
