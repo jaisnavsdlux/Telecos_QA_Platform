@@ -98,15 +98,15 @@ def _extract_references_for_rule(required_refs: list, reference_mapping: dict) -
     if required_refs:
         active_tags = [t for t in reference_mapping.keys() if any(r.lower() in t.lower() or t.lower() in r.lower() for r in required_refs)]
     else:
-        active_tags = list(reference_mapping.keys())[:3]
+        active_tags = list(reference_mapping.keys())[:2]
     
     if not active_tags:
         active_tags = list(reference_mapping.keys())[:2]
 
-    for tag in active_tags[:3]: # Cap at top 3 active tags per rule
+    for tag in active_tags[:2]: # Cap at top 2 active tags per rule
         p_list = reference_mapping.get(tag, [])
         p_list = p_list if isinstance(p_list, list) else [p_list]
-        for p in p_list[:2]:
+        for p in p_list[:1]:
             if not p or not os.path.exists(p):
                 continue
             try:
@@ -118,24 +118,36 @@ def _extract_references_for_rule(required_refs: list, reference_mapping: dict) -
                         })
                 elif p.lower().endswith(('.xlsx', '.xlsm', '.xltx')):
                     import openpyxl
-                    wb = openpyxl.load_workbook(p, data_only=True, read_only=True)
-                    for sheet in wb.sheetnames[:2]:
-                        ws = wb[sheet]
-                        ref_text += f"\n[{tag} - SHEET: {sheet}]\n"
-                        for row in ws.iter_rows(max_row=40, values_only=True):
-                            row_str = " | ".join([str(c) if c is not None else "" for c in row])
-                            if row_str.strip().replace("|", ""):
-                                ref_text += row_str + "\n"
-                    wb.close()
+                    wb = None
+                    try:
+                        wb = openpyxl.load_workbook(p, data_only=True, read_only=True)
+                        for sheet in wb.sheetnames[:2]:
+                            ws = wb[sheet]
+                            ref_text += f"\n[{tag} - SHEET: {sheet}]\n"
+                            for row in ws.iter_rows(max_row=35, values_only=True):
+                                row_str = " | ".join([str(c) if c is not None else "" for c in row])
+                                if row_str.strip().replace("|", ""):
+                                    ref_text += row_str + "\n"
+                    finally:
+                        if wb:
+                            wb.close()
+                            del wb
                 else:
-                    doc = fitz.open(p)
-                    for pg_idx in range(min(3, len(doc))):
-                        ref_text += f"\n[{tag} - PG {pg_idx+1}]\n" + doc[pg_idx].get_text()
-                    doc.close()
+                    doc = None
+                    try:
+                        doc = fitz.open(p)
+                        for pg_idx in range(min(3, len(doc))):
+                            ref_text += f"\n[{tag} - PG {pg_idx+1}]\n" + doc[pg_idx].get_text()
+                    finally:
+                        if doc:
+                            doc.close()
+                            del doc
             except Exception as e:
                 print(f"[JIT Ref extraction] Notice for {tag}: {e}")
+            finally:
+                gc.collect()
                 
-    return ref_text[:25000], ref_images[:2]
+    return ref_text[:20000], ref_images[:1]
 
 def _validate_single_rule(rule, pages, pdf_path, total_pages, reference_mapping, global_context=None, model=None):
     rule_id = rule.get("id") or rule.get("rule_id", "R999")

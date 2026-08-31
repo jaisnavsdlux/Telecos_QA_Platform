@@ -69,7 +69,30 @@ class ReportService:
                     files.append(os.path.join(rpt_dir, f))
                     seen_names.add(f)
 
-        # 2. Global reports directory
+        # 2. Check Backblaze B2 storage for project reports
+        try:
+            from backend.services.storage_service import storage
+            if storage.is_s3_configured:
+                b2_reports = storage.list_project_files(project_id, "reports")
+                os.makedirs(rpt_dir, exist_ok=True)
+                for item in b2_reports:
+                    rfname = item.get("name") or item.get("filename")
+                    if rfname and rfname.endswith(".pdf") and rfname not in seen_names:
+                        local_rpt_path = os.path.join(rpt_dir, rfname)
+                        if not os.path.exists(local_rpt_path):
+                            storage.s3.download_file(storage.bucket, f"{project_id}/reports/{rfname}", local_rpt_path)
+                            # Download companion json if exists
+                            json_key = f"{project_id}/reports/{rfname.replace('.pdf', '.json')}"
+                            try:
+                                storage.s3.download_file(storage.bucket, json_key, local_rpt_path.replace(".pdf", ".json"))
+                            except Exception:
+                                pass
+                        files.append(local_rpt_path)
+                        seen_names.add(rfname)
+        except Exception as b2_err:
+            print(f"[ReportService] Notice syncing reports from B2: {b2_err}")
+
+        # 3. Global reports directory
         if os.path.exists(REPORTS_DIR):
             for f in os.listdir(REPORTS_DIR):
                 if f.endswith(".pdf") and f not in seen_names:
