@@ -52,9 +52,17 @@ def classify_file(name: str) -> str:
         return "Structural_Certificate"
     if "structural" in ln and "cert" in ln:
         return "Structural_Certificate"
-    if "structural" in ln:
+    if "pole" in ln and ("cert" in ln or "certificate" in ln or "structural" in ln):
+        return "Pole_Certificate"
+    if ("mount" in ln or "headframe" in ln) and ("cert" in ln or "drawing" in ln or "structural" in ln):
+        return "Mount_Certificate"
+    if "sp1" in ln or "sc184419" in ln:
+        return "SP1_Certificate"
+    if "foundation" in ln:
+        return "Structural_Certificate"
+    if "structural" in ln and "drawing" in ln:
         return "Structural_Drawings"
-    if "cert" in ln:
+    if "cert" in ln or "structural" in ln:
         return "Structural_Certificate"
 
     if "rfnsa" in ln or "rfsna" in ln or "radsite" in ln:
@@ -68,14 +76,12 @@ def classify_file(name: str) -> str:
 
     if "as built" in ln or "asbuilt" in ln or " ab " in ln:
         return "As-built"
-    if "feasibility" in ln or ln.startswith("fr ") or " fr " in f" {ln} " or ln.endswith(" fr.pdf"):
+    if "feasibility" in ln or ln.startswith("fr ") or " fr " in f" {ln} " or ln.endswith(" fr.pdf") or "fr_" in ln:
         return "FR"
     if "rlm" in ln or "radio link" in ln or ("phase" in ln and "rlm" in ln):
         return "RLM"
     if "dpd" in ln or ("detail" in ln and "plumb" in ln):
         return "DPD"
-    if "sp1" in ln or "sc184419" in ln:
-        return "SP1_Certificate"
     if "lease" in ln or "tenancy" in ln or "cadastral" in ln:
         return "Lease_Plan"
     if "air3268" in ln or "rrvv" in ln or "avql" in ln or "product description" in ln or "antenna spec" in ln:
@@ -121,33 +127,51 @@ class ProjectService:
             os.makedirs(os.path.join(legacy_pdir, "references"), exist_ok=True)
             os.makedirs(os.path.join(legacy_pdir, "reports"), exist_ok=True)
 
-            # Auto-seed baseline files for H8097 from qaInput on every boot
+            # Auto-seed baseline files for H8097 dynamically across all workspace locations
             if pid == "H8097":
-                qa_ref_dir = os.path.join(BASE_DIR, "qaInput", "reference_package")
-                if os.path.exists(qa_ref_dir):
-                    for dst_ref_dir in [os.path.join(pdir, "references"), os.path.join(legacy_pdir, "references")]:
-                        os.makedirs(dst_ref_dir, exist_ok=True)
-                        for f in os.listdir(qa_ref_dir):
-                            src_f = os.path.join(qa_ref_dir, f)
-                            dst_f = os.path.join(dst_ref_dir, f)
-                            if os.path.isfile(src_f):
-                                try:
-                                    shutil.copy2(src_f, dst_f)
-                                except Exception:
-                                    pass
+                qa_ref_candidates = [
+                    os.path.join(BASE_DIR, "qaInput", "reference_package"),
+                    os.path.join(BASE_DIR, "backend", "qaInput", "reference_package"),
+                    os.path.join(os.path.dirname(BASE_DIR), "qaInput", "reference_package"),
+                    "/app/qaInput/reference_package",
+                    "/app/backend/qaInput/reference_package",
+                    "qaInput/reference_package"
+                ]
+                for qa_ref_dir in qa_ref_candidates:
+                    if os.path.exists(qa_ref_dir) and os.path.isdir(qa_ref_dir):
+                        for dst_ref_dir in [os.path.join(pdir, "references"), os.path.join(legacy_pdir, "references")]:
+                            os.makedirs(dst_ref_dir, exist_ok=True)
+                            for f in os.listdir(qa_ref_dir):
+                                src_f = os.path.join(qa_ref_dir, f)
+                                dst_f = os.path.join(dst_ref_dir, f)
+                                if os.path.isfile(src_f):
+                                    try:
+                                        shutil.copy2(src_f, dst_f)
+                                    except Exception:
+                                        pass
+                        break
 
-                qa_dwg_dir = os.path.join(BASE_DIR, "qaInput", "primary_drawing")
-                if os.path.exists(qa_dwg_dir):
-                    for dst_dwg_dir in [os.path.join(pdir, "drawing"), os.path.join(legacy_pdir, "drawing")]:
-                        os.makedirs(dst_dwg_dir, exist_ok=True)
-                        for f in os.listdir(qa_dwg_dir):
-                            src_f = os.path.join(qa_dwg_dir, f)
-                            dst_f = os.path.join(dst_dwg_dir, f)
-                            if os.path.isfile(src_f):
-                                try:
-                                    shutil.copy2(src_f, dst_f)
-                                except Exception:
-                                    pass
+                qa_dwg_candidates = [
+                    os.path.join(BASE_DIR, "qaInput", "primary_drawing"),
+                    os.path.join(BASE_DIR, "backend", "qaInput", "primary_drawing"),
+                    os.path.join(os.path.dirname(BASE_DIR), "qaInput", "primary_drawing"),
+                    "/app/qaInput/primary_drawing",
+                    "/app/backend/qaInput/primary_drawing",
+                    "qaInput/primary_drawing"
+                ]
+                for qa_dwg_dir in qa_dwg_candidates:
+                    if os.path.exists(qa_dwg_dir) and os.path.isdir(qa_dwg_dir):
+                        for dst_dwg_dir in [os.path.join(pdir, "drawing"), os.path.join(legacy_pdir, "drawing")]:
+                            os.makedirs(dst_dwg_dir, exist_ok=True)
+                            for f in os.listdir(qa_dwg_dir):
+                                src_f = os.path.join(qa_dwg_dir, f)
+                                dst_f = os.path.join(dst_dwg_dir, f)
+                                if os.path.isfile(src_f):
+                                    try:
+                                        shutil.copy2(src_f, dst_f)
+                                    except Exception:
+                                        pass
+                        break
 
                 # Purge any 1-page blank stubs from drawing folder
                 pdir_dwg = os.path.join(pdir, "drawing")

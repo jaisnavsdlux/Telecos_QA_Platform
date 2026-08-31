@@ -38,7 +38,11 @@ def main(project_id="H8097", progress_callback=None):
         os.path.join(DB_DIR, "reference_files"),
         "reference_files",
         os.path.join("qaInput", "reference_package"),
-        os.path.join(BASE_DIR, "qaInput", "reference_package")
+        os.path.join(BASE_DIR, "qaInput", "reference_package"),
+        os.path.join(BASE_DIR, "backend", "qaInput", "reference_package"),
+        os.path.join(os.path.dirname(BASE_DIR), "qaInput", "reference_package"),
+        "/app/qaInput/reference_package",
+        "/app/backend/qaInput/reference_package"
     ]
     
     ref_mapping = {}
