@@ -57,33 +57,53 @@ def main(project_id="H8097", progress_callback=None):
         print(f"  • {tag:<22} -> {len(paths)} file(s)")
 
     # 2. Select target drawing PDF
+    # 2. Select target drawing PDF (Prioritize full CAD drawings > 500KB, avoid 1-page stubs)
     drawing_dirs_to_check = [
         os.path.join(PROJECTS_DIR, pid, "drawing"),
+        os.path.join(BASE_DIR, "qaInput", "primary_drawing"),
         os.path.join("projects", pid, "drawing"),
         os.path.join(DB_DIR, "drawings"),
         "drawings",
-        os.path.join("qaInput", "primary_drawing"),
         os.path.join(PROJECTS_DIR, pid, "references"),
         "reference_files"
     ]
     
-    pdf_path = None
+    candidates = []
     for ddir in drawing_dirs_to_check:
         if os.path.exists(ddir) and os.path.isdir(ddir):
             for root, _, files in os.walk(ddir):
                 for f in files:
-                    if f.lower().endswith(".pdf") and any(k in f.lower() for k in ["fc", "cad", "austins", "drawing", "final"]):
-                        pdf_path = os.path.join(root, f)
-                        break
-                    elif f.lower().endswith(".pdf") and not pdf_path:
-                        pdf_path = os.path.join(root, f)
-                if pdf_path:
-                    break
-        if pdf_path:
-            break
+                    if f.lower().endswith(".pdf"):
+                        fp = os.path.join(root, f)
+                        try:
+                            sz = os.path.getsize(fp)
+                            # Exclude 1-page blank stubs
+                            if sz > 20000 and not f.lower().startswith(f"{pid.lower()}_drawing.pdf"):
+                                candidates.append((sz, fp, f))
+                        except Exception:
+                            pass
 
-    if not pdf_path or not os.path.exists(pdf_path):
-        # Fallback: create empty drawing stub if none exists
+    # If no local CAD file found, check Backblaze B2 storage
+    if not candidates:
+        try:
+            from backend.services.storage_service import storage
+            b2_drawings = storage.list_project_files(pid, "drawing")
+            if b2_drawings:
+                target_b2 = b2_drawings[0]["name"]
+                local_dst = os.path.join(PROJECTS_DIR, pid, "drawing", target_b2)
+                os.makedirs(os.path.dirname(local_dst), exist_ok=True)
+                storage.s3.download_file(storage.bucket, f"{pid}/drawing/{target_b2}", local_dst)
+                candidates.append((os.path.getsize(local_dst), local_dst, target_b2))
+        except Exception as e:
+            print(f"Notice downloading drawing from B2: {e}")
+
+    pdf_path = None
+    if candidates:
+        # Pick the largest CAD PDF drawing (full 14-page CAD package)
+        candidates.sort(key=lambda x: x[0], reverse=True)
+        pdf_path = candidates[0][1]
+    else:
+        # Fallback only if absolutely no files exist
         os.makedirs(os.path.join(PROJECTS_DIR, pid, "drawing"), exist_ok=True)
         pdf_path = os.path.join(PROJECTS_DIR, pid, "drawing", f"{pid}_Drawing.pdf")
         if not os.path.exists(pdf_path):
@@ -95,7 +115,11 @@ def main(project_id="H8097", progress_callback=None):
             doc.close()
 
     pdf_name = os.path.basename(pdf_path)
-    print(f"\n[2/4] Target Drawing: {pdf_name}")
+    try:
+        sz_mb = round(os.path.getsize(pdf_path) / (1024 * 1024), 2)
+    except Exception:
+        sz_mb = 0.0
+    print(f"\n[2/4] Target CAD Drawing: {pdf_name} ({sz_mb} MB)")
 
     # 3. Load rules
     rules_dict = load_rules("optus")
