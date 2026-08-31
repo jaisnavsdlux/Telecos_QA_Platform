@@ -12,11 +12,14 @@ def extract_fr_data(file_path: str) -> dict:
         "program": None
     }
     
-    if not os.path.exists(file_path):
+    if not file_path or not os.path.exists(file_path):
+        return data
+
+    if not file_path.lower().endswith(('.xlsx', '.xlsm', '.xltx', '.xltm')):
         return data
 
     try:
-        wb = openpyxl.load_workbook(file_path, data_only=True)
+        wb = openpyxl.load_workbook(file_path, data_only=True, read_only=True)
         
         # 1. SCAN FOR IDENTITY (Global tab)
         for name in ["General", "Site Identity", "Summary"]:

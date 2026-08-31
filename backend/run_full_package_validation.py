@@ -77,15 +77,13 @@ def main(project_id="H8097", progress_callback=None):
         print(f"  • {tag:<22} -> {len(paths)} file(s)")
 
     # 2. Select target drawing PDF
-    # 2. Select target drawing PDF (Prioritize full CAD drawings > 500KB, avoid 1-page stubs)
+    # 2. Select target drawing PDF (Prioritize FC Child CAD drawings in project drawing folder)
     drawing_dirs_to_check = [
         os.path.join(PROJECTS_DIR, pid, "drawing"),
         os.path.join(BASE_DIR, "qaInput", "primary_drawing"),
         os.path.join("projects", pid, "drawing"),
         os.path.join(DB_DIR, "drawings"),
-        "drawings",
-        os.path.join(PROJECTS_DIR, pid, "references"),
-        "reference_files"
+        "drawings"
     ]
     
     candidates = []
@@ -97,9 +95,13 @@ def main(project_id="H8097", progress_callback=None):
                         fp = os.path.join(root, f)
                         try:
                             sz = os.path.getsize(fp)
-                            # Exclude 1-page blank stubs
                             if sz > 20000 and not f.lower().startswith(f"{pid.lower()}_drawing.pdf"):
-                                candidates.append((sz, fp, f))
+                                # Score candidate: prioritize FC / Child / Drawing keywords
+                                score = sz
+                                fname_upper = f.upper()
+                                if "CHILD" in fname_upper or "FC" in fname_upper or "CAD" in fname_upper:
+                                    score += 100_000_000 # High priority for actual FC CAD drawing
+                                candidates.append((score, fp, f))
                         except Exception:
                             pass
 
@@ -119,7 +121,7 @@ def main(project_id="H8097", progress_callback=None):
 
     pdf_path = None
     if candidates:
-        # Pick the largest CAD PDF drawing (full 14-page CAD package)
+        # Pick the highest-scored CAD PDF drawing (actual FC Child CAD Package)
         candidates.sort(key=lambda x: x[0], reverse=True)
         pdf_path = candidates[0][1]
     else:
