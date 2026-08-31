@@ -90,6 +90,13 @@ async def upload_project_drawing(project_id: str, file: UploadFile = File(...)):
     with open(dest_path, "wb") as out_f:
         out_f.write(contents)
 
+    # Sync to Backblaze B2 under <project_id>/drawing/<filename>
+    try:
+        from backend.services.storage_service import storage
+        storage.upload_project_file(project_id, "drawing", fname, contents, content_type="application/pdf")
+    except Exception as e:
+        print(f"[Upload] Notice syncing drawing to B2: {e}")
+
     # Parse sheets from the drawing PDF
     sheets = ProjectService.parse_pdf_sheets(dest_path)
     sheet_strings = [f"Sheet {s['sheet']}: {s['title']}" for s in sheets]
@@ -112,6 +119,7 @@ async def upload_references(project_id: str, files: List[UploadFile] = File(...)
     """
     Uploads companion reference files or folders for a specific project.
     Automatically detects if an uploaded PDF is an FC Drawing and indexes it into drawing/.
+    Streams files directly to Backblaze B2 under <project_id>/references/.
     """
     pdir = ProjectService.get_project_dir(project_id)
     ref_dir = os.path.join(pdir, "references")
@@ -121,6 +129,7 @@ async def upload_references(project_id: str, files: List[UploadFile] = File(...)
 
     saved_files = []
     primary_dwg_detected = None
+    from backend.services.storage_service import storage
 
     for f in files:
         fname = os.path.basename(f.filename or "file")
@@ -131,6 +140,13 @@ async def upload_references(project_id: str, files: List[UploadFile] = File(...)
         with open(dest_path, "wb") as out_f:
             out_f.write(contents)
         
+        # Stream file to Backblaze B2 under <project_id>/references/<fname>
+        try:
+            c_type = "application/pdf" if fname.lower().endswith(".pdf") else "application/octet-stream"
+            storage.upload_project_file(project_id, "references", fname, contents, content_type=c_type)
+        except Exception as e:
+            print(f"[Upload] Notice syncing reference to B2: {e}")
+
         saved_files.append({
             "name": fname,
             "size_kb": round(len(contents) / 1024, 1),
@@ -141,6 +157,10 @@ async def upload_references(project_id: str, files: List[UploadFile] = File(...)
         if fname.lower().endswith(".pdf") and (classify_file(fname) == "FC_Drawing" or len(files) == 1):
             shutil.copy2(dest_path, os.path.join(dwg_dir, fname))
             primary_dwg_detected = fname
+            try:
+                storage.upload_project_file(project_id, "drawing", fname, contents, content_type="application/pdf")
+            except Exception:
+                pass
 
         # Handle zip archives
         if fname.lower().endswith(".zip"):

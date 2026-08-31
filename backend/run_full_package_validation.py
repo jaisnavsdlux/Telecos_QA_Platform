@@ -146,6 +146,15 @@ def main(project_id="H8097", progress_callback=None):
     print(f"  ✓ Saved Timestamped PDF Report to: {timestamped_report}")
     print(f"  ✓ Synced Project Report to: {project_report}")
 
+    # Stream generated report to Backblaze B2 under <project_id>/reports/
+    try:
+        from backend.services.storage_service import storage
+        with open(timestamped_report, "rb") as rf:
+            storage.upload_project_file(pid, "reports", os.path.basename(timestamped_report), rf, content_type="application/pdf")
+        print(f"  ✓ Uploaded Report to Backblaze B2: {pid}/reports/{os.path.basename(timestamped_report)}")
+    except Exception as b2_err:
+        print(f"  Notice uploading report to B2: {b2_err}")
+
     # 7. Update Project Metadata & Persist to Neon PostgreSQL Database
     verdicts = {"PASS": 0, "FAIL": 0, "UNCLEAR": 0, "NOT_APPLICABLE": 0}
     for r in results:

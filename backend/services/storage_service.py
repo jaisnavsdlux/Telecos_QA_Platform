@@ -4,6 +4,7 @@ Handles zero-RAM streaming uploads, presigned URLs, and persistent document stor
 """
 import os
 import io
+import re
 import shutil
 from typing import Optional, BinaryIO
 import boto3
@@ -77,22 +78,79 @@ class StorageService:
             # In local fallback, serve via static API route
             return f"/api/storage/{key}"
 
-    def download_to_path(self, key: str, target_path: str) -> bool:
-        """Downloads an object from S3 or local storage to a local file path."""
+    def upload_project_file(self, project_id: str, subfolder: str, filename: str, file_obj_or_bytes, content_type: str = "application/pdf") -> str:
+        """Uploads a file to a specific project folder in Backblaze B2 (e.g. H8097/references/doc.pdf)."""
+        pid = re.sub(r'[^a-zA-Z0-9_-]', '', (project_id or "H8097").upper().strip()) or "H8097"
+        clean_sub = subfolder.strip("/").replace("\\", "/")
+        clean_name = os.path.basename(filename)
+        key = f"{pid}/{clean_sub}/{clean_name}"
+        
+        if isinstance(file_obj_or_bytes, (bytes, bytearray)):
+            return self.upload_bytes(file_obj_or_bytes, key, content_type=content_type)
+        else:
+            return self.upload_stream(file_obj_or_bytes, key, content_type=content_type)
+
+    def list_project_files(self, project_id: str, subfolder: str = "") -> list:
+        """Lists all files stored under a project folder in Backblaze B2."""
+        pid = re.sub(r'[^a-zA-Z0-9_-]', '', (project_id or "H8097").upper().strip()) or "H8097"
+        prefix = f"{pid}/"
+        if subfolder:
+            prefix += f"{subfolder.strip('/')}/"
+
+        files = []
         if self.is_s3_configured and self.s3:
             try:
-                os.makedirs(os.path.dirname(target_path), exist_ok=True)
-                self.s3.download_file(self.bucket, key, target_path)
-                return True
-            except Exception:
-                return False
+                paginator = self.s3.get_paginator('list_objects_v2')
+                for page in paginator.paginate(Bucket=self.bucket, Prefix=prefix):
+                    for obj in page.get('Contents', []):
+                        key = obj.get('Key', '')
+                        if key and not key.endswith('/'):
+                            fname = os.path.basename(key)
+                            files.append({
+                                "key": key,
+                                "name": fname,
+                                "size_bytes": obj.get('Size', 0),
+                                "size_kb": round(obj.get('Size', 0) / 1024, 1),
+                                "last_modified": str(obj.get('LastModified', ''))
+                            })
+            except Exception as e:
+                print(f"[StorageService] Notice listing B2 objects for {prefix}: {e}")
         else:
-            src = os.path.join(self.local_storage_root, key)
-            if os.path.exists(src):
-                os.makedirs(os.path.dirname(target_path), exist_ok=True)
-                shutil.copy2(src, target_path)
-                return True
-            return False
+            local_dir = os.path.join(self.local_storage_root, prefix)
+            if os.path.exists(local_dir):
+                for root, _, f_list in os.walk(local_dir):
+                    for f in f_list:
+                        fp = os.path.join(root, f)
+                        rel_k = os.path.relpath(fp, self.local_storage_root).replace("\\", "/")
+                        files.append({
+                            "key": rel_k,
+                            "name": f,
+                            "size_bytes": os.path.getsize(fp),
+                            "size_kb": round(os.path.getsize(fp) / 1024, 1),
+                            "last_modified": ""
+                        })
+        return files
+
+    def sync_project_directory(self, project_id: str, local_project_dir: str):
+        """Syncs all files in a local project directory into Backblaze B2 under <project_id>/."""
+        if not os.path.exists(local_project_dir):
+            return
+        
+        pid = re.sub(r'[^a-zA-Z0-9_-]', '', (project_id or "H8097").upper().strip()) or "H8097"
+        for sub in ("drawing", "references", "reports"):
+            sub_path = os.path.join(local_project_dir, sub)
+            if os.path.exists(sub_path):
+                for root, _, files in os.walk(sub_path):
+                    for f in files:
+                        fp = os.path.join(root, f)
+                        rel_sub = os.path.relpath(root, local_project_dir).replace("\\", "/")
+                        try:
+                            with open(fp, "rb") as f_obj:
+                                c_type = "application/pdf" if f.lower().endswith(".pdf") else "application/octet-stream"
+                                self.upload_project_file(pid, rel_sub, f, f_obj, content_type=c_type)
+                        except Exception as e:
+                            print(f"[StorageService] Notice syncing {f} to B2: {e}")
 
 # Global singleton storage service
 storage = StorageService()
+

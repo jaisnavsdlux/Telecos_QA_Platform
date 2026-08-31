@@ -113,6 +113,32 @@ class ProjectService:
             os.makedirs(os.path.join(legacy_pdir, "references"), exist_ok=True)
             os.makedirs(os.path.join(legacy_pdir, "reports"), exist_ok=True)
 
+            # Auto-seed baseline files for H8097 if empty or missing on fresh boot
+            if pid == "H8097":
+                qa_ref_dir = os.path.join(BASE_DIR, "qaInput", "reference_package")
+                dst_ref_dir = os.path.join(pdir, "references")
+                if os.path.exists(qa_ref_dir):
+                    for f in os.listdir(qa_ref_dir):
+                        src_f = os.path.join(qa_ref_dir, f)
+                        dst_f = os.path.join(dst_ref_dir, f)
+                        if os.path.isfile(src_f) and not os.path.exists(dst_f):
+                            try:
+                                shutil.copy2(src_f, dst_f)
+                            except Exception:
+                                pass
+
+                qa_dwg_dir = os.path.join(BASE_DIR, "qaInput", "primary_drawing")
+                dst_dwg_dir = os.path.join(pdir, "drawing")
+                if os.path.exists(qa_dwg_dir):
+                    for f in os.listdir(qa_dwg_dir):
+                        src_f = os.path.join(qa_dwg_dir, f)
+                        dst_f = os.path.join(dst_dwg_dir, f)
+                        if os.path.isfile(src_f) and not os.path.exists(dst_f):
+                            try:
+                                shutil.copy2(src_f, dst_f)
+                            except Exception:
+                                pass
+
             # Check if legacy directory has files not present in db/projects
             if os.path.exists(legacy_pdir):
                 for sub in ("drawing", "references", "reports"):
@@ -446,6 +472,28 @@ class ProjectService:
                             "size_kb": size_kb,
                             "extension": ext
                         })
+
+        # Also query Backblaze B2 remote object storage under <pid>/references/
+        try:
+            from backend.services.storage_service import storage
+            b2_files = storage.list_project_files(pid, "references")
+            for b2_f in b2_files:
+                fname = b2_f.get("name")
+                if fname and fname not in seen_files:
+                    seen_files.add(fname)
+                    total_ref_files += 1
+                    ext = os.path.splitext(fname)[1].lower()
+                    cat = classify_file(fname)
+                    cat_display = cat_labels.get(cat, cat.replace("_", " "))
+                    if cat_display not in categories:
+                        categories[cat_display] = []
+                    categories[cat_display].append({
+                        "name": fname,
+                        "size_kb": b2_f.get("size_kb", 0.0),
+                        "extension": ext
+                    })
+        except Exception as e:
+            print(f"[ProjectService] Notice querying B2 references: {e}")
 
         category_list = []
         for cat_name, file_list in sorted(categories.items()):
