@@ -150,9 +150,10 @@ class ProjectService:
                                     pass
 
                 # Purge any 1-page blank stubs from drawing folder
-                if os.path.exists(dst_dwg_dir):
-                    for f in os.listdir(dst_dwg_dir):
-                        fp = os.path.join(dst_dwg_dir, f)
+                pdir_dwg = os.path.join(pdir, "drawing")
+                if os.path.exists(pdir_dwg):
+                    for f in os.listdir(pdir_dwg):
+                        fp = os.path.join(pdir_dwg, f)
                         if os.path.isfile(fp) and f.lower().startswith(f"{pid.lower()}_drawing.pdf") and os.path.getsize(fp) < 50000:
                             try:
                                 os.remove(fp)
