@@ -326,7 +326,9 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
             # ── 3. STANDARD OPENAI / OLLAMA / LOCAL HOST COMPATIBLE FORMAT ──
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {api_key}"
+                "Authorization": f"Bearer {api_key}",
+                "ngrok-skip-browser-warning": "1",
+                "User-Agent": "TelecosValidator/1.0"
             }
             
             openai_content = []
@@ -378,7 +380,11 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
                         raise Exception(f"Connection to LLM endpoint ({url}) failed: {conn_err}")
                     time.sleep(2)
 
-            res_json = response.json()
+            try:
+                res_json = response.json()
+            except Exception:
+                raise Exception(f"LLM endpoint ({url}) returned non-JSON response (HTTP {getattr(response, 'status_code', 'unknown')}): {getattr(response, 'text', '')[:300]}")
+
             if "error" in res_json:
                 raise Exception(res_json["error"].get("message", str(res_json["error"])))
             
