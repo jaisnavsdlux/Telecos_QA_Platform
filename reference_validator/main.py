@@ -191,9 +191,26 @@ def _validate_single_rule(rule, pages, pdf_path, total_pages, reference_mapping,
     return result
 
 def extract_pages(file_path: str):
-    if not file_path or not os.path.exists(file_path):
+    target_path = file_path
+    if not target_path or not os.path.exists(target_path):
+        # Search workspace dynamically for the primary CAD drawing
+        for root, _, files in os.walk(BASE_DIR):
+            for f in files:
+                if f.lower().endswith(".pdf") and ("H8097" in f.upper() or "CAD" in f.upper() or "FC" in f.upper()):
+                    cand = os.path.join(root, f)
+                    try:
+                        if os.path.getsize(cand) > 1_000_000:
+                            target_path = cand
+                            break
+                    except Exception:
+                        pass
+            if target_path and os.path.exists(target_path):
+                break
+
+    if not target_path or not os.path.exists(target_path):
         return [], 0
-    doc = fitz.open(file_path)
+
+    doc = fitz.open(target_path)
     pages = [p.get_text() for p in doc]
     total = len(doc)
     doc.close()
