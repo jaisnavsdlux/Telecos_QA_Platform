@@ -209,8 +209,8 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
     
     gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
     target_model = model or os.getenv("LLM_MODEL", "gemini-2.0-flash")
-    api_base = os.getenv("LLM_API_BASE", os.getenv("OPENAI_API_BASE", "http://localhost:11434/v1")).rstrip("/")
-    api_key = os.getenv("LLM_API_KEY", os.getenv("OPENAI_API_KEY", "gemma-local"))
+    api_base = os.getenv("LLM_API_BASE", os.getenv("OPENAI_API_BASE", "http://localhost:11434/v1")).strip().rstrip("/")
+    api_key = os.getenv("LLM_API_KEY", os.getenv("OPENAI_API_KEY", "gemma-local")).strip()
     
     anthropic_key = os.getenv("ANTHROPIC_API_KEY")
     use_anthropic = (target_model.startswith("claude") or os.getenv("LLM_PROVIDER") == "anthropic") and bool(anthropic_key)
