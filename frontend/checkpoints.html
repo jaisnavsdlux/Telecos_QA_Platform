@@ -411,7 +411,7 @@
 
     function startPolling() {
       if (pollInterval) clearInterval(pollInterval);
-      pollInterval = setInterval(checkProgress, 1000);
+      pollInterval = setInterval(checkProgress, 8000);
     }
 
     async function checkProgress() {
