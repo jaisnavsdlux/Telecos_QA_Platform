@@ -209,36 +209,35 @@ def main(project_id="H8097", progress_callback=None):
         print("Project meta update notice:", m_err)
 
     try:
-        db = SessionLocal()
-        run_record = ValidationRun(
-            id=f"run_{pid}_{ts_str}",
-            project_id=pid,
-            status="completed",
-            model=os.getenv("LLM_MODEL", "gemini-2.0-flash"),
-            elapsed_seconds=round(elapsed_total, 2),
-            pass_count=verdicts.get("PASS", 0),
-            fail_count=verdicts.get("FAIL", 0),
-            unclear_count=verdicts.get("UNCLEAR", 0),
-            na_count=verdicts.get("NOT_APPLICABLE", 0),
-            total_rules=total_rules,
-            report_filename=report_filename
-        )
-        db.add(run_record)
-        
-        for r in results:
-            verdict_entry = RuleVerdict(
-                run_id=run_record.id,
-                rule_code=r.get("rule_id", "R000"),
-                verdict=r.get("verdict", "PASS"),
-                confidence=float(r.get("confidence", 0.95) if isinstance(r.get("confidence"), (int, float)) else 0.95),
-                reasoning=str(r.get("reasoning") or r.get("observation") or "")[:1000],
-                evidence_data=r.get("evidence", {}) if isinstance(r.get("evidence"), dict) else {"text": str(r.get("evidence", ""))}
+        with SessionLocal() as db:
+            run_record = ValidationRun(
+                id=f"run_{pid}_{ts_str}",
+                project_id=pid,
+                status="completed",
+                model=os.getenv("LLM_MODEL", "gemini-2.0-flash"),
+                elapsed_seconds=round(elapsed_total, 2),
+                pass_count=verdicts.get("PASS", 0),
+                fail_count=verdicts.get("FAIL", 0),
+                unclear_count=verdicts.get("UNCLEAR", 0),
+                na_count=verdicts.get("NOT_APPLICABLE", 0),
+                total_rules=total_rules,
+                report_filename=report_filename
             )
-            db.add(verdict_entry)
+            db.add(run_record)
+            
+            for r in results:
+                verdict_entry = RuleVerdict(
+                    run_id=run_record.id,
+                    rule_code=r.get("rule_id", "R000"),
+                    verdict=r.get("verdict", "PASS"),
+                    confidence=float(r.get("confidence", 0.95) if isinstance(r.get("confidence"), (int, float)) else 0.95),
+                    reasoning=str(r.get("reasoning") or r.get("observation") or "")[:1000],
+                    evidence_data=r.get("evidence", {}) if isinstance(r.get("evidence"), dict) else {"text": str(r.get("evidence", ""))}
+                )
+                db.add(verdict_entry)
 
-        db.commit()
-        db.close()
-        print("  ✓ Run and verdicts persisted to Neon PostgreSQL Database.")
+            db.commit()
+            print("  ✓ Run and verdicts persisted to Neon PostgreSQL Database.")
     except Exception as db_err:
         print(f"Notice: Database sync notice: {db_err}")
 

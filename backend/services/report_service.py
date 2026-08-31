@@ -169,7 +169,8 @@ class ReportService:
 
     @staticmethod
     def render_page_png(pdf_path: str, page_num: int, dpi: int = 150) -> bytes:
-        """Renders a PDF page to PNG bytes at specified DPI."""
+        """Renders a PDF page to PNG bytes at specified DPI with strict memory cleanup."""
+        import gc
         doc = fitz.open(pdf_path)
         if page_num < 1 or page_num > len(doc):
             doc.close()
@@ -178,5 +179,9 @@ class ReportService:
         page = doc.load_page(page_num - 1)
         pix = page.get_pixmap(dpi=dpi)
         png_bytes = pix.tobytes("png")
+        del pix
+        del page
         doc.close()
+        del doc
+        gc.collect()
         return png_bytes
