@@ -57,8 +57,23 @@ def main(project_id="H8097", progress_callback=None):
                                 ref_mapping[tag].append(fpath)
                                 total_ref_files += 1
 
-    # If references are missing locally (e.g. fresh Render container deployment), pull from Backblaze B2
+    # If references are missing from primary folders, perform recursive workspace scan
     if total_ref_files < 5:
+        for root, _, files in os.walk(BASE_DIR):
+            if "reports" in root or ".git" in root or "node_modules" in root or ".gemini" in root:
+                continue
+            for f in files:
+                fpath = os.path.join(root, f)
+                if os.path.isfile(fpath) and f.lower().endswith(('.pdf', '.xlsx', '.xlsm', '.png', '.jpg')):
+                    tag = classify_file(f)
+                    if tag not in ("Unknown", "FC_Drawing"):
+                        if tag not in ref_mapping:
+                            ref_mapping[tag] = []
+                        if fpath not in ref_mapping[tag]:
+                            ref_mapping[tag].append(fpath)
+                            total_ref_files += 1
+
+    # If references are still missing, pull from Backblaze B2
         try:
             from backend.services.storage_service import storage
             if storage.is_s3_configured:

@@ -114,15 +114,28 @@ def _render_pages_as_images(file_path: str, page_indices: list):
         force_memory_release()
     return images
 
+def _has_enough_memory(max_rss_mb: int = 380) -> bool:
+    """Returns True if process has safe memory headroom below container limits."""
+    try:
+        import psutil
+        rss = psutil.Process().memory_info().rss / (1024 * 1024)
+        return rss < max_rss_mb
+    except Exception:
+        return True
+
 def _extract_references_for_rule(required_refs: list, reference_mapping: dict) -> tuple[str, list]:
     """
-    JIT (Just-In-Time) On-Demand Reference Extractor.
-    Only reads and decodes the 1-2 specific companion files mapped to the active rule,
-    keeping container RAM under 50MB and releasing file memory immediately.
+    JIT (Just-In-Time) On-Demand Reference Extractor with Memory Guard.
+    Only reads and decodes the 1-2 specific companion files mapped to the active rule
+    if process has safe memory headroom (<380MB). Releases buffers immediately.
     """
     if not reference_mapping:
         return "", []
     
+    if not _has_enough_memory():
+        force_memory_release()
+        return "", []
+
     ref_text = ""
     ref_images = []
     
@@ -136,6 +149,8 @@ def _extract_references_for_rule(required_refs: list, reference_mapping: dict) -
         active_tags = list(reference_mapping.keys())[:2]
 
     for tag in active_tags[:2]: # Cap at top 2 active tags per rule
+        if not _has_enough_memory():
+            break
         p_list = reference_mapping.get(tag, [])
         p_list = p_list if isinstance(p_list, list) else [p_list]
         for p in p_list[:1]:

@@ -103,12 +103,13 @@ def get_token_logs() -> list:
                 return []
         return []
 
-def _arbitrate_verdict(raw: dict, config: dict, global_context: dict | None = None, pdf_text: str = "") -> dict:
+def _arbitrate_verdict(raw: dict, config: dict, global_context: dict | None = None, pdf_text: str = "", ref_text: str = "") -> dict:
     """Enterprise-grade verdict calibration layer that guarantees zero UNCLEAR verdicts."""
     verdict = raw.get("result", raw.get("verdict", raw.get("raw_verdict", "UNCLEAR"))).upper()
     evidence = raw.get("evidence", raw.get("located_element", ""))
     reasoning = raw.get("reason", raw.get("reasoning", raw.get("qualification", "")))
     confidence = raw.get("confidence", "MEDIUM")
+    combined_text = (pdf_text + "\n" + ref_text).strip()
     
     # ── 1. GLOBAL TRUTH ARBITRATION ──
     if global_context:
@@ -145,7 +146,7 @@ def _arbitrate_verdict(raw: dict, config: dict, global_context: dict | None = No
             negatives = config.get("negative_constraints", [])
             has_negative = False
             for n in negatives:
-                if re.search(str(n), pdf_text, re.I):
+                if re.search(str(n), combined_text, re.I):
                     has_negative = True
                     verdict = "FAIL"
                     reasoning = f"[NEGATIVE CONSTRAINT] Prohibited term '{n}' detected in drawing text."
@@ -154,11 +155,11 @@ def _arbitrate_verdict(raw: dict, config: dict, global_context: dict | None = No
                     break
 
             if not has_negative:
-                # Check expected patterns
+                # Check expected patterns in combined CAD + Companion reference text
                 patterns = config.get("expected_patterns", [])
-                if patterns and not any(re.search(str(p), pdf_text, re.I) for p in patterns):
+                if patterns and not any(re.search(str(p), combined_text, re.I) for p in patterns):
                     verdict = "FAIL"
-                    reasoning = f"[PATTERN VALIDATION] Required engineering pattern not matched in drawing text."
+                    reasoning = f"[PATTERN VALIDATION] Required engineering pattern not matched in drawing or companion reference text."
                     evidence = f"Missing required patterns: {patterns[:2]}"
                     confidence = "MEDIUM"
                 else:
@@ -170,7 +171,7 @@ def _arbitrate_verdict(raw: dict, config: dict, global_context: dict | None = No
     # ── 4. DETERMINISTIC PATTERN ENFORCEMENT ON PASS ──
     patterns = config.get("expected_patterns", [])
     if verdict == "PASS" and patterns:
-        if not any(re.search(str(p), str(evidence) + " " + pdf_text, re.I) for p in patterns):
+        if not any(re.search(str(p), str(evidence) + " " + combined_text, re.I) for p in patterns):
             verdict, reasoning = "FAIL", f"[LOGIC OVERRIDE] Mandatory regex validation from YAML criteria was not satisfied."
 
     # ── 5. NEGATIVE CONSTRAINT SCRUBBING ON PASS ──
@@ -225,7 +226,7 @@ def run_rule(rule: dict, pdf_text: str, rule_extra: dict | None = None, global_c
     target_model = model or os.getenv("LLM_MODEL", "gemma4:cloud")
     try:
         raw_res, token_usage = call_llm(user_content, BASE_SYSTEM_PROMPT, model=target_model, rule_id=rule_id)
-        arbitrated = _arbitrate_verdict(raw_res, config, global_context, pdf_text=pdf_text)
+        arbitrated = _arbitrate_verdict(raw_res, config, global_context, pdf_text=pdf_text, ref_text=ref_text)
         arbitrated["token_usage"] = token_usage
         arbitrated["rule_id"] = rule_id
         return arbitrated
@@ -234,21 +235,22 @@ def run_rule(rule: dict, pdf_text: str, rule_extra: dict | None = None, global_c
         deterministic_verdict = "PASS"
         deterministic_reason = f"Verified compliance against drawing text & engineering specifications (Rule: {config.get('name') or config.get('description', rule_id)})."
         deterministic_evidence = "Verified from drawing text & companion reference files."
+        combined_text = (pdf_text + "\n" + ref_text).strip()
 
         # 1. Check prohibited negative constraints
         for n in config.get("negative_constraints", []):
-            if re.search(str(n), pdf_text, re.I):
+            if re.search(str(n), combined_text, re.I):
                 deterministic_verdict = "FAIL"
                 deterministic_reason = f"Prohibited constraint '{n}' detected in drawing text."
                 deterministic_evidence = f"Found '{n}'"
                 break
 
-        # 2. Check required patterns
+        # 2. Check required patterns in combined text
         if deterministic_verdict == "PASS" and config.get("expected_patterns"):
             for p in config.get("expected_patterns", []):
-                if not re.search(str(p), pdf_text, re.I):
+                if not re.search(str(p), combined_text, re.I):
                     deterministic_verdict = "FAIL"
-                    deterministic_reason = f"Required pattern '{p}' not found in drawing text."
+                    deterministic_reason = f"Required pattern '{p}' not found in drawing or companion reference text."
                     deterministic_evidence = f"Missing '{p}'"
                     break
 
@@ -276,7 +278,7 @@ def run_rule(rule: dict, pdf_text: str, rule_extra: dict | None = None, global_c
             "evidence": deterministic_evidence,
             "confidence": "HIGH"
         }
-        arbitrated = _arbitrate_verdict(raw_fallback, config, global_context, pdf_text=pdf_text)
+        arbitrated = _arbitrate_verdict(raw_fallback, config, global_context, pdf_text=pdf_text, ref_text=ref_text)
         arbitrated["token_usage"] = fallback_token_usage
         arbitrated["rule_id"] = rule_id
         return arbitrated

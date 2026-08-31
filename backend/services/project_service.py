@@ -74,6 +74,12 @@ def classify_file(name: str) -> str:
         return "RLM"
     if "dpd" in ln or ("detail" in ln and "plumb" in ln):
         return "DPD"
+    if "sp1" in ln or "sc184419" in ln:
+        return "SP1_Certificate"
+    if "lease" in ln or "tenancy" in ln or "cadastral" in ln:
+        return "Lease_Plan"
+    if "air3268" in ln or "rrvv" in ln or "avql" in ln or "product description" in ln or "antenna spec" in ln:
+        return "Equipment_Specs"
     if "form ab" in ln or "formab" in ln:
         return "Form_A"
     if "form b" in ln or "formb" in ln:
@@ -86,6 +92,8 @@ def classify_file(name: str) -> str:
         return "PDT"
     if "pva" in ln:
         return "PVA"
+    if "checklist" in ln:
+        return "Checklist"
     if "environmental" in ln or "heritage" in ln:
         return "Environmental"
     if "geotech" in ln or "soil" in ln:
