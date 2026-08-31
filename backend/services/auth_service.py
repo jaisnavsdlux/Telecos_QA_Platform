@@ -64,28 +64,79 @@ class AuthService:
                 "is_admin": True
             }
         }
+        users_dict = {}
+        # 1. Try loading from Neon PostgreSQL DB
+        try:
+            from backend.database.connection import SessionLocal
+            from backend.database.models import User as UserModel
+            db = SessionLocal()
+            db_users = db.query(UserModel).all()
+            for u in db_users:
+                users_dict[u.username.lower()] = {
+                    "username": u.username.lower(),
+                    "password_hash": u.password_hash,
+                    "role": u.role or "engineer",
+                    "display_name": u.display_name or u.username.capitalize(),
+                    "email": u.email or "",
+                    "is_admin": u.is_admin or (u.role == "admin")
+                }
+            db.close()
+        except Exception:
+            pass
+
+        # 2. Fallback / Merge with local file
         with _AUTH_LOCK:
             if os.path.exists(USERS_FILE):
                 try:
                     with open(USERS_FILE, "r", encoding="utf-8") as f:
-                        users = json.load(f)
-                        if "admin" not in users:
-                            users["admin"] = default_users["admin"]
-                            AuthService.save_users(users)
-                        return users
+                        file_users = json.load(f)
+                        for k, v in file_users.items():
+                            if k not in users_dict:
+                                users_dict[k] = v
                 except Exception:
-                    return default_users
-            else:
-                AuthService.save_users(default_users)
-                return default_users
+                    pass
+
+        if "admin" not in users_dict:
+            users_dict["admin"] = default_users["admin"]
+            AuthService.save_users(users_dict)
+
+        return users_dict
 
     @staticmethod
     def save_users(users: Dict[str, Any]) -> None:
-        """Thread-safe persistence of user data."""
+        """Thread-safe persistence of user data to DB and local storage."""
         with _AUTH_LOCK:
             os.makedirs(os.path.dirname(USERS_FILE), exist_ok=True)
             with open(USERS_FILE, "w", encoding="utf-8") as f:
                 json.dump(users, f, indent=2)
+
+        # Sync to Neon DB
+        try:
+            from backend.database.connection import SessionLocal
+            from backend.database.models import User as UserModel
+            db = SessionLocal()
+            for uname, udata in users.items():
+                existing = db.query(UserModel).filter(UserModel.username == uname).first()
+                if not existing:
+                    new_u = UserModel(
+                        username=uname,
+                        password_hash=udata.get("password_hash", ""),
+                        display_name=udata.get("display_name", uname.capitalize()),
+                        email=udata.get("email", ""),
+                        role=udata.get("role", "engineer"),
+                        is_admin=udata.get("is_admin", False)
+                    )
+                    db.add(new_u)
+                else:
+                    existing.password_hash = udata.get("password_hash", existing.password_hash)
+                    existing.role = udata.get("role", existing.role)
+                    existing.display_name = udata.get("display_name", existing.display_name)
+                    existing.email = udata.get("email", existing.email)
+                    existing.is_admin = udata.get("is_admin", existing.is_admin)
+            db.commit()
+            db.close()
+        except Exception:
+            pass
 
     @staticmethod
     def authenticate(username: str, password: str) -> Optional[Dict[str, Any]]:
@@ -109,7 +160,7 @@ class AuthService:
 
     @staticmethod
     def register(username: str, password: str, display_name: str = "", email: str = "", role: str = "engineer") -> Dict[str, Any]:
-        """Registers a new user account."""
+        """Registers a new user account with Neon DB persistence."""
         u = username.lower().strip()
         p = password.strip()
         if not u or not p:
