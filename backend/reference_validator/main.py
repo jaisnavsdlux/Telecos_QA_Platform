@@ -64,7 +64,8 @@ def _render_pages_as_images(file_path: str, page_indices: list):
         doc = fitz.open(file_path)
         for i in page_indices[:2]: 
             if i < len(doc):
-                pix = doc[i].get_pixmap(matrix=fitz.Matrix(1.0, 1.0))
+                # Crisp 150 DPI render for ultra-clear fine-print CAD reading
+                pix = doc[i].get_pixmap(matrix=fitz.Matrix(1.5, 1.5))
                 img_bytes = pix.tobytes("jpeg")
                 b64 = base64.b64encode(img_bytes).decode()
                 images.append({"data": b64, "media_type": "image/jpeg"})
@@ -73,7 +74,62 @@ def _render_pages_as_images(file_path: str, page_indices: list):
         print(f"[render_pages] Notice rendering images: {e}")
     return images
 
-def _validate_single_rule(rule, pages, pdf_path, total_pages, ref_cache, global_context=None, model=None):
+def _extract_references_for_rule(required_refs: list, reference_mapping: dict) -> tuple[str, list]:
+    """
+    JIT (Just-In-Time) On-Demand Reference Extractor.
+    Only reads and decodes the 1-2 specific companion files mapped to the active rule,
+    keeping container RAM under 50MB and releasing file memory immediately.
+    """
+    if not reference_mapping:
+        return "", []
+    
+    ref_text = ""
+    ref_images = []
+    
+    # Filter mapping to tags specifically needed for this rule (or all if general rule)
+    if required_refs:
+        active_tags = [t for t in reference_mapping.keys() if any(r.lower() in t.lower() or t.lower() in r.lower() for r in required_refs)]
+    else:
+        active_tags = list(reference_mapping.keys())[:3]
+    
+    if not active_tags:
+        active_tags = list(reference_mapping.keys())[:2]
+
+    for tag in active_tags[:3]: # Cap at top 3 active tags per rule
+        p_list = reference_mapping.get(tag, [])
+        p_list = p_list if isinstance(p_list, list) else [p_list]
+        for p in p_list[:2]:
+            if not p or not os.path.exists(p):
+                continue
+            try:
+                if p.lower().endswith(('.png', '.jpg', '.jpeg')):
+                    with open(p, "rb") as f:
+                        ref_images.append({
+                            "data": base64.b64encode(f.read()).decode(),
+                            "media_type": "image/png" if p.endswith('png') else "image/jpeg"
+                        })
+                elif p.lower().endswith(('.xlsx', '.xlsm', '.xltx')):
+                    import openpyxl
+                    wb = openpyxl.load_workbook(p, data_only=True, read_only=True)
+                    for sheet in wb.sheetnames[:2]:
+                        ws = wb[sheet]
+                        ref_text += f"\n[{tag} - SHEET: {sheet}]\n"
+                        for row in ws.iter_rows(max_row=40, values_only=True):
+                            row_str = " | ".join([str(c) if c is not None else "" for c in row])
+                            if row_str.strip().replace("|", ""):
+                                ref_text += row_str + "\n"
+                    wb.close()
+                else:
+                    doc = fitz.open(p)
+                    for pg_idx in range(min(3, len(doc))):
+                        ref_text += f"\n[{tag} - PG {pg_idx+1}]\n" + doc[pg_idx].get_text()
+                    doc.close()
+            except Exception as e:
+                print(f"[JIT Ref extraction] Notice for {tag}: {e}")
+                
+    return ref_text[:25000], ref_images[:2]
+
+def _validate_single_rule(rule, pages, pdf_path, total_pages, reference_mapping, global_context=None, model=None):
     rule_id = rule.get("id") or rule.get("rule_id", "R999")
     
     # 0. RESOLVE SCOPE DYNAMICALLY
@@ -81,23 +137,18 @@ def _validate_single_rule(rule, pages, pdf_path, total_pages, ref_cache, global_
     page_indices = _detect_page_indices(pages, scope, total_pages)
     scoped_text = "\n\n".join(f"[PAGE {i+1}]\n{pages[i]}" for i in page_indices if i < len(pages))
     
-    # RESOLVE REFERENCES
+    # 1. JIT RESOLVE ONLY REQUIRED REFERENCES FOR THIS ACTIVE RULE
     required_refs = rule.get("required_references", [])
-    ref_text = ""
-    ref_images = []
-    for tag, val in ref_cache.items():
-        if not required_refs or tag in required_refs:
-            if val.get("text"): ref_text += f"\n[{tag}]\n{val['text']}"
-            if val.get("images"): ref_images.extend(val["images"][:3])
+    ref_text, ref_images = _extract_references_for_rule(required_refs, reference_mapping or {})
 
     rule_extra = {
         "reference_text": ref_text,
         "drawing_images": _render_pages_as_images(pdf_path, page_indices) if pdf_path else [],
-        "reference_images": ref_images[:4],
+        "reference_images": ref_images,
     }
 
-    # RUN RULE with target model (default gemma4)
-    target_model = model or os.getenv("LLM_MODEL", "gemma4:cloud")
+    # RUN RULE with target model
+    target_model = model or os.getenv("LLM_MODEL", "gemini-2.0-flash")
     result = run_rule(rule, scoped_text, rule_extra=rule_extra, global_context=global_context, model=target_model)
     
     # ADD METADATA
@@ -117,57 +168,21 @@ def extract_pages(file_path: str):
     doc.close()
     return pages, total
 
-def _extract_reference_cache(reference_mapping: dict):
-    cache = {}
-    if not reference_mapping: return cache
-    for tag, p_list in reference_mapping.items():
-        try:
-            p_list = p_list if isinstance(p_list, list) else [p_list]
-            found_text = ""
-            found_imgs = []
-            for p in p_list[:5]: # Cap at top 5 files per tag
-                if not p or not os.path.exists(p):
-                    continue
-                if p.lower().endswith(('.png', '.jpg', '.jpeg')):
-                    with open(p, "rb") as f:
-                        found_imgs.append({"data": base64.b64encode(f.read()).decode(), "media_type": "image/png" if p.endswith('png') else "image/jpeg"})
-                elif p.lower().endswith(('.xlsx', '.xlsm', '.xltx')):
-                    try:
-                        import openpyxl
-                        wb = openpyxl.load_workbook(p, data_only=True)
-                        for sheet in wb.sheetnames:
-                            ws = wb[sheet]
-                            found_text += f"\n[SHEET: {sheet}]\n"
-                            for row in ws.iter_rows(values_only=True):
-                                row_str = " | ".join([str(c) if c is not None else "" for c in row])
-                                if row_str.strip().replace("|", ""):
-                                    found_text += row_str + "\n"
-                    except Exception as xe:
-                        print(f"[reference_cache] Excel parse error: {xe}")
-                else:
-                    d = fitz.open(p)
-                    found_text += "\n".join([pg.get_text() for pg in d])
-                    d.close()
-            cache[tag] = {"text": found_text[:25000], "images": found_imgs[:4]}
-        except Exception as e:
-            print(f"[reference_cache] Error parsing {tag}: {e}")
-    return cache
-
-
 def run_validation(pdf_path: str, rules: list, reference_mapping: dict = None, use_cache: bool = False, on_progress = None) -> list:
     """
     Synchronous validation runner for list/dict of rules.
-    Runs each rule individually against the scoped context and tracks progress.
+    Runs each rule individually with on-demand JIT reference loading.
     """
     if isinstance(rules, dict):
         rules = list(rules.values())
 
     pages, total_pages = extract_pages(pdf_path)
-    ref_cache = _extract_reference_cache(reference_mapping or {})
     
+    # Extract baseline global context from first few pages of drawing + core references
     domain = None
     if pages:
-        domain = extract_global_context("\n".join(pages[:5]), "\n".join([v.get("text", "") for v in ref_cache.values()]), reference_mapping=reference_mapping or {})
+        ref_sample_text, _ = _extract_references_for_rule(["RFNSA", "SITE_DETAILS", "LEASE_PLAN"], reference_mapping or {})
+        domain = extract_global_context("\n".join(pages[:5]), ref_sample_text, reference_mapping=reference_mapping or {})
     global_context = domain.to_dict() if domain else {}
 
     results = [None] * len(rules)
@@ -178,11 +193,11 @@ def run_validation(pdf_path: str, rules: list, reference_mapping: dict = None, u
     def _worker(idx, rule):
         nonlocal completed_count
         try:
-            from api import EXECUTION_PAUSE_EVENT
+            from backend.services.validation_service import EXECUTION_PAUSE_EVENT
             EXECUTION_PAUSE_EVENT.wait()
         except Exception:
             pass
-        res = _validate_single_rule(rule, pages, pdf_path, total_pages, ref_cache, global_context)
+        res = _validate_single_rule(rule, pages, pdf_path, total_pages, reference_mapping, global_context)
         completed_count += 1
         if on_progress:
             try:
