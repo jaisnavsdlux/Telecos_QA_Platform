@@ -48,9 +48,29 @@ def main(project_id="H8097", progress_callback=None):
                         if tag not in ("Unknown", "FC_Drawing"):
                             if tag not in ref_mapping:
                                 ref_mapping[tag] = []
-                            if fpath not in ref_mapping[tag]:
-                                ref_mapping[tag].append(fpath)
-                                total_ref_files += 1
+    # If references are missing locally (e.g. fresh Render container deployment), pull from Backblaze B2
+    if total_ref_files < 10:
+        try:
+            from backend.services.storage_service import storage
+            if storage.is_s3_configured:
+                b2_refs = storage.list_project_files(pid, "references")
+                ref_dest_dir = os.path.join(PROJECTS_DIR, pid, "references")
+                os.makedirs(ref_dest_dir, exist_ok=True)
+                for item in b2_refs:
+                    fname = item.get("name") or item.get("filename")
+                    if fname:
+                        dst_path = os.path.join(ref_dest_dir, fname)
+                        if not os.path.exists(dst_path):
+                            storage.s3.download_file(storage.bucket, f"{pid}/references/{fname}", dst_path)
+                            tag = classify_file(fname)
+                            if tag not in ("Unknown", "FC_Drawing"):
+                                if tag not in ref_mapping:
+                                    ref_mapping[tag] = []
+                                if dst_path not in ref_mapping[tag]:
+                                    ref_mapping[tag].append(dst_path)
+                                    total_ref_files += 1
+        except Exception as b2_dl_err:
+            print(f"Notice fetching references from B2: {b2_dl_err}")
 
     print(f"\n[1/4] Constructed Reference Mapping for {len(ref_mapping)} Document Categories ({total_ref_files} files found):")
     for tag, paths in sorted(ref_mapping.items()):
