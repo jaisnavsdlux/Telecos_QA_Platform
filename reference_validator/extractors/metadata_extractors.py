@@ -9,23 +9,41 @@ If not found, use null."""
 
 def extract_as_built(text: str) -> dict:
     """Extracts authoritative drawing metadata."""
-    target_model = os.getenv("LLM_MODEL", "gemma4")
+    target_model = os.getenv("LLM_MODEL", "gemma4:cloud")
     content = [{"type": "text", "text": text[:10000]}]
-    res, _ = call_llm(content, PROMPT, model=target_model, rule_id="EXTRACT_AS_BUILT")
-    # Wrap in SourceValue markers
+    res = {}
+    try:
+        raw_res, _ = call_llm(content, PROMPT, model=target_model, rule_id="EXTRACT_AS_BUILT")
+        if isinstance(raw_res, dict):
+            res = raw_res
+    except Exception:
+        # Regex baseline extraction
+        id_match = re.findall(r'\b[A-Z]\d{4,5}\b', text)
+        if id_match:
+            res["site_id"] = id_match[0]
+        
     return {
         k: SourceValue(value=v, source="AS_BUILT")
-        for k, v in (res.items() if isinstance(res, dict) else {})
+        for k, v in res.items()
         if v
     }
 
 def extract_rfnsa(text: str) -> dict:
     """Extracts reference site metadata from RFNSA/Client records."""
-    target_model = os.getenv("LLM_MODEL", "gemma4")
+    target_model = os.getenv("LLM_MODEL", "gemma4:cloud")
     content = [{"type": "text", "text": text[:10000]}]
-    res, _ = call_llm(content, PROMPT, model=target_model, rule_id="EXTRACT_RFNSA")
+    res = {}
+    try:
+        raw_res, _ = call_llm(content, PROMPT, model=target_model, rule_id="EXTRACT_RFNSA")
+        if isinstance(raw_res, dict):
+            res = raw_res
+    except Exception:
+        id_match = re.findall(r'\b[A-Z]\d{4,5}\b', text)
+        if id_match:
+            res["site_id"] = id_match[0]
+
     return {
         k: SourceValue(value=v, source="RFNSA")
-        for k, v in (res.items() if isinstance(res, dict) else {})
+        for k, v in res.items()
         if v
     }
