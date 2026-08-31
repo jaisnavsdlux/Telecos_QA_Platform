@@ -60,6 +60,7 @@ def _render_pages_as_images(file_path: str, page_indices: list):
     images = []
     if not file_path or not os.path.exists(file_path):
         return images
+    doc = None
     try:
         doc = fitz.open(file_path)
         for i in page_indices[:2]: 
@@ -69,9 +70,14 @@ def _render_pages_as_images(file_path: str, page_indices: list):
                 img_bytes = pix.tobytes("jpeg")
                 b64 = base64.b64encode(img_bytes).decode()
                 images.append({"data": b64, "media_type": "image/jpeg"})
-        doc.close()
+                del pix
     except Exception as e:
         print(f"[render_pages] Notice rendering images: {e}")
+    finally:
+        if doc:
+            doc.close()
+            del doc
+        gc.collect()
     return images
 
 def _extract_references_for_rule(required_refs: list, reference_mapping: dict) -> tuple[str, list]:

@@ -390,7 +390,10 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
             
             raw_text = res_json["choices"][0]["message"]["content"]
             usage = res_json.get("usage", {})
-            input_tokens = usage.get("prompt_tokens") or (len(system_msg) + sum(len(t) for t in text_accumulator)) // 4
+            img_count = sum(1 for c in openai_content if c.get("type") == "image_url")
+            base_tokens = (len(system_msg) + sum(len(t) for t in text_accumulator)) // 4
+            reported_tokens = usage.get("prompt_tokens", 0)
+            input_tokens = reported_tokens if reported_tokens > base_tokens else (base_tokens + img_count * 1600)
             output_tokens = usage.get("completion_tokens") or len(raw_text) // 4
 
     # Build token usage record (no caching used in code logic -> 0)
