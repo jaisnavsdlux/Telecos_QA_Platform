@@ -6,9 +6,21 @@ import time
 import threading
 import hashlib
 import yaml
+import gc
+import ctypes
+
+def force_memory_release():
+    """Forces Python GC and Linux C-heap (glibc) to immediately surrender memory back to the OS."""
+    gc.collect()
+    try:
+        if hasattr(ctypes, "CDLL"):
+            libc = ctypes.CDLL("libc.so.6")
+            libc.malloc_trim(0)
+    except Exception:
+        pass
 
 # Global semaphore: concurrency limiter for API calls
-_LLM_SEMAPHORE = threading.Semaphore(int(os.getenv("LLM_CONCURRENCY", "3")))
+_LLM_SEMAPHORE = threading.Semaphore(int(os.getenv("LLM_CONCURRENCY", "1")))
 _LLM_LAST_CALL_TIME = 0.0
 _LLM_MIN_GAP_SECONDS = 0.2
 
@@ -199,6 +211,14 @@ def run_rule(rule: dict, pdf_text: str, rule_extra: dict | None = None, global_c
             "confidence": "LOW",
             "token_usage": fallback_token_usage
         }
+    finally:
+        try:
+            del user_content
+            del extra
+            del context_text
+        except Exception:
+            pass
+        force_memory_release()
 
 def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id: str = "R000") -> tuple[dict, dict]:
     """
@@ -403,8 +423,17 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
             img_count = sum(1 for c in openai_content if c.get("type") == "image_url")
             base_tokens = (len(system_msg) + sum(len(t) for t in text_accumulator)) // 4
             reported_tokens = usage.get("prompt_tokens", 0)
-            input_tokens = reported_tokens if reported_tokens > base_tokens else (base_tokens + img_count * 1600)
-            output_tokens = usage.get("completion_tokens") or len(raw_text) // 4
+    finally:
+        try:
+            del openai_content
+            del text_accumulator
+            del messages
+            del payload
+            del res_json
+            del response
+        except Exception:
+            pass
+        force_memory_release()
 
     # Build token usage record (no caching used in code logic -> 0)
     token_usage = {
