@@ -18,6 +18,12 @@ def force_memory_release():
     except Exception:
         pass
 
+try:
+    from backend.config import BASE_DIR, PROJECTS_DIR
+except Exception:
+    BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    PROJECTS_DIR = os.path.join(BASE_DIR, "db", "projects")
+
 from reference_validator.validator.rule_engine import run_rule, load_rules, _find_config
 from reference_validator.validator.pre_extractor import extract_global_context
 from reference_validator.rules_loader import load_rules_from_excel
