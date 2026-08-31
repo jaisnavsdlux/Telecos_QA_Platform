@@ -30,7 +30,8 @@ def main(project_id="H8097", progress_callback=None):
     # 1. Build Reference Mapping dynamically across uploaded project directories
     ref_dirs_to_check = [
         os.path.join(PROJECTS_DIR, pid, "references"),
-        os.path.join("projects", pid, "references"),
+        os.path.join(BASE_DIR, "db", "projects", pid, "references"),
+        os.path.join(BASE_DIR, "projects", pid, "references"),
         os.path.join(DB_DIR, "reference_files"),
         "reference_files",
         os.path.join("qaInput", "reference_package")
@@ -48,6 +49,10 @@ def main(project_id="H8097", progress_callback=None):
                         if tag not in ("Unknown", "FC_Drawing"):
                             if tag not in ref_mapping:
                                 ref_mapping[tag] = []
+                            if fpath not in ref_mapping[tag]:
+                                ref_mapping[tag].append(fpath)
+                                total_ref_files += 1
+
     # If references are missing locally (e.g. fresh Render container deployment), pull from Backblaze B2
     if total_ref_files < 10:
         try:
@@ -76,12 +81,12 @@ def main(project_id="H8097", progress_callback=None):
     for tag, paths in sorted(ref_mapping.items()):
         print(f"  • {tag:<22} -> {len(paths)} file(s)")
 
-    # 2. Select target drawing PDF
     # 2. Select target drawing PDF (Prioritize FC Child CAD drawings in project drawing folder)
     drawing_dirs_to_check = [
         os.path.join(PROJECTS_DIR, pid, "drawing"),
+        os.path.join(BASE_DIR, "db", "projects", pid, "drawing"),
+        os.path.join(BASE_DIR, "projects", pid, "drawing"),
         os.path.join(BASE_DIR, "qaInput", "primary_drawing"),
-        os.path.join("projects", pid, "drawing"),
         os.path.join(DB_DIR, "drawings"),
         "drawings"
     ]
@@ -96,9 +101,10 @@ def main(project_id="H8097", progress_callback=None):
                         try:
                             sz = os.path.getsize(fp)
                             if sz > 20000 and not f.lower().startswith(f"{pid.lower()}_drawing.pdf"):
-                                # Score candidate: prioritize FC / Child / Drawing keywords
                                 score = sz
                                 fname_upper = f.upper()
+                                if pid.upper() in fname_upper:
+                                    score += 500_000_000 # Top priority for active project ID match
                                 if "CHILD" in fname_upper or "FC" in fname_upper or "CAD" in fname_upper:
                                     score += 100_000_000 # High priority for actual FC CAD drawing
                                 candidates.append((score, fp, f))
