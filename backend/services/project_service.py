@@ -18,6 +18,7 @@ import fitz  # PyMuPDF
 from backend.config import PROJECTS_DIR, REFERENCE_FILES_DIR, BASE_DIR
 
 _PROJECT_LOCK = threading.RLock()
+_SEEDED_PROJECTS = set()
 LEGACY_PROJECTS_DIR = os.path.join(BASE_DIR, "projects")
 
 def classify_file(name: str) -> str:
@@ -127,8 +128,8 @@ class ProjectService:
             os.makedirs(os.path.join(legacy_pdir, "references"), exist_ok=True)
             os.makedirs(os.path.join(legacy_pdir, "reports"), exist_ok=True)
 
-            # Auto-seed baseline files for H8097 dynamically across all workspace locations
-            if pid == "H8097":
+            # Auto-seed baseline files for H8097 dynamically across all workspace locations (once per startup)
+            if pid == "H8097" and pid not in _SEEDED_PROJECTS:
                 qa_ref_candidates = [
                     os.path.join(BASE_DIR, "qaInput", "reference_package"),
                     os.path.join(BASE_DIR, "backend", "qaInput", "reference_package"),
@@ -183,6 +184,8 @@ class ProjectService:
                                 os.remove(fp)
                             except Exception:
                                 pass
+
+                _SEEDED_PROJECTS.add(pid)
 
             # Check if legacy directory has files not present in db/projects
             if os.path.exists(legacy_pdir):
