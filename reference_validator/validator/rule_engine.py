@@ -293,52 +293,129 @@ def run_rule(rule: dict, pdf_text: str, rule_extra: dict | None = None, global_c
             pass
         force_memory_release()
 
-def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id: str = "R000") -> tuple[dict, dict]:
+def call_llm(content_list: list, system_msg: str, model: str = "claude-opus-5", rule_id: str = "R000") -> tuple[dict, dict]:
     """
-    Universal LLM Caller supporting Gemma-4 (Cloud/Local/OpenAI/Ollama format) and Anthropic.
-    Ensures prompt caching is disabled in code logic and tracks per-rule token metrics.
+    Production-Grade Multi-Modal LLM Caller.
+    Defaults to Anthropic Claude (claude-opus-5 / claude-3-7-sonnet) with native SDK and resilient REST fallback.
     """
     global _LLM_LAST_CALL_TIME
     
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY", os.getenv("CLAUDE_API_KEY", "")).strip()
     gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
     raw_model = (model or os.getenv("LLM_MODEL", "")).strip()
     api_base = os.getenv("LLM_API_BASE", os.getenv("OPENAI_API_BASE", "")).strip().rstrip("/")
-    
-    if api_base and (not raw_model or raw_model == "gemini-2.0-flash"):
-        target_model = "gemma4:cloud"
-    elif not raw_model:
-        target_model = "gemini-2.0-flash" if gemini_key else "gemma4:cloud"
-    else:
-        target_model = raw_model
+    api_key = os.getenv("LLM_API_KEY", os.getenv("OPENAI_API_KEY", "")).strip()
 
-    if not api_base:
-        api_base = "http://localhost:11434/v1"
-    api_key = os.getenv("LLM_API_KEY", os.getenv("OPENAI_API_KEY", "gemma-local")).strip()
-    
-    anthropic_key = os.getenv("ANTHROPIC_API_KEY")
-    use_anthropic = (target_model.startswith("claude") or os.getenv("LLM_PROVIDER") == "anthropic") and bool(anthropic_key)
+    if anthropic_key:
+        if not raw_model or "gemma" in raw_model or "ollama" in raw_model or raw_model == "gemini-2.0-flash":
+            target_model = "claude-opus-5"
+        else:
+            target_model = raw_model
+    elif gemini_key:
+        target_model = raw_model if raw_model and "gemma" not in raw_model else "gemini-2.0-flash"
+    else:
+        target_model = raw_model or "claude-opus-5"
 
     with _LLM_SEMAPHORE:
-        # Rate limit spacing to strictly honor 15 RPM limits
         elapsed = time.time() - _LLM_LAST_CALL_TIME
-        min_gap = 1.0 if gemini_key else _LLM_MIN_GAP_SECONDS
+        min_gap = 0.5 if anthropic_key else 1.0
         if elapsed < min_gap:
             time.sleep(min_gap - elapsed)
         _LLM_LAST_CALL_TIME = time.time()
 
         openai_content = []
         text_accumulator = []
-        messages = []
-        payload = None
-        res_json = None
-        response = None
         raw_text = ""
         input_tokens = 0
         output_tokens = 0
 
         try:
-            if gemini_key:
-                # ── 1. NATIVE OFFICIAL GOOGLE GEMINI REST API ──
+            # ── 1. PRIMARY: OFFICIAL ANTHROPIC CLAUDE API ──
+            if anthropic_key:
+                claude_content = []
+                for item in content_list:
+                    if item.get("type") == "text":
+                        t_val = item.get("text", "")
+                        claude_content.append({"type": "text", "text": t_val})
+                        text_accumulator.append(t_val)
+                    elif item.get("type") == "image":
+                        src = item.get("source", {})
+                        b64_data = src.get("data", "")
+                        mtype = src.get("media_type", "image/png")
+                        claude_content.append({
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": mtype,
+                                "data": b64_data
+                            }
+                        })
+
+                sdk_success = False
+                try:
+                    import anthropic
+                    client = anthropic.Anthropic(api_key=anthropic_key)
+                    models_to_try = [target_model, "claude-opus-5", "claude-3-7-sonnet-20250219", "claude-3-5-sonnet-20241022", "claude-3-haiku-20240307"]
+                    models_to_try = list(dict.fromkeys([m for m in models_to_try if m]))
+
+                    for attempt_model in models_to_try:
+                        for attempt in range(3):
+                            try:
+                                msg = client.messages.create(
+                                    model=attempt_model,
+                                    max_tokens=2048,
+                                    system=system_msg,
+                                    messages=[{"role": "user", "content": claude_content}]
+                                )
+                                if msg and msg.content:
+                                    raw_text = msg.content[0].text
+                                    input_tokens = getattr(msg.usage, "input_tokens", 0)
+                                    output_tokens = getattr(msg.usage, "output_tokens", 0)
+                                    sdk_success = True
+                                    target_model = attempt_model
+                                    break
+                            except Exception as anth_err:
+                                err_str = str(anth_err).lower()
+                                if "rate_limit" in err_str or "429" in err_str:
+                                    time.sleep(2.5 * (attempt + 1))
+                                elif "not_found" in err_str or "404" in err_str:
+                                    break
+                                else:
+                                    time.sleep(1.5)
+                        if sdk_success:
+                            break
+                except ImportError:
+                    sdk_success = False
+
+                if not sdk_success and not raw_text:
+                    headers = {
+                        "x-api-key": anthropic_key,
+                        "anthropic-version": "2023-06-01",
+                        "content-type": "application/json"
+                    }
+                    payload = {
+                        "model": target_model,
+                        "max_tokens": 2048,
+                        "system": system_msg,
+                        "messages": [{"role": "user", "content": claude_content}]
+                    }
+                    for attempt in range(3):
+                        try:
+                            res = requests.post("https://api.anthropic.com/v1/messages", headers=headers, json=payload, timeout=60)
+                            if res.status_code == 200:
+                                res_json = res.json()
+                                raw_text = res_json["content"][0]["text"]
+                                usage = res_json.get("usage", {})
+                                input_tokens = usage.get("input_tokens", 0)
+                                output_tokens = usage.get("output_tokens", 0)
+                                break
+                            elif res.status_code == 429:
+                                time.sleep(2.5 * (attempt + 1))
+                        except Exception:
+                            time.sleep(1.5)
+
+            elif gemini_key:
+                # ── 2. NATIVE GOOGLE GEMINI REST API ──
                 gemini_parts = []
                 for item in content_list:
                     if item.get("type") == "text":
@@ -355,21 +432,14 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
                         })
 
                 gemini_payload = {
-                    "system_instruction": {
-                        "parts": [{"text": system_msg}]
-                    },
-                    "contents": [
-                        {"role": "user", "parts": gemini_parts}
-                    ],
-                    "generationConfig": {
-                        "temperature": 0.1,
-                        "maxOutputTokens": 2048
-                    }
+                    "system_instruction": {"parts": [{"text": system_msg}]},
+                    "contents": [{"role": "user", "parts": gemini_parts}],
+                    "generationConfig": {"temperature": 0.1, "maxOutputTokens": 2048}
                 }
 
                 models_to_try = [target_model, "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
                 models_to_try = list(dict.fromkeys([m.replace("models/", "") for m in models_to_try if m]))
-
+                
                 for clean_model in models_to_try:
                     url = f"https://generativelanguage.googleapis.com/v1beta/models/{clean_model}:generateContent?key={gemini_key}"
                     for attempt in range(3):
@@ -381,8 +451,6 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
                             if res.status_code == 404:
                                 break
                             if res.status_code != 200:
-                                if attempt == 2:
-                                    raise Exception(f"Gemini API status {res.status_code}: {res.text[:300]}")
                                 time.sleep(2.0)
                                 continue
 
@@ -397,45 +465,18 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
                             input_tokens = usage.get("promptTokenCount", 0) or (len(system_msg) + sum(len(t) for t in text_accumulator)) // 4
                             output_tokens = usage.get("candidatesTokenCount", 0) or (len(raw_text or "") // 4)
                             break
-                        except Exception as g_err:
-                            if attempt == 2 and clean_model == models_to_try[-1]:
-                                raise g_err
+                        except Exception:
                             time.sleep(2.0)
 
                     if raw_text:
                         target_model = clean_model
                         break
 
-                if not raw_text:
-                    raw_text = '{"result": "PASS", "reason": "Rule requirements verified against document context metadata.", "evidence": "Verified", "confidence": "MEDIUM"}'
-
-            elif use_anthropic:
-                # ── 2. ANTHROPIC MESSAGES API ──
-                headers = {
-                    "x-api-key": anthropic_key,
-                    "anthropic-version": "2023-06-01",
-                    "content-type": "application/json"
-                }
-                payload = {
-                    "model": target_model,
-                    "max_tokens": 2048,
-                    "system": system_msg,
-                    "messages": [{"role": "user", "content": content_list}]
-                }
-                response = requests.post("https://api.anthropic.com/v1/messages", headers=headers, json=payload, timeout=60)
-                res_json = response.json()
-                if "error" in res_json:
-                    raise Exception(res_json["error"].get("message", str(res_json["error"])))
-                
-                raw_text = res_json["content"][0]["text"]
-                usage = res_json.get("usage", {})
-                input_tokens = usage.get("input_tokens", 0)
-                output_tokens = usage.get("output_tokens", 0)
             else:
-                # ── 3. STANDARD OPENAI / OLLAMA / LOCAL HOST COMPATIBLE FORMAT ──
+                # ── 3. STANDARD OPENAI / LOCAL HOST COMPATIBLE FORMAT ──
                 headers = {
                     "Content-Type": "application/json",
-                    "Authorization": f"Bearer {api_key}",
+                    "Authorization": f"Bearer {api_key or 'local'}",
                     "ngrok-skip-browser-warning": "1",
                     "User-Agent": "TelecosValidator/1.0"
                 }
@@ -466,7 +507,7 @@ def call_llm(content_list: list, system_msg: str, model: str = "gemma4", rule_id
                     "max_tokens": 2048
                 }
 
-                url = f"{api_base}/chat/completions"
+                url = f"{api_base or 'http://localhost:11434/v1'}/chat/completions"
                 for attempt in range(3):
                     try:
                         response = requests.post(url, headers=headers, json=payload, timeout=60)
