@@ -33,7 +33,7 @@ def compute_metrics(project_id: str = "H8097") -> Dict[str, Any]:
         }
         total_rules = v_summary.get("total", 71) or 71
         elapsed = local_state.get("elapsed_seconds") or 301.7
-    elif local_state.get("status") == "completed" or local_state.get("verdicts"):
+    elif (local_state.get("status") == "completed" or local_state.get("verdicts")) and local_state.get("project_id", "H8097") == project_id:
         v_dict = local_state.get("verdicts", {"PASS": 0, "FAIL": 0, "UNCLEAR": 0, "NOT_APPLICABLE": 0})
         total_rules = local_state.get("total_rules", 71)
         elapsed = local_state.get("elapsed_seconds", 301.7)

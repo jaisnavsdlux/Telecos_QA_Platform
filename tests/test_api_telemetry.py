@@ -21,7 +21,7 @@ def test_dashboard_metrics_h8097(client):
 
 def test_unvalidated_project_metrics(client):
     """Tests metrics for a newly created clean project return 0% scorecard gracefully."""
-    res = client.get("/api/dashboard_metrics?project_id=CLEAN_TEST_SITE")
+    res = client.get("/api/dashboard_metrics?project_id=BRAND_NEW_UNVALIDATED_SITE")
     assert res.status_code == 200
     data = res.json()
     assert data["verdicts"]["PASS"] == 0
