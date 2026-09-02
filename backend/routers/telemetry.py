@@ -42,30 +42,31 @@ def compute_metrics(project_id: str = "H8097") -> Dict[str, Any]:
         total_rules = 72
         elapsed = 0.0
 
-    in_tok = 495683 if project_id == "H8097" else 0
-    out_tok = 13547 if project_id == "H8097" else 0
+    in_tok = 0
+    out_tok = 0
     cache_read = 0
     cache_create = 0
 
-    tok_log_candidates = [
-        os.path.join(pdir, "token_usage_log.json"),
-        TOKEN_LOG_FILE,
-        "token_usage_log.json"
-    ]
-    for cand in tok_log_candidates:
-        if os.path.exists(cand):
-            try:
-                with open(cand, "r", encoding="utf-8") as f:
-                    logs = json.load(f)
-                if logs and isinstance(logs, list):
-                    last_run_logs = logs[-total_rules:]
-                    in_tok = sum(l.get("input_tokens", 0) for l in last_run_logs)
-                    out_tok = sum(l.get("output_tokens", 0) for l in last_run_logs)
-                    cache_read = sum(l.get("cache_read_input_tokens", 0) for l in last_run_logs)
-                    cache_create = sum(l.get("cache_creation_input_tokens", 0) for l in last_run_logs)
-                    break
-            except Exception:
-                pass
+    if local_state.get("status") in ["running", "completed"] and local_state.get("project_id", "H8097") == project_id:
+        tok_log_candidates = [
+            os.path.join(pdir, "token_usage_log.json"),
+            TOKEN_LOG_FILE,
+            "token_usage_log.json"
+        ]
+        for cand in tok_log_candidates:
+            if os.path.exists(cand):
+                try:
+                    with open(cand, "r", encoding="utf-8") as f:
+                        logs = json.load(f)
+                    if logs and isinstance(logs, list):
+                        last_run_logs = logs[-total_rules:]
+                        in_tok = sum(l.get("input_tokens", 0) for l in last_run_logs)
+                        out_tok = sum(l.get("output_tokens", 0) for l in last_run_logs)
+                        cache_read = sum(l.get("cache_read_input_tokens", 0) for l in last_run_logs)
+                        cache_create = sum(l.get("cache_creation_input_tokens", 0) for l in last_run_logs)
+                        break
+                except Exception:
+                    pass
 
     ref_count = len(os.listdir(os.path.join(pdir, "references"))) if os.path.exists(os.path.join(pdir, "references")) else 0
     if ref_count == 0 and project_id == "H8097":
