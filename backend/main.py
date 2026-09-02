@@ -30,7 +30,7 @@ if sys.platform == "win32":
     except Exception:
         pass
 
-from backend.config import FRONTEND_DIR, STATIC_DIR, CORS_ORIGINS
+from backend.config import FRONTEND_DIR, STATIC_DIR, CORS_ORIGINS, BASE_DIR
 from backend.database.init_db import init_db
 from backend.services.project_service import classify_file
 from backend.routers.health import router as health_router
@@ -86,22 +86,17 @@ app.include_router(reports_router)
 app.include_router(telemetry_router)
 
 # Mount frontend UI assets if present locally
-mount_dir = FRONTEND_DIR if os.path.exists(FRONTEND_DIR) else STATIC_DIR
-if os.path.exists(mount_dir):
-    app.mount("/static", NoCacheStaticFiles(directory=mount_dir, html=True), name="static")
-    app.mount("/assets", NoCacheStaticFiles(directory=mount_dir, html=True), name="assets")
+for static_candidate in [STATIC_DIR, FRONTEND_DIR, os.path.join(BASE_DIR, "static"), os.path.join(BASE_DIR, "frontend")]:
+    if os.path.exists(static_candidate):
+        app.mount("/static", NoCacheStaticFiles(directory=static_candidate, html=True), name="static")
+        app.mount("/assets", NoCacheStaticFiles(directory=static_candidate, html=True), name="assets")
+        break
 
 @app.get("/")
 @app.head("/")
 def root():
-    """API Gateway root status endpoint."""
-    return {
-        "status": "online",
-        "service": "Strelza Telecos QA & Compliance API",
-        "version": "2.3.0",
-        "docs_url": "/docs",
-        "health_url": "/api/health"
-    }
+    """API Gateway root status endpoint — redirects to login/dashboard UI."""
+    return RedirectResponse(url="/static/index.html")
 
 # Backward compatibility exports
 __all__ = ["app", "classify_file"]
