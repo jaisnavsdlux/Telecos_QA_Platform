@@ -67,7 +67,7 @@
       <!-- Live Scorecard KPI Strip -->
       <div class="summary-strip">
         <div class="summary-tile pass">
-          <div class="value" id="kpiPass">59</div>
+          <div class="value" id="kpiPass">0</div>
           <div class="label">Passing Rules (100%)</div>
         </div>
         <div class="summary-tile fail">
@@ -79,11 +79,11 @@
           <div class="label">Unclear Issues</div>
         </div>
         <div class="summary-tile na">
-          <div class="value" id="kpiNA">12</div>
+          <div class="value" id="kpiNA">0</div>
           <div class="label">Not Applicable (Rooftop Scope)</div>
         </div>
         <div class="summary-tile">
-          <div class="value" id="kpiTotal">71</div>
+          <div class="value" id="kpiTotal">72</div>
           <div class="label">Total Optus BA Rules</div>
         </div>
       </div>
@@ -198,7 +198,7 @@
         document.getElementById("kpiFail").textContent = failCount;
         document.getElementById("kpiUnclear").textContent = unclearCount;
         document.getElementById("kpiNA").textContent = naCount;
-        document.getElementById("kpiTotal").textContent = totalCount || metrics.total_rules || 71;
+        document.getElementById("kpiTotal").textContent = 72;
 
         if (metrics.target_site) {
           document.getElementById("siteIdentifierText").textContent = `${metrics.target_site.site_id} • ${metrics.target_site.site_name}`;

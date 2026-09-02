@@ -114,8 +114,8 @@ def _render_pages_as_images(file_path: str, page_indices: list):
         force_memory_release()
     return images
 
-def _has_enough_memory(max_rss_mb: int = 380) -> bool:
-    """Returns True if process has safe memory headroom below container limits."""
+def _has_enough_memory(max_rss_mb=4096):
+    """Checks available process memory headroom (default 4GB on local systems)."""
     try:
         import psutil
         rss = psutil.Process().memory_info().rss / (1024 * 1024)

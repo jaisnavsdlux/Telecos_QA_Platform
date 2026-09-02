@@ -2,12 +2,11 @@
 """
 ===============================================================================
   STRELZA TELECOS QA PLATFORM — PHASE 1 MASTER APPLICATION RUNNER
-  AI-Powered Multi-Modal Telecom Compliance Audit Suite
+  AI-Powered Multi-Modal Telecom Compliance Audit Suite (72 Rules)
 ===============================================================================
 """
 import sys
 import os
-import getpass
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -20,35 +19,52 @@ env_path = os.path.join(CURRENT_DIR, ".env")
 load_dotenv(env_path)
 
 def setup_api_keys():
-    """Interactive first-time setup assistant for Claude API credentials."""
+    """Interactive first-time / update assistant for Claude API credentials."""
     anthropic_key = os.getenv("ANTHROPIC_API_KEY", os.getenv("CLAUDE_API_KEY", "")).strip()
     
-    if not anthropic_key:
-        print("\n" + "=" * 75)
-        print("  🔑 CLAUDE API CREDENTIAL SETUP ASSISTANT")
-        print("=" * 75)
-        print("  To perform AI-powered CAD drawing compliance audits, the platform")
-        print("  requires an Anthropic Claude API Key.")
-        print("=" * 75)
-        
-        try:
-            if sys.stdin.isatty():
-                entered_key = input("\n👉 Enter your Anthropic Claude API Key (or press Enter to skip): ").strip()
+    print("\n" + "=" * 75)
+    print("  🔑 CLAUDE API CREDENTIAL SETUP ASSISTANT")
+    print("=" * 75)
+    
+    try:
+        if sys.stdin.isatty():
+            if anthropic_key:
+                masked = anthropic_key[:7] + "..." + anthropic_key[-4:] if len(anthropic_key) > 12 else "***"
+                print(f"  [OK] Current Claude API Key configured: {masked}")
+                entered_key = input("  ➜ Press [ENTER] to keep current key, or paste new API key to update: ").strip()
                 if entered_key:
                     os.environ["ANTHROPIC_API_KEY"] = entered_key
-                    # Save to .env for persistence
+                    # Update .env
+                    lines = []
+                    if os.path.exists(env_path):
+                        with open(env_path, "r", encoding="utf-8") as f:
+                            lines = [l for l in f.readlines() if not l.startswith("ANTHROPIC_API_KEY=")]
+                    lines.append(f"ANTHROPIC_API_KEY={entered_key}\n")
+                    with open(env_path, "w", encoding="utf-8") as f:
+                        f.writelines(lines)
+                    print("  [OK] Successfully updated Claude API Key in .env file.")
+                else:
+                    print("  [OK] Continuing with active Claude API credentials.")
+            else:
+                print("  To perform AI-powered CAD drawing compliance audits across all 72 rules,")
+                print("  the platform requires an Anthropic Claude API Key.")
+                entered_key = input("\n👉 Enter your Anthropic Claude API Key (e.g. sk-ant-...): ").strip()
+                if entered_key:
+                    os.environ["ANTHROPIC_API_KEY"] = entered_key
                     with open(env_path, "a", encoding="utf-8") as f:
                         f.write(f"\nANTHROPIC_API_KEY={entered_key}\nLLM_MODEL=claude-opus-5\n")
                     print("  [OK] Saved Claude API Key to .env file.")
                 else:
-                    print("  [Notice] Running without Anthropic API key. Add ANTHROPIC_API_KEY to .env anytime.")
-        except Exception:
-            pass
+                    print("  [Notice] Running in evaluation mode. You can set ANTHROPIC_API_KEY in .env anytime.")
+    except Exception:
+        pass
+    print("=" * 75)
 
 def main():
     print("\n" + "=" * 75)
     print("🚀 STRELZA TELECOS QA PLATFORM — PHASE 1")
     print("  Enterprise Telecom Compliance & For-Construction Drawing Audit Suite")
+    print("  72-Rule Optus BA Engineering Verification Suite")
     print("=" * 75)
     
     setup_api_keys()

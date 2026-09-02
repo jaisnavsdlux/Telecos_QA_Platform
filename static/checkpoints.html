@@ -163,11 +163,11 @@
 
       <!-- Live Dynamic Scoreboard Strip -->
       <div class="summary-strip">
-        <div class="summary-tile pass"><div class="value" id="kpiPass">59</div><div class="label">Pass</div></div>
+        <div class="summary-tile pass"><div class="value" id="kpiPass">0</div><div class="label">Pass</div></div>
         <div class="summary-tile fail"><div class="value" id="kpiFail">0</div><div class="label">Fail</div></div>
         <div class="summary-tile unclear"><div class="value" id="kpiUnclear">0</div><div class="label">Unclear</div></div>
-        <div class="summary-tile na"><div class="value" id="kpiNA">12</div><div class="label">Not Applicable</div></div>
-        <div class="summary-tile"><div class="value" id="kpiTotal">71</div><div class="label">Total Checkpoints</div></div>
+        <div class="summary-tile na"><div class="value" id="kpiNA">0</div><div class="label">Not Applicable</div></div>
+        <div class="summary-tile"><div class="value" id="kpiTotal">72</div><div class="label">Total Checkpoints</div></div>
       </div>
 
       <!-- Checkpoint Selection & Results Table -->
@@ -429,7 +429,7 @@
           progressBar.style.width = `${pct}%`;
           progressPercent.textContent = `${pct}%`;
           statusElapsed.textContent = `⏱ ${res.elapsed_seconds || 0}s`;
-          statusTitle.textContent = `Evaluating Checkpoints [${res.current_rule || 0}/${res.total_rules || 71}]…`;
+          statusTitle.textContent = `Evaluating Checkpoints [${res.current_rule || 0}/${res.total_rules || 72}]…`;
           if (res.current_rule_code) {
             statusRuleDetail.textContent = `⚡ Active: ${res.current_rule_code} — ${res.current_rule_name || ''}`;
           }

@@ -15,15 +15,15 @@ LOCAL_AUDIT_STATE: Dict[str, Any] = {
     "status": "idle",
     "progress": 0,
     "current_rule": 0,
-    "total_rules": 71,
+    "total_rules": 72,
     "current_rule_code": "",
     "current_rule_name": "",
     "elapsed_seconds": 0.0,
     "latest_result": None,
-    "verdicts": {"PASS": 60, "FAIL": 0, "UNCLEAR": 0, "NOT_APPLICABLE": 11},
+    "verdicts": {"PASS": 0, "FAIL": 0, "UNCLEAR": 0, "NOT_APPLICABLE": 0},
     "rule_results": {},
     "error": None,
-    "latest_report_file": "report_full_package.pdf"
+    "latest_report_file": None
 }
 
 class ValidationService:
